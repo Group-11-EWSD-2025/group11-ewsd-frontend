@@ -1,13 +1,10 @@
-import { TUserData } from "@/types";
+import { TLoginState } from "@/types";
 import { atom } from "recoil";
 import { recoilPersist } from "recoil-persist";
 
 const { persistAtom } = recoilPersist();
 
-export const loginState = atom<{
-  token: string;
-  userData: TUserData;
-}>({
+export const loginState = atom<TLoginState>({
   key: "loginState",
   default: {
     token: "",

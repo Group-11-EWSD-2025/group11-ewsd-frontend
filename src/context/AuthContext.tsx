@@ -1,9 +1,10 @@
 import { loginState } from "@/recoil/auth";
+import { TLoginState } from "@/types";
 import React, { createContext, useContext } from "react";
 import { useRecoilValue, useResetRecoilState } from "recoil";
 
 type AuthContextType = {
-  authState: any;
+  authState: TLoginState;
   logout: () => void;
 };
 
