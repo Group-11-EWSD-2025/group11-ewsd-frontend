@@ -33,11 +33,11 @@ export const InputField = <T extends FieldValues>({
         <FormItem
           className={cn(
             field.className,
-            "flex flex-col gap-0.5",
+            "flex flex-col",
             field.type === "hidden" && "hidden",
           )}
         >
-          <FormLabel className="text-base">
+          <FormLabel className="text-sm">
             {field.label}
             {field.required && <span className="text-red-500">*</span>}
           </FormLabel>

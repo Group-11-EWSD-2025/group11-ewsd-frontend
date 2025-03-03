@@ -29,7 +29,7 @@ export const flattenRoutes = (endpoints: Endpoints): Route[] => {
 const Router = () => {
   const { authState } = useAuth();
 
-  return <>{!!authState.token ? <PrivateRoutes /> : <PublicRoutes />}</>;
+  return <>{!authState.token ? <PrivateRoutes /> : <PublicRoutes />}</>;
 };
 
 export default Router;

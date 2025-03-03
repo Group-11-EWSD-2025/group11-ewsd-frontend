@@ -23,8 +23,6 @@ import { Form } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import React, { createContext, useContext } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
-import { OTPField as CustomOTPField, OTPProps } from "./OTPField";
-import { PinFieldProps, PinInput } from "./PinInput";
 
 type CustomFormProps<T extends FieldValues> = {
   formMethods: UseFormReturn<T>;
@@ -93,26 +91,6 @@ CustomForm.CheckboxField = function CheckboxField({
     throw new Error("CheckboxField must be used within a CustomForm");
   }
   return <CustomCheckboxField hookedForm={formMethods} field={field} />;
-};
-
-CustomForm.OTPField = function OTPField({ field }: { field: OTPProps }) {
-  const formMethods = useContext(FormMethodsContext);
-  if (!formMethods) {
-    throw new Error("OTPField must be used within a CustomForm");
-  }
-  return <CustomOTPField hookedForm={formMethods} field={field} />;
-};
-
-CustomForm.PinInput = function PinInputField({
-  field,
-}: {
-  field: PinFieldProps;
-}) {
-  const formMethods = useContext(FormMethodsContext);
-  if (!formMethods) {
-    throw new Error("OTPField must be used within a CustomForm");
-  }
-  return <PinInput hookedForm={formMethods} field={field} />;
 };
 
 CustomForm.Button = function Button({
