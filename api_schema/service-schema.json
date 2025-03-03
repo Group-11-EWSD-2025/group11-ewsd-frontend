@@ -1,0 +1,3568 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MagicWorkforce API",
+    "description": "Backend API for the MagicWorkforce.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/workspaces/": {
+      "post": {
+        "tags": ["WorkSpaces"],
+        "summary": "Create Workspace",
+        "operationId": "create_workspace_api_workspaces__post",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Bodycreateworkspaceapiworkspacespost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelGetWorkspaceDto"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "POST",
+          "uri": "http://${stageVariables.url}/api/workspaces/",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "get": {
+        "tags": ["WorkSpaces"],
+        "summary": "Get All Workspaces",
+        "operationId": "get_all_workspaces_api_workspaces__get",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "is_deleted",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+              "default": false,
+              "title": "Is Deleted"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelListGetAllWorkspaceDto"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/workspaces/",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspaces/create_tab": {
+      "post": {
+        "tags": ["WorkSpaces"],
+        "summary": "Create Tab",
+        "operationId": "create_tab_api_workspaces_create_tab_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Bodycreatetabapiworkspacescreatetabpost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModeldict"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Bearer": [] }],
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "POST",
+          "uri": "http://${stageVariables.url}/api/workspaces/create_tab",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspaces/{workspace_id}/related_documents/query": {
+      "get": {
+        "tags": ["WorkSpaces"],
+        "summary": "Related Documents By Query",
+        "operationId": "related_documents_by_query_api_workspaces__workspace_id__related_documents_query_get",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Workspace Id" }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Query"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "integer" }, { "type": "null" }],
+              "default": 0,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelListGetRelatedDocumentsEmbeddingsDto"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/workspaces/{workspace_id}/related_documents/query",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.workspace_id": "method.request.path.workspace_id"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspaces/{workspace_id}/tabs/{tab_id}": {
+      "get": {
+        "tags": ["WorkSpaces"],
+        "summary": "Get Tab",
+        "operationId": "get_tab_api_workspaces__workspace_id__tabs__tab_id__get",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Workspace Id" }
+          },
+          {
+            "name": "tab_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Tab Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelGetTabDto"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/workspaces/{workspace_id}/tabs/{tab_id}",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.workspace_id": "method.request.path.workspace_id",
+            "integration.request.path.tab_id": "method.request.path.tab_id"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspaces/get_workspace_by_id/{workspace_id}": {
+      "get": {
+        "tags": ["WorkSpaces"],
+        "summary": "Get Workspace By Id",
+        "operationId": "get_workspace_by_id_api_workspaces_get_workspace_by_id__workspace_id__get",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Workspace Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelGetWorkspaceDto"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/workspaces/get_workspace_by_id/{workspace_id}",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.workspace_id": "method.request.path.workspace_id"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspaces/{workspace_id}/chat-history": {
+      "put": {
+        "tags": ["WorkSpaces"],
+        "summary": "Update Workspace Chat History",
+        "description": "Endpoint to update the chat history of a workspace.",
+        "operationId": "update_workspace_chat_history_api_workspaces__workspace_id__chat_history_put",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Workspace Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateChatHistoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelGetWorkspaceDto"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "PUT",
+          "uri": "http://${stageVariables.url}/api/workspaces/{workspace_id}/chat-history",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.workspace_id": "method.request.path.workspace_id"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspaces/related-documents": {
+      "get": {
+        "tags": ["WorkSpaces"],
+        "summary": "Get All Related Documents",
+        "operationId": "get_all_related_documents_api_workspaces_related_documents_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelListGetAllRelateDocumentDto"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          }
+        },
+        "security": [{ "Bearer": [] }],
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/workspaces/related-documents",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspaces/add_comment": {
+      "post": {
+        "tags": ["WorkSpaces"],
+        "summary": "Add Comment",
+        "operationId": "add_comment_api_workspaces_add_comment_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCommentRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModeldict"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Bearer": [] }],
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "POST",
+          "uri": "http://${stageVariables.url}/api/workspaces/add_comment",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspaces/open_or_close_tab/{workspace_id}/{tab_id}/{is_open}": {
+      "put": {
+        "tags": ["WorkSpaces"],
+        "summary": "Open Or Close Tab",
+        "operationId": "open_or_close_tab_api_workspaces_open_or_close_tab__workspace_id___tab_id___is_open__put",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Workspace Id" }
+          },
+          {
+            "name": "tab_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Tab Id" }
+          },
+          {
+            "name": "is_open",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "boolean", "title": "Is Open" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModeldict"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "PUT",
+          "uri": "http://${stageVariables.url}/api/workspaces/open_or_close_tab/{workspace_id}/{tab_id}/{is_open}",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.workspace_id": "method.request.path.workspace_id",
+            "integration.request.path.tab_id": "method.request.path.tab_id",
+            "integration.request.path.is_open": "method.request.path.is_open"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspaces/delete_workspace/{workspace_id}": {
+      "delete": {
+        "tags": ["WorkSpaces"],
+        "summary": "Delete Workspace",
+        "operationId": "delete_workspace_api_workspaces_delete_workspace__workspace_id__delete",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Workspace Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelGetWorkspaceDto"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "DELETE",
+          "uri": "http://${stageVariables.url}/api/workspaces/delete_workspace/{workspace_id}",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.workspace_id": "method.request.path.workspace_id"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspaces/resolve_comment/{workspace_id}/{tab_id}/{comment_id}": {
+      "put": {
+        "tags": ["WorkSpaces"],
+        "summary": "Resolve Comment",
+        "operationId": "resolve_comment_api_workspaces_resolve_comment__workspace_id___tab_id___comment_id__put",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Workspace Id" }
+          },
+          {
+            "name": "tab_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Tab Id" }
+          },
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Comment Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModeldict"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "PUT",
+          "uri": "http://${stageVariables.url}/api/workspaces/resolve_comment/{workspace_id}/{tab_id}/{comment_id}",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.workspace_id": "method.request.path.workspace_id",
+            "integration.request.path.tab_id": "method.request.path.tab_id",
+            "integration.request.path.comment_id": "method.request.path.comment_id"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "Get Notifications",
+        "description": "Get all notifications for the authenticated user.\n\nRetrieves all notifications associated with the authenticated user's ID.\n\nArgs:\n    user (dict): The authenticated user information from Keycloak\n\nReturns:\n    BaseResponseModel[List[NotificationResponseDTO]]: Response containing list of notifications\n\nRaises:\n    HTTPException: If fetching notifications fails",
+        "operationId": "get_notifications_api_notifications__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelListNotificationResponseDTO"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          }
+        },
+        "security": [{ "Bearer": [] }],
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/notifications/",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "post": {
+        "tags": ["Notifications"],
+        "summary": "Create Notification",
+        "description": "Create a new notification.\n\nCreates a notification for a specific user and publishes it to the message queue.\n\nArgs:\n    request (NotificationCreateDTO): The notification details to create\n    user (dict): The authenticated user information from Keycloak\n\nReturns:\n    BaseResponseModel[NotificationResponseDTO]: Response containing the created notification\n\nRaises:\n    HTTPException: If notification creation fails\n\nExample: \n{\n    \"type\": \"noti\",\n    \"message\": \"Hello\",\n    \"payload\": {\"data\": \"Example data\"}\n}",
+        "operationId": "create_notification_api_notifications__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NotificationCreateDTO" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelNotificationResponseDTO"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Bearer": [] }],
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "POST",
+          "uri": "http://${stageVariables.url}/api/notifications/",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/{notification_id}": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "Get Notification",
+        "description": "Get a specific notification by ID for the authenticated user.\n\nRetrieves a single notification by its ID, verifying it belongs to the authenticated user.\n\nArgs:\n    notification_id (str): The ID of the notification to retrieve\n    user (dict): The authenticated user information from Keycloak\n\nReturns:\n    BaseResponseModel[NotificationResponseDTO]: Response containing the notification\n\nRaises:\n    HTTPException: If fetching notification fails",
+        "operationId": "get_notification_api_notifications__notification_id__get",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Notification Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelNotificationResponseDTO"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/notifications/{notification_id}",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.notification_id": "method.request.path.notification_id"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/{notification_id}/read": {
+      "put": {
+        "tags": ["Notifications"],
+        "summary": "Mark Notification Read Status",
+        "description": "Mark a notification as read for the authenticated user.\n\nUpdates the read status of a notification to true, verifying it belongs to the authenticated user.\n\nArgs:\n    notification_id (str): The ID of the notification to mark as read\n    status (bool): The status to mark the notification as\n    user (dict): The authenticated user information from Keycloak\n\nReturns:\n    BaseResponseModel[bool]: Response indicating success/failure of the operation\n\nRaises:\n    HTTPException: If marking notification as read fails",
+        "operationId": "mark_notification_read_status_api_notifications__notification_id__read_put",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Notification Id" }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "boolean", "title": "Status" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelbool"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "PUT",
+          "uri": "http://${stageVariables.url}/api/notifications/{notification_id}/read",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.notification_id": "method.request.path.notification_id"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/meeting-events/protected": {
+      "get": {
+        "tags": ["Meeting-Events"],
+        "summary": "Protected Route",
+        "operationId": "protected_route_api_meeting_events_protected_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          }
+        },
+        "security": [{ "Bearer": [] }],
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/meeting-events/protected",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/meeting-events/workspace/{workspace_id}": {
+      "get": {
+        "tags": ["Meeting-Events"],
+        "summary": "Get All Meeting Events",
+        "operationId": "get_all_meeting_events_api_meeting_events_workspace__workspace_id__get",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Workspace Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelListGetMeetingEventDto"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/meeting-events/workspace/{workspace_id}",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.workspace_id": "method.request.path.workspace_id"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/meeting-events/{id}": {
+      "get": {
+        "tags": ["Meeting-Events"],
+        "summary": "Get Meeting Event By Id",
+        "operationId": "get_meeting_event_by_id_api_meeting_events__id__get",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelGetMeetingEventDto"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/meeting-events/{id}",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Meeting-Events"],
+        "summary": "Update Meeting Event",
+        "operationId": "update_meeting_event_api_meeting_events__id__put",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMeetingEventRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelGetMeetingEventDto"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "PUT",
+          "uri": "http://${stageVariables.url}/api/meeting-events/{id}",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Meeting-Events"],
+        "summary": "Delete Meeting Event",
+        "operationId": "delete_meeting_event_api_meeting_events__id__delete",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelNoneType"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "DELETE",
+          "uri": "http://${stageVariables.url}/api/meeting-events/{id}",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/meeting-events/room/verify-password": {
+      "post": {
+        "tags": ["Meeting-Events"],
+        "summary": "Verify Room Password",
+        "operationId": "verify_room_password_api_meeting_events_room_verify_password_post",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "room_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Room Id" }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Password" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModeldict"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "POST",
+          "uri": "http://${stageVariables.url}/api/meeting-events/room/verify-password",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/meeting-events/": {
+      "post": {
+        "tags": ["Meeting-Events"],
+        "summary": "Create Meeting Event",
+        "operationId": "create_meeting_event_api_meeting_events__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatedMeetingEventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModelGetMeetingEventDto"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "Bearer": [] }],
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "POST",
+          "uri": "http://${stageVariables.url}/api/meeting-events/",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/documents/upload": {
+      "post": {
+        "tags": ["Documents"],
+        "summary": "Upload a document",
+        "description": "Upload a document file along with its description.\n\n- **description**: Description of the document\n- **upload_file**: The document file to be uploaded",
+        "operationId": "upload_document_api_documents_upload_post",
+        "parameters": [
+          {
+            "name": "dependencies",
+            "in": "query",
+            "required": false,
+            "schema": { "title": "Dependencies" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Bodyuploaddocumentapidocumentsuploadpost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Details of the uploaded document",
+            "content": { "application/json": { "schema": {} } },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "POST",
+          "uri": "http://${stageVariables.url}/api/documents/upload",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/documents/search": {
+      "get": {
+        "tags": ["Documents"],
+        "summary": "Search for documents",
+        "description": "Search for documents matching the query.\n\n- **query**: The search term to use for finding relevant documents.",
+        "operationId": "search_api_documents_search_get",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Search query string.",
+              "title": "Query"
+            },
+            "description": "Search query string."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of documents matching the search query.",
+            "content": { "application/json": { "schema": {} } },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/documents/search",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Get Current User",
+        "description": "Get information about the currently authenticated user from their JWT token.\n\nReturns:\n    BaseResponseModel: Response containing user information from the token",
+        "operationId": "get_current_user_api_users_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          }
+        },
+        "security": [{ "Bearer": [] }],
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/users/me",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/s3/list": {
+      "get": {
+        "tags": ["AWS S3 File"],
+        "summary": "List Files",
+        "operationId": "list_files_api_s3_list_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModeldict"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/s3/list",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/s3/upload": {
+      "post": {
+        "tags": ["AWS S3 File"],
+        "summary": "Upload File",
+        "operationId": "upload_file_api_s3_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Bodyuploadfileapis3uploadpost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModeldict"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "POST",
+          "uri": "http://${stageVariables.url}/api/s3/upload",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/s3/download/{file_name}": {
+      "get": {
+        "tags": ["AWS S3 File"],
+        "summary": "Download File",
+        "operationId": "download_file_api_s3_download__file_name__get",
+        "parameters": [
+          {
+            "name": "file_name",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "File Name" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModeldict"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/api/s3/download/{file_name}",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.file_name": "method.request.path.file_name"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/s3/delete/{file_name}": {
+      "delete": {
+        "tags": ["AWS S3 File"],
+        "summary": "Delete File",
+        "operationId": "delete_file_api_s3_delete__file_name__delete",
+        "parameters": [
+          {
+            "name": "file_name",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "File Name" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponseModeldict"
+                }
+              }
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "DELETE",
+          "uri": "http://${stageVariables.url}/api/s3/delete/{file_name}",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestParameters": {
+            "integration.request.path.file_name": "method.request.path.file_name"
+          }
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/openapi.json": {
+      "get": {
+        "summary": "Get Openapi Json",
+        "description": "Serve OpenAPI JSON format.\n\nThis function returns the OpenAPI schema of the API in JSON format.\n\nReturns:\n    JSONResponse: The OpenAPI schema in JSON format.",
+        "operationId": "get_openapi_json_openapi_json_get",
+        "parameters": [
+          {
+            "name": "app",
+            "in": "query",
+            "required": true,
+            "schema": { "title": "App" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/openapi.json",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        }
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } },
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "http_proxy",
+          "httpMethod": "GET",
+          "uri": "http://${stageVariables.url}/health",
+          "connectionType": "VPC_LINK",
+          "connectionId": "VPC_LINK_ID",
+          "timeoutInMillis": 60000,
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match"
+        },
+        "parameters": []
+      },
+      "options": {
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": { "application/json": "{\"statusCode\": 200}" },
+          "passthroughBehavior": "when_no_match",
+          "type": "mock"
+        },
+        "tags": ["Z-Options"],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": { "schema": { "type": "string" } },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BaseResponseModelGetMeetingEventDto": {
+        "properties": {
+          "code": { "type": "integer", "title": "Code" },
+          "status": { "type": "string", "title": "Status" },
+          "message": { "anyOf": [{ "type": "string" }], "title": "Message" },
+          "data": {
+            "anyOf": [{ "$ref": "#/components/schemas/GetMeetingEventDto" }]
+          },
+          "error": { "anyOf": [{}], "title": "Error" }
+        },
+        "type": "object",
+        "required": ["code", "status", "message"],
+        "title": "BaseResponseModel[GetMeetingEventDto]"
+      },
+      "BaseResponseModelGetTabDto": {
+        "properties": {
+          "code": { "type": "integer", "title": "Code" },
+          "status": { "type": "string", "title": "Status" },
+          "message": { "anyOf": [{ "type": "string" }], "title": "Message" },
+          "data": { "anyOf": [{ "$ref": "#/components/schemas/GetTabDto" }] },
+          "error": { "anyOf": [{}], "title": "Error" }
+        },
+        "type": "object",
+        "required": ["code", "status", "message"],
+        "title": "BaseResponseModel[GetTabDto]"
+      },
+      "BaseResponseModelGetWorkspaceDto": {
+        "properties": {
+          "code": { "type": "integer", "title": "Code" },
+          "status": { "type": "string", "title": "Status" },
+          "message": { "anyOf": [{ "type": "string" }], "title": "Message" },
+          "data": {
+            "anyOf": [{ "$ref": "#/components/schemas/GetWorkspaceDto" }]
+          },
+          "error": { "anyOf": [{}], "title": "Error" }
+        },
+        "type": "object",
+        "required": ["code", "status", "message"],
+        "title": "BaseResponseModel[GetWorkspaceDto]"
+      },
+      "BaseResponseModelListGetAllRelateDocumentDto": {
+        "properties": {
+          "code": { "type": "integer", "title": "Code" },
+          "status": { "type": "string", "title": "Status" },
+          "message": { "anyOf": [{ "type": "string" }], "title": "Message" },
+          "data": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/GetAllRelateDocumentDto"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Data"
+          },
+          "error": { "anyOf": [{}], "title": "Error" }
+        },
+        "type": "object",
+        "required": ["code", "status", "message"],
+        "title": "BaseResponseModel[List[GetAllRelateDocumentDto]]"
+      },
+      "BaseResponseModelListGetAllWorkspaceDto": {
+        "properties": {
+          "code": { "type": "integer", "title": "Code" },
+          "status": { "type": "string", "title": "Status" },
+          "message": { "anyOf": [{ "type": "string" }], "title": "Message" },
+          "data": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/GetAllWorkspaceDto" },
+                "type": "array"
+              }
+            ],
+            "title": "Data"
+          },
+          "error": { "anyOf": [{}], "title": "Error" }
+        },
+        "type": "object",
+        "required": ["code", "status", "message"],
+        "title": "BaseResponseModel[List[GetAllWorkspaceDto]]"
+      },
+      "BaseResponseModelListGetMeetingEventDto": {
+        "properties": {
+          "code": { "type": "integer", "title": "Code" },
+          "status": { "type": "string", "title": "Status" },
+          "message": { "anyOf": [{ "type": "string" }], "title": "Message" },
+          "data": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/GetMeetingEventDto" },
+                "type": "array"
+              }
+            ],
+            "title": "Data"
+          },
+          "error": { "anyOf": [{}], "title": "Error" }
+        },
+        "type": "object",
+        "required": ["code", "status", "message"],
+        "title": "BaseResponseModel[List[GetMeetingEventDto]]"
+      },
+      "BaseResponseModelListGetRelatedDocumentsEmbeddingsDto": {
+        "properties": {
+          "code": { "type": "integer", "title": "Code" },
+          "status": { "type": "string", "title": "Status" },
+          "message": { "anyOf": [{ "type": "string" }], "title": "Message" },
+          "data": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/GetRelatedDocumentsEmbeddingsDto"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Data"
+          },
+          "error": { "anyOf": [{}], "title": "Error" }
+        },
+        "type": "object",
+        "required": ["code", "status", "message"],
+        "title": "BaseResponseModel[List[GetRelatedDocumentsEmbeddingsDto]]"
+      },
+      "BaseResponseModelListNotificationResponseDTO": {
+        "properties": {
+          "code": { "type": "integer", "title": "Code" },
+          "status": { "type": "string", "title": "Status" },
+          "message": { "anyOf": [{ "type": "string" }], "title": "Message" },
+          "data": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/NotificationResponseDTO"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Data"
+          },
+          "error": { "anyOf": [{}], "title": "Error" }
+        },
+        "type": "object",
+        "required": ["code", "status", "message"],
+        "title": "BaseResponseModel[List[NotificationResponseDTO]]"
+      },
+      "BaseResponseModelNoneType": {
+        "properties": {
+          "code": { "type": "integer", "title": "Code" },
+          "status": { "type": "string", "title": "Status" },
+          "message": { "anyOf": [{ "type": "string" }], "title": "Message" },
+          "data": { "title": "Data" },
+          "error": { "anyOf": [{}], "title": "Error" }
+        },
+        "type": "object",
+        "required": ["code", "status", "message"],
+        "title": "BaseResponseModel[NoneType]"
+      },
+      "BaseResponseModelNotificationResponseDTO": {
+        "properties": {
+          "code": { "type": "integer", "title": "Code" },
+          "status": { "type": "string", "title": "Status" },
+          "message": { "anyOf": [{ "type": "string" }], "title": "Message" },
+          "data": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/NotificationResponseDTO" }
+            ]
+          },
+          "error": { "anyOf": [{}], "title": "Error" }
+        },
+        "type": "object",
+        "required": ["code", "status", "message"],
+        "title": "BaseResponseModel[NotificationResponseDTO]"
+      },
+      "BaseResponseModelbool": {
+        "properties": {
+          "code": { "type": "integer", "title": "Code" },
+          "status": { "type": "string", "title": "Status" },
+          "message": { "anyOf": [{ "type": "string" }], "title": "Message" },
+          "data": { "anyOf": [{ "type": "boolean" }], "title": "Data" },
+          "error": { "anyOf": [{}], "title": "Error" }
+        },
+        "type": "object",
+        "required": ["code", "status", "message"],
+        "title": "BaseResponseModel[bool]"
+      },
+      "BaseResponseModeldict": {
+        "properties": {
+          "code": { "type": "integer", "title": "Code" },
+          "status": { "type": "string", "title": "Status" },
+          "message": { "anyOf": [{ "type": "string" }], "title": "Message" },
+          "data": { "anyOf": [{ "type": "object" }], "title": "Data" },
+          "error": { "anyOf": [{}], "title": "Error" }
+        },
+        "type": "object",
+        "required": ["code", "status", "message"],
+        "title": "BaseResponseModel[dict]"
+      },
+      "Bodycreatetabapiworkspacescreatetabpost": {
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "title": "Workspace Id",
+            "description": "Workspace ID"
+          },
+          "file": {
+            "anyOf": [{ "type": "string", "format": "binary" }],
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": ["workspace_id"],
+        "title": "Body_create_tab_api_workspaces_create_tab_post"
+      },
+      "Bodycreateworkspaceapiworkspacespost": {
+        "properties": {
+          "module_name": {
+            "type": "string",
+            "title": "Module Name",
+            "description": "Module name"
+          },
+          "workspace_name": {
+            "type": "string",
+            "title": "Workspace Name",
+            "description": "Workspace name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Description of the workspace"
+          },
+          "related_document_ids": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Related Document Ids",
+            "description": "List of related document IDs"
+          },
+          "files": {
+            "items": { "type": "string", "format": "binary" },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "module_name",
+          "workspace_name",
+          "description",
+          "related_document_ids",
+          "files"
+        ],
+        "title": "Body_create_workspace_api_workspaces__post"
+      },
+      "Bodyuploaddocumentapidocumentsuploadpost": {
+        "properties": {
+          "description": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "title": "Description",
+            "description": "Description of the document."
+          },
+          "upload_file": {
+            "type": "string",
+            "format": "binary",
+            "title": "Upload File",
+            "description": "The document file to be uploaded."
+          }
+        },
+        "type": "object",
+        "required": ["description", "upload_file"],
+        "title": "Body_upload_document_api_documents_upload_post"
+      },
+      "Bodyuploadfileapis3uploadpost": {
+        "properties": {
+          "file": { "type": "string", "format": "binary", "title": "File" }
+        },
+        "type": "object",
+        "required": ["file"],
+        "title": "Body_upload_file_api_s3_upload_post"
+      },
+      "CreateCommentRequest": {
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "title": "Workspace Id",
+            "description": "ID of the workspace"
+          },
+          "tab_id": {
+            "type": "string",
+            "title": "Tab Id",
+            "description": "ID of the tab where the comment will be added"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "The comment text"
+          },
+          "selected_text": {
+            "type": "string",
+            "title": "Selected Text",
+            "description": "The selected text that the comment refers to"
+          },
+          "selection_start": {
+            "type": "integer",
+            "title": "Selection Start",
+            "description": "Start position of the selected text"
+          },
+          "selection_end": {
+            "type": "integer",
+            "title": "Selection End",
+            "description": "End position of the selected text"
+          },
+          "ai_suggestion": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Ai Suggestion",
+            "description": "Optional AI suggestion"
+          },
+          "author": {
+            "type": "string",
+            "title": "Author",
+            "description": "Author of the comment"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "description": "User ID of the comment author"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workspace_id",
+          "tab_id",
+          "text",
+          "selected_text",
+          "selection_start",
+          "selection_end",
+          "author",
+          "user_id"
+        ],
+        "title": "CreateCommentRequest"
+      },
+      "CreatedMeetingEventRequest": {
+        "properties": {
+          "title": { "type": "string", "title": "Title" },
+          "workspace_id": { "type": "string", "title": "Workspace Id" },
+          "achieved_description": {
+            "type": "string",
+            "title": "Achieved Description"
+          },
+          "password": { "type": "string", "title": "Password" },
+          "transcript_content": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Transcript Content"
+          },
+          "audio_file_path": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Audio File Path"
+          },
+          "audio_file_name": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Audio File Name"
+          },
+          "audio_file_extension": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Audio File Extension"
+          },
+          "organizer_id": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Organizer Id"
+          },
+          "participant_ids": {
+            "anyOf": [{ "items": { "type": "string" }, "type": "array" }],
+            "title": "Participant Ids",
+            "default": []
+          },
+          "location": { "anyOf": [{ "type": "string" }], "title": "Location" }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "workspace_id",
+          "achieved_description",
+          "password"
+        ],
+        "title": "CreatedMeetingEventRequest"
+      },
+      "GetAllRelateDocumentDto": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "module_name": { "type": "string", "title": "Module Name" },
+          "country": { "type": "string", "title": "Country" },
+          "description": { "type": "string", "title": "Description" },
+          "file_name": { "type": "string", "title": "File Name" },
+          "file_path": { "type": "string", "title": "File Path" }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "module_name",
+          "country",
+          "description",
+          "file_name",
+          "file_path"
+        ],
+        "title": "GetAllRelateDocumentDto"
+      },
+      "GetAllWorkspaceDto": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "module_name": { "type": "string", "title": "Module Name" },
+          "workspace_name": { "type": "string", "title": "Workspace Name" },
+          "related_document_count": {
+            "type": "integer",
+            "title": "Related Document Count"
+          },
+          "is_deleted": { "type": "boolean", "title": "Is Deleted" }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "module_name",
+          "workspace_name",
+          "related_document_count",
+          "is_deleted"
+        ],
+        "title": "GetAllWorkspaceDto"
+      },
+      "GetMeetingEventDto": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "module_name": { "type": "string", "title": "Module Name" },
+          "workspace_id": { "type": "string", "title": "Workspace Id" },
+          "title": { "type": "string", "title": "Title" },
+          "achieved_description": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Achieved Description"
+          },
+          "password": { "type": "string", "title": "Password" },
+          "meeting_link": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Meeting Link"
+          },
+          "room_id": { "anyOf": [{ "type": "string" }], "title": "Room Id" },
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End Time"
+          },
+          "transcript_content": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Transcript Content"
+          },
+          "audio_file_path": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Audio File Path"
+          },
+          "audio_file_name": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Audio File Name"
+          },
+          "audio_file_extension": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Audio File Extension"
+          },
+          "organizer_id": { "type": "string", "title": "Organizer Id" },
+          "participant_ids": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Participant Ids",
+            "default": []
+          },
+          "location": { "anyOf": [{ "type": "string" }], "title": "Location" },
+          "status": { "$ref": "#/components/schemas/MeetingEventStatus" }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "module_name",
+          "workspace_id",
+          "title",
+          "password",
+          "start_time",
+          "end_time",
+          "organizer_id",
+          "status"
+        ],
+        "title": "GetMeetingEventDto"
+      },
+      "GetRelatedDocumentsEmbeddingsDto": {
+        "properties": {
+          "document_id": { "type": "string", "title": "Document Id" },
+          "text_content": { "type": "string", "title": "Text Content" },
+          "source": { "type": "string", "title": "Source" },
+          "page": { "type": "integer", "title": "Page" },
+          "embedding": {
+            "items": { "type": "number" },
+            "type": "array",
+            "title": "Embedding"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document_id",
+          "text_content",
+          "source",
+          "page",
+          "embedding"
+        ],
+        "title": "GetRelatedDocumentsEmbeddingsDto"
+      },
+      "GetTabDto": {
+        "properties": {
+          "tab_id": { "type": "string", "title": "Tab Id" },
+          "tab_name": { "type": "string", "title": "Tab Name" },
+          "tab_type": { "type": "string", "title": "Tab Type" },
+          "upload_document": {
+            "anyOf": [{ "$ref": "#/components/schemas/UploadDocumentModel" }]
+          },
+          "tab_content": {
+            "anyOf": [{ "type": "object" }],
+            "title": "Tab Content"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active",
+            "default": false
+          },
+          "is_open": {
+            "type": "boolean",
+            "title": "Is Open",
+            "default": false
+          },
+          "is_permanent": {
+            "type": "boolean",
+            "title": "Is Permanent",
+            "default": false
+          },
+          "is_deleted": {
+            "type": "boolean",
+            "title": "Is Deleted",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": ["tab_id", "tab_name", "tab_type"],
+        "title": "GetTabDto"
+      },
+      "GetWorkspaceDto": {
+        "properties": {
+          "_id": { "type": "string", "title": "Id" },
+          "module_name": { "type": "string", "title": "Module Name" },
+          "workspace_name": { "type": "string", "title": "Workspace Name" },
+          "description": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Description"
+          },
+          "related_document_ids": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Related Document Ids"
+          },
+          "tabs": {
+            "items": { "type": "object" },
+            "type": "array",
+            "title": "Tabs"
+          },
+          "chat_history": {
+            "items": { "type": "object" },
+            "type": "array",
+            "title": "Chat History"
+          },
+          "is_deleted": { "type": "boolean", "title": "Is Deleted" },
+          "created_by": { "type": "string", "title": "Created By" },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_by": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "anyOf": [{ "type": "string", "format": "date-time" }],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "_id",
+          "module_name",
+          "workspace_name",
+          "related_document_ids",
+          "tabs",
+          "chat_history",
+          "is_deleted",
+          "created_by",
+          "created_at",
+          "updated_by",
+          "updated_at"
+        ],
+        "title": "GetWorkspaceDto"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MeetingEventStatus": {
+        "type": "string",
+        "enum": ["Scheduled", "InProgress", "Completed", "Cancelled"],
+        "title": "MeetingEventStatus"
+      },
+      "NotificationCreateDTO": {
+        "properties": {
+          "type": { "type": "string", "title": "Type" },
+          "message": { "type": "string", "title": "Message" },
+          "payload": { "anyOf": [{ "type": "object" }], "title": "Payload" }
+        },
+        "type": "object",
+        "required": ["type", "message"],
+        "title": "NotificationCreateDTO"
+      },
+      "NotificationResponseDTO": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "user_id": { "type": "string", "title": "User Id" },
+          "type": { "type": "string", "title": "Type" },
+          "message": { "type": "string", "title": "Message" },
+          "read": { "type": "boolean", "title": "Read" },
+          "created_at": { "type": "string", "title": "Created At" },
+          "payload": { "anyOf": [{ "type": "object" }], "title": "Payload" }
+        },
+        "type": "object",
+        "required": ["id", "user_id", "type", "message", "read", "created_at"],
+        "title": "NotificationResponseDTO"
+      },
+      "UpdateChatHistoryRequest": {
+        "properties": {
+          "chat_type": {
+            "type": "string",
+            "title": "Chat Type",
+            "description": "Type of chat message (e.g., text, tab)"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Chat message content"
+          },
+          "tab_data": {
+            "anyOf": [{ "type": "object" }],
+            "title": "Tab Data",
+            "description": "Additional tab data for tab-type messages"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "User or assistant message type"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Timestamp of when the message was created"
+          },
+          "is_deleted": {
+            "type": "boolean",
+            "title": "Is Deleted",
+            "description": "Whether the chat message is deleted",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": ["chat_type", "text", "type", "created_at"],
+        "title": "UpdateChatHistoryRequest"
+      },
+      "UpdateMeetingEventRequest": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "workspace_id": { "type": "string", "title": "Workspace Id" },
+          "title": { "type": "string", "title": "Title" },
+          "achieved_description": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Achieved Description"
+          },
+          "password": { "type": "string", "title": "Password" },
+          "meeting_link": { "type": "string", "title": "Meeting Link" },
+          "room_id": { "type": "string", "title": "Room Id" },
+          "transcript_content": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Transcript Content"
+          },
+          "audio_file_path": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Audio File Path"
+          },
+          "audio_file_name": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Audio File Name"
+          },
+          "audio_file_extension": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Audio File Extension"
+          },
+          "status": { "$ref": "#/components/schemas/MeetingEventStatus" },
+          "organizer_id": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Organizer Id"
+          },
+          "participant_ids": {
+            "anyOf": [{ "items": { "type": "string" }, "type": "array" }],
+            "title": "Participant Ids",
+            "default": []
+          },
+          "location": { "anyOf": [{ "type": "string" }], "title": "Location" }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "workspace_id",
+          "title",
+          "password",
+          "meeting_link",
+          "room_id",
+          "status"
+        ],
+        "title": "UpdateMeetingEventRequest"
+      },
+      "UploadDocumentModel": {
+        "properties": {
+          "upload_document_id": {
+            "type": "string",
+            "title": "Upload Document Id"
+          },
+          "document_name": { "type": "string", "title": "Document Name" },
+          "file_name": { "type": "string", "title": "File Name" },
+          "document_path": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Document Path"
+          },
+          "file_extension": { "type": "string", "title": "File Extension" },
+          "document_content": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Document Content"
+          },
+          "encoded_document_content": {
+            "anyOf": [{ "type": "string", "format": "binary" }],
+            "title": "Encoded Document Content"
+          },
+          "is_deleted": {
+            "type": "boolean",
+            "title": "Is Deleted",
+            "default": false
+          },
+          "created_by": { "type": "string", "title": "Created By" },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_by": {
+            "anyOf": [{ "type": "string" }],
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "anyOf": [{ "type": "string", "format": "date-time" }],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "upload_document_id",
+          "document_name",
+          "file_name",
+          "file_extension",
+          "created_by",
+          "created_at"
+        ],
+        "title": "UploadDocumentModel"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "Enter your bearer token",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "servers": [{ "url": "/" }, { "url": "/magicworkforce/v1alpha" }],
+  "x-amazon-apigateway-binary-media-types": [
+    "multipart/form-data",
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/docx",
+    "application/xlsx",
+    "audio/mpeg",
+    "image/png",
+    "image/jpeg",
+    "image/jpg"
+  ]
+}

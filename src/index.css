@@ -1,0 +1,169 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import "tailwindcss";
+
+@plugin 'tailwindcss-animate';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  /* modified and updated */
+  /* colors */
+  --color-add-on-primary-altered: var(--add-on-primary-altered);
+  --color-primary-blue: hsl(var(--primary-blue));
+
+  /* fonts */
+  --font-sans: "Inter", sans-serif;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 215, 25%, 27%, 1;
+    --popover: 0 0% 98%;
+    --popover-foreground: 215, 25%, 27%, 1;
+    --primary: 215, 25%, 27%, 1;
+    --primary-foreground: 214, 100%, 97%, 1;
+    --secondary: 210, 40%, 96%, 1;
+    --secondary-foreground: 215, 25%, 27%, 1;
+    --muted: 215, 25%, 27%, 1;
+    --muted-foreground: 0 0% 9%;
+    --accent: 214, 95%, 93%, 1;
+    --accent-foreground: 215, 25%, 27%, 1;
+    --destructive: 0, 72%, 51%, 1;
+    --destructive-foreground: 0 0% 98%;
+    --border: 213, 27%, 84%, 1;
+    --input: 213, 27%, 84%, 1;
+    --ring: 0 0% 3.9%;
+    --chart-1: 32, 95%, 44%, 1;
+    --chart-2: 142, 76%, 36%, 1;
+    --chart-3: 221, 83%, 53%, 1;
+    --chart-4: 45, 93%, 47%, 1;
+    --chart-5: 271, 81%, 56%, 1;
+    --radius: 0.5rem;
+    /* modified and updated */
+    --add-on-primary-altered: #64748b;
+    --blue-400: #60a5fa;
+    --purple-700: #7e22ce;
+    --primary-blue: 215 25% 27%;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+@layer base {
+  * {
+    @apply border-border font-sans;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  h1 {
+    @apply text-4xl font-extrabold;
+  }
+  h3 {
+    @apply text-2xl font-bold;
+  }
+}
+
+@layer utilities {
+  .text-primary-gradient {
+    @apply bg-clip-text text-transparent;
+    -webkit-background-clip: text;
+    background-image: linear-gradient(
+      170deg,
+      #60a5fa 0%,
+      #7e22ce 51%,
+      #f30ee9 100%
+    );
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
