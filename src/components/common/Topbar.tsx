@@ -14,7 +14,7 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
           background: "linear-gradient(180deg, #F3F4F6 0%, #FFFFFF 100%)",
         }}
       >
-        <h1 className="text-xl font-semibold">Business & Management</h1>
+        <h1 className="text-xl font-medium">Business & Management</h1>
         <div className="flex items-center gap-x-7">
           <div className="flex cursor-pointer items-center gap-x-2 py-2">
             <Settings size={20} />
@@ -49,7 +49,7 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
             </Avatar>
           </div>
         </div>
-        <h1 className="py-2 text-lg font-semibold">Business & Management</h1>
+        <h1 className="py-2 text-lg font-medium">Business & Management</h1>
       </div>
     </>
   );

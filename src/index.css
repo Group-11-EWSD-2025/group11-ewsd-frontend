@@ -49,6 +49,7 @@
   --color-brand: hsl(var(--brand));
   --color-surface-weak: hsl(var(--surface-weak));
   --color-border-weak: hsl(var(--border-weak));
+  --color-text-strong: hsl(var(--text-strong));
 
   /* fonts */
   --font-sans: "Inter", sans-serif;
@@ -105,6 +106,7 @@
     --border: 213, 27%, 84%;
     --border-weak: 214, 32%, 91%;
     --surface-weak: 210, 40%, 96%;
+    --text-strong: 222, 47%, 11%, 1;
 
     --sidebar-width: 256px;
     --topbar-height: 64px;
