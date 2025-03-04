@@ -1,68 +1,135 @@
-import { ChartLine, LogOut, Plus, Tags, User, Users } from "lucide-react";
+import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
+import {
+  Building2,
+  ChartLine,
+  Ellipsis,
+  LogOut,
+  PanelLeftClose,
+  Plus,
+  Tags,
+  User,
+  Users,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
-const Sidebar = () => {
-  const sidebarItems = [
-    [
-      {
-        icon: <Tags size={20} />,
-        label: "Categories",
-      },
-      {
-        icon: <ChartLine size={20} />,
-        label: "Insights",
-      },
-      {
-        icon: <Users size={20} />,
-        label: "Users Management",
-      },
-    ],
-    [
-      {
-        icon: <User size={20} />,
-        label: "Account Settings",
-      },
-      {
-        icon: <LogOut size={20} />,
-        label: "Logout",
-        action: () => {
-          console.log("logout");
-        },
-      },
-    ],
-  ];
+type Props = {
+  setIsSidebarOpen: (isSidebarOpen: boolean) => void;
+};
 
+type SidebarItem = {
+  icon: React.ReactNode;
+  label: string;
+  href: string;
+  action?: () => void;
+};
+
+const departments = [
+  "Business & Management",
+  "Architecture & Design",
+  "Education & Teaching",
+];
+
+const sidebarItems: SidebarItem[][] = [
+  [
+    {
+      icon: <Tags size={20} />,
+      label: "Categories",
+      href: PrivatePageEndPoints.categories.path,
+    },
+    {
+      icon: <ChartLine size={20} />,
+      label: "Insights",
+      href: PrivatePageEndPoints.insights.path,
+    },
+    {
+      icon: <Users size={20} />,
+      label: "Users Management",
+      href: PrivatePageEndPoints.users.path,
+    },
+  ],
+  [
+    {
+      icon: <User size={20} />,
+      label: "Account Settings",
+      href: PrivatePageEndPoints.accountSettings.path,
+    },
+    {
+      icon: <LogOut size={20} />,
+      label: "Logout",
+      href: "",
+      action: () => {
+        console.log("logout");
+      },
+    },
+  ],
+];
+
+const Sidebar = ({ setIsSidebarOpen }: Props) => {
   return (
-    <div className="flex h-screen w-[256px] flex-col justify-between bg-white">
+    <nav className="border-border-weak flex h-screen w-[var(--sidebar-width)] flex-col justify-between border-r bg-white lg:border-0">
       <div className="flex flex-col gap-y-2">
-        <div className="px-4 pt-5 pb-2">
+        <div className="flex items-center justify-between px-4 pt-5 pb-2">
           <h1 className="text-xl font-semibold">IdeaHub</h1>
+          <PanelLeftClose
+            size={20}
+            className="cursor-pointer lg:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
         </div>
         <div className="flex flex-col gap-y-1 p-2">
           <p className="text-brand px-2 py-1.5 text-sm">Departments</p>
+          {departments.map((department) => (
+            <div className="hover:bg-surface-weak group grid cursor-pointer grid-cols-[1fr_auto] items-center justify-between gap-x-2.5 rounded-md px-2 py-1.5 transition-colors">
+              <div className="grid grid-cols-[20px_1fr] items-center gap-x-2.5">
+                <Building2 size={20} />
+                <p className="max-w-[180px] overflow-hidden text-ellipsis whitespace-nowrap text-black">
+                  {department}
+                </p>
+              </div>
+              <Ellipsis
+                className="text-brand invisible group-hover:visible"
+                size={20}
+              />
+            </div>
+          ))}
           <div className="hover:bg-surface-weak flex cursor-pointer items-center gap-x-2.5 rounded-md px-2 py-1.5 transition-colors">
-            <Plus size={16} />
+            <Plus size={20} className="text-brand" />
             <p className="text-brand">Create New</p>
           </div>
         </div>
         <div className="flex flex-col gap-y-1 p-2">
           {sidebarItems[0].map((item) => (
-            <div className="hover:bg-surface-weak flex cursor-pointer items-center gap-x-2.5 rounded-md px-2 py-1.5 transition-colors">
-              {item.icon}
-              <p className="text-black">{item.label}</p>
-            </div>
+            <Link to={item.href}>
+              <div className="hover:bg-surface-weak flex cursor-pointer items-center gap-x-2.5 rounded-md px-2 py-1.5 transition-colors">
+                {item.icon}
+                <p className="text-black">{item.label}</p>
+              </div>
+            </Link>
           ))}
         </div>
       </div>
 
       <div className="border-border-weak border-t px-2 py-3">
-        {sidebarItems[1].map((item) => (
-          <div className="hover:bg-brand/10 flex cursor-pointer items-center gap-x-2.5 rounded-md px-2 py-1.5 transition-colors">
-            {item.icon}
-            <p className="text-black">{item.label}</p>
-          </div>
-        ))}
+        {sidebarItems[1].map((item) => {
+          const menuItem = (
+            <div className="hover:bg-surface-weak flex cursor-pointer items-center gap-x-2.5 rounded-md px-2 py-1.5 transition-colors">
+              {item.icon}
+              <p className="text-black">{item.label}</p>
+            </div>
+          );
+
+          return item.href ? (
+            <Link to={item.href} key={item.label}>
+              {menuItem}
+            </Link>
+          ) : (
+            <div key={item.label} onClick={item.action}>
+              {menuItem}
+            </div>
+          );
+        })}
       </div>
-    </div>
+    </nav>
   );
 };
 

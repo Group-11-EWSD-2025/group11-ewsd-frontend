@@ -105,6 +105,10 @@
     --border: 213, 27%, 84%;
     --border-weak: 214, 32%, 91%;
     --surface-weak: 210, 40%, 96%;
+
+    --sidebar-width: 256px;
+    --topbar-height: 64px;
+    --content-width: 728px;
   }
   .dark {
     --background: 0 0% 3.9%;
