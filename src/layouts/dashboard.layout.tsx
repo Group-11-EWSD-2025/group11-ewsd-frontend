@@ -19,8 +19,10 @@ function DashboardLayout() {
       </div>
       <div className="ml-0 w-full lg:ml-[var(--sidebar-width)] lg:w-[calc(100vw-var(--sidebar-width))]">
         <Topbar setIsSidebarOpen={setIsSidebarOpen} />
-        <div className="mx-auto w-full overflow-y-auto p-4 lg:h-[calc(100vh-var(--topbar-height))] lg:max-w-[var(--content-width)] lg:p-6">
-          <Outlet />
+        <div className="overflow-y-auto lg:h-[calc(100vh-var(--topbar-height))]">
+          <div className="mx-auto w-full p-4 lg:max-w-[var(--content-width)] lg:p-6">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>

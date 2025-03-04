@@ -40,7 +40,7 @@ const ImageCard = ({ image }: { image: string }) => {
 
 const AttachmentCard = ({ attachment }: { attachment: string }) => {
   return (
-    <div className="bg-surface-weak flex items-center gap-x-2 rounded-md px-4 py-3">
+    <div className="bg-surface-weak flex items-center gap-x-2 rounded-md px-2 py-1 md:px-4 md:py-3">
       <File size={20} />
       <p className="text-text-strong">{attachment}</p>
     </div>
@@ -95,7 +95,7 @@ const IdeaCard = () => {
             </div>
           )}
           {sampleAttachments.length > 0 && (
-            <div className="flex items-center gap-x-2">
+            <div className="flex flex-wrap items-center gap-2">
               {sampleAttachments.length > 4 ? (
                 <>
                   {sampleAttachments.slice(0, 3).map((attachment, index) => (
@@ -104,7 +104,7 @@ const IdeaCard = () => {
                       attachment={attachment}
                     />
                   ))}
-                  <div className="bg-surface-weak flex items-center gap-x-2 rounded-md px-4 py-3">
+                  <div className="bg-surface-weak flex items-center gap-x-2 rounded-md px-2 py-1 md:px-4 md:py-3">
                     <p className="text-brand">
                       +{sampleAttachments.length - 3} More
                     </p>
@@ -122,7 +122,7 @@ const IdeaCard = () => {
           )}
         </div>
       </div>
-      <div className="flex flex-col md:flex-row md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:justify-between">
         <div className="flex items-center gap-x-3">
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" />
