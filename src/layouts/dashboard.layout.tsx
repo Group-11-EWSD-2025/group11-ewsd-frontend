@@ -8,7 +8,7 @@ function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex bg-[#F3F4F6]">
+    <div className="bg-muted flex">
       <div
         className={cn(
           "border-border-weak fixed top-0 left-0 z-10 w-[var(--sidebar-width)] translate-x-[-100%] border-r bg-white transition-transform duration-300 ease-in-out lg:translate-x-0",
@@ -20,7 +20,7 @@ function DashboardLayout() {
       <div className="ml-0 w-full lg:ml-[var(--sidebar-width)] lg:w-[calc(100vw-var(--sidebar-width))]">
         <Topbar setIsSidebarOpen={setIsSidebarOpen} />
         <div className="overflow-y-auto lg:h-[calc(100vh-var(--topbar-height))]">
-          <div className="mx-auto w-full p-4 lg:max-w-[var(--content-width)] lg:p-6">
+          <div className="mx-auto h-full w-full lg:max-w-[var(--content-width)]">
             <Outlet />
           </div>
         </div>
