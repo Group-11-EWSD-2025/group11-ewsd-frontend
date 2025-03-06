@@ -1,5 +1,8 @@
+import DepartmentForm from "@/components/common/DepartmentForm";
+import UserForm from "@/components/common/UserForm";
+import { Button } from "@/components/ui/button";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
-import { cn } from "@/lib/utils";
+import { cn, showDialog } from "@/lib/utils";
 import {
   Building2,
   ChartLine,
@@ -72,6 +75,22 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
     return currentPath === path;
   };
 
+  function handleCreateDepartment() {
+    console.log("create department");
+    showDialog({
+      title: "Create Department",
+      children: <DepartmentForm />,
+    });
+  }
+
+  function handleCreateUser() {
+    console.log("create user");
+    showDialog({
+      title: "Create User",
+      children: <UserForm />,
+    });
+  }
+
   return (
     <nav className="border-border-weak flex h-screen w-[var(--sidebar-width)] flex-col justify-between border-r bg-white lg:border-0">
       <div className="flex flex-col gap-y-2">
@@ -102,10 +121,22 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
               />
             </div>
           ))}
-          <div className="hover:bg-surface-weak flex cursor-pointer items-center gap-x-2.5 rounded-md px-2 py-1.5 transition-colors">
+          <Button
+            variant="ghost"
+            className="justify-start gap-x-2.5 px-2 text-base font-normal"
+            onClick={handleCreateDepartment}
+          >
             <Plus size={20} className="text-brand" />
             <p className="text-brand">Create New</p>
-          </div>
+          </Button>
+          <Button
+            variant="ghost"
+            className="justify-start gap-x-2.5 px-2 text-base font-normal"
+            onClick={handleCreateUser}
+          >
+            <Plus size={20} className="text-brand" />
+            <p className="text-brand">Create New User</p>
+          </Button>
         </div>
         <div className="flex flex-col gap-y-1 p-2">
           {sidebarItems[0].map((item) => (

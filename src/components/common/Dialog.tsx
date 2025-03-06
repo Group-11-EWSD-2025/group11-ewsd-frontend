@@ -128,14 +128,14 @@ const Dialog = () => {
     >
       <DialogContent className={classes({ size, className })}>
         <DialogHeader>
-          <DialogTitle className={cn("text-xl font-bold", titleClassName)}>
-            {title}
-          </DialogTitle>
-          <DialogDescription
-            className={cn("mt-5 text-base", descriptionClassName)}
-          >
-            {description}
-          </DialogDescription>
+          <DialogTitle className={titleClassName}>{title}</DialogTitle>
+          {description && (
+            <DialogDescription
+              className={cn("mt-5 text-base", descriptionClassName)}
+            >
+              {description}
+            </DialogDescription>
+          )}
         </DialogHeader>
         {dialogContent}
         {(!!action || !!cancel) && (

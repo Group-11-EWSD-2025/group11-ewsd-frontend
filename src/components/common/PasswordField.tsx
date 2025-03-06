@@ -11,11 +11,9 @@ import { useState } from "react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { Input } from "../ui/input";
 
-export type PasswordFieldProps = {
-  name: string;
-  placeholder?: string;
+export type PasswordFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
-  className?: string;
+  name: string;
 };
 
 export type PasswordFormFieldProps<T extends FieldValues> = {
@@ -40,7 +38,10 @@ export const PasswordField = <T extends FieldValues>({
       render={({ field: formField }) => {
         return (
           <FormItem className={cn(field.className, "flex flex-col")}>
-            <FormLabel className="text-sm">{field.label}</FormLabel>
+            <FormLabel className="text-sm">
+              {field.label}
+              {field.required && <span className="text-red-500">*</span>}
+            </FormLabel>
             <FormControl>
               <div
                 className={cn(
