@@ -77,7 +77,11 @@ const Dialog = () => {
           </Button>
         )}
         {action && (
-          <Button {...action} onClick={handleAction}>
+          <Button
+            variant={action.variant ?? "default"}
+            {...action}
+            onClick={handleAction}
+          >
             {action.label ?? "Confirm"}
           </Button>
         )}

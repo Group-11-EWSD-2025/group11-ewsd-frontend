@@ -45,7 +45,7 @@ export const PasswordField = <T extends FieldValues>({
             <FormControl>
               <div
                 className={cn(
-                  "relative flex w-full items-center rounded-md border border-[#BEBEBE] pr-3 focus-within:border focus-within:border-black",
+                  "relative flex w-full items-center rounded-md border pr-3 focus-within:border focus-within:border-black",
                   className,
                 )}
               >
@@ -68,9 +68,9 @@ export const PasswordField = <T extends FieldValues>({
                 >
                   {formField.value &&
                     (showPassword ? (
-                      <Eye size={16} className="text-[#475569]" />
+                      <Eye size={16} className="text-muted-foreground" />
                     ) : (
-                      <EyeOff size={16} className="text-[#475569]" />
+                      <EyeOff size={16} className="text-muted-foreground" />
                     ))}
                 </button>
               </div>

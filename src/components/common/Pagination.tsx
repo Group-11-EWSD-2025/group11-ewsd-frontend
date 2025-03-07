@@ -91,7 +91,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"
-            className="h-10 w-[90px] border border-[#CBD5E1] bg-transparent"
+            className="border-border-weak h-10 w-[90px] border bg-transparent"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
@@ -99,7 +99,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           </Button>
           <Button
             variant="outline"
-            className="h-10 w-[90px] border border-[#CBD5E1] bg-transparent"
+            className="border-border-weak h-10 w-[90px] border bg-transparent"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages || totalPages === 0}
           >

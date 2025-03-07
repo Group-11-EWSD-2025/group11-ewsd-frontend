@@ -30,7 +30,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-y-7 bg-[#F3F4F6]">
+    <div className="bg-muted flex h-screen flex-col items-center justify-center gap-y-7">
       <h2 className="text-2xl font-semibold">IdeaHub</h2>
       <div className="flex w-[384px] flex-col gap-y-6 rounded-xl bg-white p-6 shadow-md">
         <Lock className="h-8 w-8" />

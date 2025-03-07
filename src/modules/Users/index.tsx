@@ -15,15 +15,15 @@ import { MoreVertical, Pencil, Plus, SearchIcon, Trash } from "lucide-react";
 import * as React from "react";
 
 import Pagination from "@/components/common/Pagination";
+import UserForm from "@/components/common/UserForm";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -39,6 +39,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { showDialog } from "@/lib/utils";
+import { dialogState } from "@/recoil/common";
+import { useRecoilState } from "recoil";
 
 // Define the data type
 type User = {
@@ -178,6 +181,9 @@ const Users = () => {
   const [pageSize] = React.useState(4);
   const [currentPage, setCurrentPage] = React.useState(1);
 
+  const [dialog, setDialog] = useRecoilState(dialogState);
+  console.log(dialog);
+
   // Define columns
   const columns: ColumnDef<User>[] = [
     {
@@ -274,6 +280,44 @@ const Users = () => {
     return filteredData.slice(start, end);
   }, [filteredData, currentPage, pageSize]);
 
+  function handleCreateUser() {
+    showDialog({
+      title: "Create User",
+      children: <UserForm />,
+    });
+  }
+
+  function handleEditUser() {
+    showDialog({
+      title: "Edit User",
+      children: <UserForm />,
+    });
+  }
+
+  function handleDeleteUser() {
+    showDialog({
+      isAlert: true,
+      title: "Are you sure you want to delete this user?",
+      children: (
+        <p className="text-brand text-sm">
+          This action cannot be undone, and the user will lose access to the
+          system. Any submitted ideas and comments will remain but will be
+          marked as <b>Anonymous</b>.
+        </p>
+      ),
+      cancel: {
+        label: "Cancel",
+      },
+      action: {
+        label: "Yes, Delete",
+        variant: "destructive",
+        onClick: () => {
+          console.log("Delete user");
+        },
+      },
+    });
+  }
+
   return (
     <div className="container mx-auto">
       {/* Header with search and filters */}
@@ -285,7 +329,7 @@ const Users = () => {
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
             }
-            className="min-w-xs border border-[#CBD5E1] bg-white py-5 placeholder:text-gray-400"
+            className="min-w-xs border bg-white py-5 placeholder:text-gray-400"
           />
           <SearchIcon className="absolute top-1/2 right-3 size-4 -translate-y-1/2 text-gray-400" />
         </div>
@@ -297,7 +341,7 @@ const Users = () => {
               setSelectedRole(value);
             }}
           >
-            <SelectTrigger className="h-10 w-36 border border-[#CBD5E1] bg-white shadow-none">
+            <SelectTrigger className="h-10 w-36 border bg-white shadow-none">
               <SelectValue placeholder="All Role" />
             </SelectTrigger>
             <SelectContent>
@@ -309,7 +353,10 @@ const Users = () => {
               ))}
             </SelectContent>
           </Select>
-          <Button className="flex items-center gap-1">
+          <Button
+            className="flex items-center gap-1"
+            onClick={handleCreateUser}
+          >
             <Plus className="h-4 w-4" />
             Create User
           </Button>
@@ -365,32 +412,36 @@ const Users = () => {
                         if (column.id === "actions") {
                           return (
                             <TableCell key={column.id}>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
+                              <Popover>
+                                <PopoverTrigger>
                                   <Button
                                     variant="ghost"
                                     className="h-8 w-8 p-0"
                                   >
                                     <MoreVertical className="h-4 w-4" />
                                   </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem
-                                    onClick={() => console.log("Edit User")}
-                                    className="flex items-center gap-2 text-slate-700"
+                                </PopoverTrigger>
+                                <PopoverContent className="flex w-[160px] flex-col p-1">
+                                  <Button
+                                    variant="ghost"
+                                    onClick={handleEditUser}
+                                    className="w-full justify-start"
                                   >
                                     <Pencil className="size-4 text-slate-700" />
                                     Edit User
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => console.log("Delete User")}
-                                    className="flex items-center gap-2 text-[#F43F5E]"
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    onClick={handleDeleteUser}
+                                    className="w-full justify-start"
                                   >
-                                    <Trash className="size-4 text-[#F43F5E]" />
-                                    Delete User
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
+                                    <Trash className="text-destructive size-4" />
+                                    <p className="text-destructive">
+                                      Delete User
+                                    </p>
+                                  </Button>
+                                </PopoverContent>
+                              </Popover>
                             </TableCell>
                           );
                         }
