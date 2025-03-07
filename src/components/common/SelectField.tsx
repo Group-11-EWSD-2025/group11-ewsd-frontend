@@ -53,7 +53,7 @@ export const SelectField = ({
               <SelectTrigger className="mb-0 w-full shadow-none">
                 <SelectValue placeholder={field.placeholder ?? "Select"} />
               </SelectTrigger>
-              <SelectContent className="z-[9999]">
+              <SelectContent className="z-[1001]">
                 {field.options.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}

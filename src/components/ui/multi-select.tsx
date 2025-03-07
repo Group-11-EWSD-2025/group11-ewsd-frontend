@@ -1,13 +1,7 @@
 // src/components/multi-select.tsx
 
 import { cva, type VariantProps } from "class-variance-authority";
-import {
-  CheckIcon,
-  ChevronDown,
-  WandSparkles,
-  XCircle,
-  XIcon,
-} from "lucide-react";
+import { CheckIcon, ChevronDown, XCircle, XIcon } from "lucide-react";
 import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -56,7 +50,7 @@ const multiSelectVariants = cva(
 /**
  * Props for MultiSelect component
  */
-interface MultiSelectProps
+export interface MultiSelectProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof multiSelectVariants> {
   /**
@@ -202,7 +196,7 @@ export const MultiSelect = React.forwardRef<
             {...props}
             onClick={handleTogglePopover}
             className={cn(
-              "flex h-auto min-h-10 w-full items-center justify-between rounded-md border bg-inherit p-1 hover:bg-inherit [&_svg]:pointer-events-auto",
+              "flex h-auto min-h-10 w-full items-center justify-between rounded-md border bg-inherit p-1 shadow-none hover:bg-inherit [&_svg]:pointer-events-auto",
               className,
             )}
           >
@@ -281,7 +275,7 @@ export const MultiSelect = React.forwardRef<
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="z-[9999] w-auto p-0"
+          className="z-[1001] w-auto p-0"
           align="start"
           onEscapeKeyDown={() => setIsPopoverOpen(false)}
         >
@@ -306,7 +300,7 @@ export const MultiSelect = React.forwardRef<
                         : "opacity-50 [&_svg]:invisible",
                     )}
                   >
-                    <CheckIcon className="h-4 w-4" />
+                    <CheckIcon className="h-4 w-4 text-white" />
                   </div>
                   <span>(Select All)</span>
                 </CommandItem>
@@ -326,7 +320,7 @@ export const MultiSelect = React.forwardRef<
                             : "opacity-50 [&_svg]:invisible",
                         )}
                       >
-                        <CheckIcon className="h-4 w-4" />
+                        <CheckIcon className="h-4 w-4 text-white" />
                       </div>
                       {option.icon && (
                         <option.icon className="text-muted-foreground mr-2 h-4 w-4" />
@@ -364,15 +358,6 @@ export const MultiSelect = React.forwardRef<
             </CommandList>
           </Command>
         </PopoverContent>
-        {animation > 0 && selectedValues.length > 0 && (
-          <WandSparkles
-            className={cn(
-              "text-foreground bg-background my-2 h-3 w-3 cursor-pointer",
-              isAnimating ? "" : "text-muted-foreground",
-            )}
-            onClick={() => setIsAnimating(!isAnimating)}
-          />
-        )}
       </Popover>
     );
   },
