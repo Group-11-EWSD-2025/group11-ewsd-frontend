@@ -11,6 +11,10 @@ import {
   InputProps,
 } from "@/components/common/InputField";
 import {
+  MultiSelectField as CustomMultiSelectField,
+  CustomMultiSelectProps,
+} from "@/components/common/MultiSelectField";
+import {
   PasswordField as CustomPasswordField,
   PasswordFieldProps,
 } from "@/components/common/PasswordField";
@@ -74,6 +78,26 @@ CustomForm.SelectField = function SelectField({
   }
   return (
     <CustomSelectField
+      hookedForm={formMethods}
+      field={field}
+      className={className}
+    />
+  );
+};
+
+CustomForm.MultiSelectField = function MultiSelectField({
+  field,
+  className,
+}: {
+  field: CustomMultiSelectProps;
+  className?: string;
+}) {
+  const formMethods = useContext(FormMethodsContext);
+  if (!formMethods) {
+    throw new Error("MultiSelectField must be used within a CustomForm");
+  }
+  return (
+    <CustomMultiSelectField
       hookedForm={formMethods}
       field={field}
       className={className}

@@ -1,11 +1,9 @@
 import CustomForm from "@/components/common/CustomForm";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { MultiSelect } from "../ui/multi-select";
 
-const DEPARTMENTS_OPTIONS = [
+export const DEPARTMENTS_OPTIONS = [
   { value: "react", label: "React" },
   { value: "angular", label: "Angular" },
   { value: "vue", label: "Vue" },
@@ -37,12 +35,9 @@ const userSchema = z.object({
   role: z.enum(["teacher", "assistant", "admin"], {
     message: "Invalid role selected",
   }),
-  assignedDepartment: z.enum(
-    ["business-management", "architecture-design", "education-teaching"],
-    {
-      message: "Invalid department",
-    },
-  ),
+  assignedDepartments: z
+    .array(z.string().min(1, { message: "Invalid department" }))
+    .min(1, { message: "At least one department must be selected" }),
   userPassword: z
     .string()
     .min(8, { message: "Password must be at least 8 characters" })
@@ -58,11 +53,6 @@ const userSchema = z.object({
 export type UserFormInputs = z.infer<typeof userSchema>;
 
 function UserForm() {
-  const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>([
-    "react",
-    "angular",
-  ]);
-
   const userForm = useForm<UserFormInputs>({
     resolver: zodResolver(userSchema),
     defaultValues: {
@@ -70,7 +60,7 @@ function UserForm() {
       email: "",
       phoneNumber: "",
       role: "teacher",
-      assignedDepartment: "business-management",
+      assignedDepartments: [],
       userPassword: "",
     },
   });
@@ -122,23 +112,15 @@ function UserForm() {
             required: true,
           }}
         />
-        <CustomForm.SelectField
+        <CustomForm.MultiSelectField
           field={{
-            name: "assignedDepartment",
+            name: "assignedDepartments",
             label: "Assigned Department",
-            placeholder: "Select",
             options: DEPARTMENTS_OPTIONS,
             required: true,
+            modalPopover: true,
+            onValueChange: () => {},
           }}
-        />
-        <MultiSelect
-          options={DEPARTMENTS_OPTIONS}
-          onValueChange={setSelectedFrameworks}
-          defaultValue={selectedFrameworks}
-          placeholder="Select frameworks"
-          variant="inverted"
-          animation={2}
-          maxCount={3}
         />
         <CustomForm.PasswordField
           field={{

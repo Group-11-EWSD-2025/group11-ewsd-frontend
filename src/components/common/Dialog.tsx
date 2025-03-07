@@ -22,7 +22,7 @@ import { cva } from "class-variance-authority";
 import { useRecoilState } from "recoil";
 
 const classes = cva(
-  "fixed z-[1500] bg-white w-full rounded-lg max-h-[80vh] overflow-auto",
+  "fixed z-[1000] bg-white w-full rounded-lg max-h-[80vh] overflow-auto",
   {
     variants: {
       size: {
