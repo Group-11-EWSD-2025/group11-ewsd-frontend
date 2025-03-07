@@ -2,10 +2,13 @@ import Sidebar from "@/components/common/Sidebar";
 import Topbar from "@/components/common/Topbar";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
 function DashboardLayout() {
+  const { pathname } = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const widthFullRoutes = ["/users"];
+  const isWidthFull = widthFullRoutes.includes(pathname);
 
   return (
     <div className="bg-muted flex">
@@ -20,7 +23,13 @@ function DashboardLayout() {
       <div className="ml-0 w-full lg:ml-[var(--sidebar-width)] lg:w-[calc(100vw-var(--sidebar-width))]">
         <Topbar setIsSidebarOpen={setIsSidebarOpen} />
         <div className="overflow-y-auto lg:h-[calc(100vh-var(--topbar-height))]">
-          <div className="mx-auto h-full w-full lg:max-w-[var(--content-width)]">
+          <div
+            className={cn(
+              "mx-auto h-full",
+              !isWidthFull && "lg:max-w-[var(--content-width)]",
+              isWidthFull && "w-full px-5 py-6",
+            )}
+          >
             <Outlet />
           </div>
         </div>
