@@ -44,7 +44,13 @@ const Login = () => {
   });
 
   const onSubmit = (data: LoginFormInputs) => {
-    loginMutation.mutate(data);
+    // loginMutation.mutate(data);
+    setAuthState({
+      token: "123",
+      userData: {
+        email: data.email,
+      },
+    });
   };
 
   return (
