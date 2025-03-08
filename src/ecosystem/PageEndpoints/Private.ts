@@ -8,6 +8,14 @@ export const PrivatePageEndPoints = {
     getHref: () => "/",
     component: Loadable(lazy(() => import("@/modules/Home"))),
   },
+  departments: {
+    details: {
+      path: "/departments/:id",
+      label: "Department Details",
+      getHref: (id: string) => `/departments/${id}`,
+      component: Loadable(lazy(() => import("@/modules/Departments"))),
+    },
+  },
   categories: {
     path: "/categories",
     label: "Categories",

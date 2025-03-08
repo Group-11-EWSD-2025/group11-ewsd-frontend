@@ -1,5 +1,6 @@
 import DepartmentForm from "@/components/common/DepartmentForm";
 import { Button } from "@/components/ui/button";
+import { DEPARTMENTS } from "@/constants";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { cn, showDialog } from "@/lib/utils";
 import {
@@ -26,13 +27,7 @@ type SidebarItem = {
   action?: () => void;
 };
 
-const departments = [
-  "Business & Management",
-  "Architecture & Design",
-  "Education & Teaching",
-];
-
-const sidebarItems: SidebarItem[][] = [
+const SIDEBAR_ITEMS: SidebarItem[][] = [
   [
     {
       icon: <Tags size={20} />,
@@ -86,7 +81,9 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
     <nav className="border-border-weak flex h-screen w-[var(--sidebar-width)] flex-col justify-between border-r bg-white lg:border-0">
       <div className="flex flex-col gap-y-2">
         <div className="flex items-center justify-between px-4 pt-5 pb-2">
-          <h1 className="text-lg font-semibold lg:text-xl">IdeaHub</h1>
+          <Link to={PrivatePageEndPoints.root.path}>
+            <h1 className="text-lg font-semibold lg:text-xl">IdeaHub</h1>
+          </Link>
           <PanelLeftClose
             size={20}
             className="cursor-pointer lg:hidden"
@@ -95,22 +92,25 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
         </div>
         <div className="flex flex-col gap-y-1 p-2">
           <p className="text-brand px-2 py-1.5 text-sm">Departments</p>
-          {departments.map((department) => (
-            <div
-              key={department}
+          {DEPARTMENTS.map((department) => (
+            <Link
+              key={department.id}
+              to={PrivatePageEndPoints.departments.details.getHref(
+                department.id,
+              )}
               className="hover:bg-surface-weak group grid cursor-pointer grid-cols-[1fr_auto] items-center justify-between gap-x-2.5 rounded-md px-2 py-1.5 transition-colors"
             >
               <div className="grid grid-cols-[20px_1fr] items-center gap-x-2.5">
                 <Building2 size={20} />
                 <p className="max-w-[180px] overflow-hidden text-ellipsis whitespace-nowrap text-black">
-                  {department}
+                  {department.name}
                 </p>
               </div>
               <Ellipsis
                 className="text-brand invisible group-hover:visible"
                 size={20}
               />
-            </div>
+            </Link>
           ))}
           <Button
             variant="ghost"
@@ -122,7 +122,7 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
           </Button>
         </div>
         <div className="flex flex-col gap-y-1 p-2">
-          {sidebarItems[0].map((item) => (
+          {SIDEBAR_ITEMS[0].map((item) => (
             <Link key={item.label} to={item.href}>
               <div
                 className={cn(
@@ -139,7 +139,7 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
       </div>
 
       <div className="border-border-weak border-t px-2 py-3">
-        {sidebarItems[1].map((item) => {
+        {SIDEBAR_ITEMS[1].map((item) => {
           const menuItem = (
             <div
               className={cn(
