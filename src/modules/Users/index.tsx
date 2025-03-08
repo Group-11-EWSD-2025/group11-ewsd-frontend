@@ -417,11 +417,14 @@ const Users = () => {
                                     <MoreVertical className="h-4 w-4" />
                                   </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="flex w-[160px] flex-col p-1">
+                                <PopoverContent
+                                  align="end"
+                                  className="flex w-[186px] flex-col p-1"
+                                >
                                   <Button
                                     variant="ghost"
                                     onClick={handleEditUser}
-                                    className="w-full justify-start"
+                                    className="w-full justify-start p-2"
                                   >
                                     <Pencil className="size-4 text-slate-700" />
                                     Edit User
@@ -429,7 +432,7 @@ const Users = () => {
                                   <Button
                                     variant="ghost"
                                     onClick={handleDeleteUser}
-                                    className="w-full justify-start"
+                                    className="w-full justify-start p-2"
                                   >
                                     <Trash className="text-destructive size-4" />
                                     <p className="text-destructive">

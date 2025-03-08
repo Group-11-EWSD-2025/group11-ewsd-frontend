@@ -22,6 +22,7 @@ export type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
   options: {
     label: string;
     value: string;
+    desc?: string;
   }[];
 };
 
@@ -36,6 +37,12 @@ export const SelectField = ({
   field,
   className,
 }: SelectFieldProps) => {
+  // Find the selected option's label for the trigger display
+  const getSelectedLabel = (value: string) => {
+    const selectedOption = field.options.find((opt) => opt.value === value);
+    return selectedOption?.label;
+  };
+
   return (
     <FormField
       control={hookedForm.control}
@@ -51,12 +58,28 @@ export const SelectField = ({
           <FormControl>
             <Select onValueChange={formField.onChange} value={formField.value}>
               <SelectTrigger className="mb-0 w-full shadow-none">
-                <SelectValue placeholder={field.placeholder ?? "Select"} />
+                <SelectValue>
+                  {formField.value
+                    ? getSelectedLabel(formField.value)
+                    : (field.placeholder ?? "Select")}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent className="z-[1001]">
                 {field.options.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                    <div className="flex flex-col items-start justify-center">
+                      <p
+                        className={cn(
+                          "font-semibold text-black",
+                          option.value !== "" && option.desc && "mb-1",
+                        )}
+                      >
+                        {option.label}
+                      </p>
+                      {option.desc && (
+                        <p className="text-sm text-gray-500">{option.desc}</p>
+                      )}
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>

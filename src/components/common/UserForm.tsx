@@ -12,9 +12,13 @@ export const DEPARTMENTS_OPTIONS = [
 ];
 
 const ROLES_OPTIONS = [
-  { label: "Teacher", value: "teacher" },
-  { label: "Assistant", value: "assistant" },
-  { label: "Admin", value: "admin" },
+  { label: "Teacher", value: "teacher", desc: "Teacher role for teaching" },
+  {
+    label: "Assistant",
+    value: "assistant",
+    desc: "Assistant role for assisting",
+  },
+  { label: "Admin", value: "admin", desc: "Admin role for managing" },
 ];
 
 const userSchema = z.object({
