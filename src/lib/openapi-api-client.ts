@@ -1,4 +1,4 @@
-import { API_SERVICE_BASE_URL } from "@/config/env";
+import { API_BASE_URL } from "@/config/env";
 import { toast } from "@/hooks/use-toast";
 import { getLoginState } from "@/lib/utils";
 import type { paths as servicePaths } from "@/types/api-schema/service-schema";
@@ -20,7 +20,7 @@ function handleResponseError(error: any) {
 }
 
 export const serviceApiClient = createClient<servicePaths>({
-  baseUrl: API_SERVICE_BASE_URL,
+  baseUrl: API_BASE_URL,
 });
 
 export const apiServiceMiddleware = () => {
