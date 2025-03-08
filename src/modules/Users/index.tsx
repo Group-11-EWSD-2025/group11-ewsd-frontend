@@ -189,39 +189,35 @@ const Users = () => {
     {
       accessorKey: "name",
       header: () => {
-        return <div className="text-sm font-medium text-gray-500">Name</div>;
+        return <div className="text-gray-500">Name</div>;
       },
       cell: ({ row }) => <div>{row.getValue("name")}</div>,
     },
     {
       accessorKey: "email",
       header: () => {
-        return <div className="text-sm font-medium text-gray-500">Email</div>;
+        return <div className="text-gray-500">Email</div>;
       },
       cell: ({ row }) => <div>{row.getValue("email")}</div>,
     },
     {
       accessorKey: "phone",
       header: () => {
-        return <div className="text-sm font-medium text-gray-500">Phone</div>;
+        return <div className="text-gray-500">Phone</div>;
       },
       cell: ({ row }) => <div>{row.getValue("phone")}</div>,
     },
     {
       accessorKey: "department",
       header: () => {
-        return (
-          <div className="text-sm font-medium text-gray-500">
-            Assigned Department
-          </div>
-        );
+        return <div className="text-gray-500">Assigned Department</div>;
       },
       cell: ({ row }) => <div>{row.getValue("department")}</div>,
     },
     {
       accessorKey: "role",
       header: () => {
-        return <div className="text-sm font-medium text-gray-500">Role</div>;
+        return <div className="text-gray-500">Role</div>;
       },
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("role")}</div>
@@ -329,7 +325,7 @@ const Users = () => {
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
             }
-            className="min-w-xs border bg-white py-5 placeholder:text-gray-400"
+            className="min-w-xs border bg-white py-5 text-base placeholder:text-gray-400"
           />
           <SearchIcon className="absolute top-1/2 right-3 size-4 -translate-y-1/2 text-gray-400" />
         </div>
