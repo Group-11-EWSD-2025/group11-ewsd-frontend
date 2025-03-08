@@ -1,6 +1,7 @@
 import DepartmentForm from "@/components/common/DepartmentForm";
 import { Button } from "@/components/ui/button";
 import { DEPARTMENTS } from "@/constants";
+import { useAuth } from "@/context/AuthContext";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { cn, showDialog } from "@/lib/utils";
 import {
@@ -27,43 +28,42 @@ type SidebarItem = {
   action?: () => void;
 };
 
-const SIDEBAR_ITEMS: SidebarItem[][] = [
-  [
-    {
-      icon: <Tags size={20} />,
-      label: "Categories",
-      href: PrivatePageEndPoints.categories.path,
-    },
-    {
-      icon: <ChartLine size={20} />,
-      label: "Insights",
-      href: PrivatePageEndPoints.insights.path,
-    },
-    {
-      icon: <Users size={20} />,
-      label: "Users Management",
-      href: PrivatePageEndPoints.users.path,
-    },
-  ],
-  [
-    {
-      icon: <User size={20} />,
-      label: "Account Settings",
-      href: PrivatePageEndPoints.accountSettings.path,
-    },
-    {
-      icon: <LogOut size={20} />,
-      label: "Logout",
-      href: "",
-      action: () => {
-        console.log("logout");
-      },
-    },
-  ],
-];
-
 const Sidebar = ({ setIsSidebarOpen }: Props) => {
   const currentPath = useLocation().pathname;
+  const { logout } = useAuth();
+
+  const SIDEBAR_ITEMS: SidebarItem[][] = [
+    [
+      {
+        icon: <Tags size={20} />,
+        label: "Categories",
+        href: PrivatePageEndPoints.categories.path,
+      },
+      {
+        icon: <ChartLine size={20} />,
+        label: "Insights",
+        href: PrivatePageEndPoints.insights.path,
+      },
+      {
+        icon: <Users size={20} />,
+        label: "Users Management",
+        href: PrivatePageEndPoints.users.path,
+      },
+    ],
+    [
+      {
+        icon: <User size={20} />,
+        label: "Account Settings",
+        href: PrivatePageEndPoints.accountSettings.path,
+      },
+      {
+        icon: <LogOut size={20} />,
+        label: "Logout",
+        href: "",
+        action: logout,
+      },
+    ],
+  ];
 
   const isActive = (path: string) => {
     return currentPath === path;

@@ -119,15 +119,21 @@ CustomForm.CheckboxField = function CheckboxField({
 
 CustomForm.Button = function Button({
   children,
+  state = "default",
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   children: React.ReactNode;
+  state?: "loading" | "default";
 }) {
   const formMethods = useContext(FormMethodsContext);
   if (!formMethods) {
     throw new Error("Button must be used within a CustomForm");
   }
-  return <CustomButton {...props}>{children}</CustomButton>;
+  return (
+    <CustomButton {...props} state={state}>
+      {children}
+    </CustomButton>
+  );
 };
 
 CustomForm.PasswordField = function PasswordField({
