@@ -337,7 +337,7 @@ const Users = () => {
               setSelectedRole(value);
             }}
           >
-            <SelectTrigger className="h-10 w-36 border bg-white shadow-none">
+            <SelectTrigger className="h-10 min-w-36 border bg-white shadow-none">
               <SelectValue placeholder="All Role" />
             </SelectTrigger>
             <SelectContent>
