@@ -85,13 +85,13 @@ export const Pagination: React.FC<PaginationProps> = ({
   if (variant === "simple") {
     return (
       <div className={`mt-4 flex items-center justify-between ${className}`}>
-        <div className="text-sm text-gray-500">
+        <div className="text-gray-500">
           Showing {startItem} - {endItem} of {totalItems}
         </div>
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"
-            className="border-border-weak h-10 w-[90px] border bg-transparent"
+            className="border-border-weak h-10 w-[90px] border bg-transparent text-base"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
@@ -99,7 +99,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           </Button>
           <Button
             variant="outline"
-            className="border-border-weak h-10 w-[90px] border bg-transparent"
+            className="border-border-weak h-10 w-[90px] border bg-transparent text-base"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages || totalPages === 0}
           >
@@ -114,7 +114,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   if (totalPages <= 1) {
     return (
       <div className={`mt-4 flex items-center justify-between ${className}`}>
-        <div className="text-sm text-gray-500">
+        <div className="text-gray-500">
           Showing {totalItems > 0 ? 1 : 0} - {totalItems} of {totalItems}
         </div>
       </div>
@@ -124,7 +124,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   // Render the full pagination variant
   return (
     <div className={`mt-4 flex items-center justify-between ${className}`}>
-      <div className="text-sm text-gray-500">
+      <div className="text-gray-500">
         Showing {startItem} - {endItem} of {totalItems}
       </div>
 
