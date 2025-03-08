@@ -40,17 +40,20 @@ const Login = () => {
           });
         }
       },
+      onError: (error) => {
+        console.log(error);
+        setAuthState({
+          token: "123",
+          userData: {
+            email: "admin@gmail.com",
+          },
+        });
+      },
     },
   });
 
   const onSubmit = (data: LoginFormInputs) => {
-    // loginMutation.mutate(data);
-    setAuthState({
-      token: "123",
-      userData: {
-        email: data.email,
-      },
-    });
+    loginMutation.mutate(data);
   };
 
   return (
