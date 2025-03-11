@@ -1,7 +1,9 @@
 import CustomForm from "@/components/common/CustomForm";
+import { showDialog } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Button } from "../ui/button";
 
 export const DEPARTMENTS_OPTIONS = [
   { value: "react", label: "React" },
@@ -73,6 +75,30 @@ function UserForm() {
     console.log(data);
   };
 
+  const handleDeleteUser = () => {
+    showDialog({
+      isAlert: true,
+      title: "Are you sure you want to delete this user?",
+      children: (
+        <p className="text-brand text-sm">
+          This action cannot be undone, and the user will lose access to the
+          system. Any submitted ideas and comments will remain but will be
+          marked as <b>Anonymous</b>.
+        </p>
+      ),
+      cancel: {
+        label: "Cancel",
+      },
+      action: {
+        label: "Yes, Delete",
+        variant: "destructive",
+        onClick: () => {
+          console.log("Delete user");
+        },
+      },
+    });
+  };
+
   return (
     <CustomForm
       formMethods={userForm}
@@ -134,7 +160,10 @@ function UserForm() {
             required: true,
           }}
         />
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <Button variant="destructive" onClick={handleDeleteUser}>
+            Delete User
+          </Button>
           <CustomForm.Button>Create</CustomForm.Button>
         </div>
       </div>
