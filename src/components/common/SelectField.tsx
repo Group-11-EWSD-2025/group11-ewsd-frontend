@@ -58,11 +58,7 @@ export const SelectField = ({
           <FormControl>
             <Select onValueChange={formField.onChange} value={formField.value}>
               <SelectTrigger className="mb-0 w-full shadow-none">
-                <SelectValue>
-                  {formField.value
-                    ? getSelectedLabel(formField.value)
-                    : (field.placeholder ?? "Select")}
-                </SelectValue>
+                <SelectValue placeholder={field.placeholder ?? "Select"} />
               </SelectTrigger>
               <SelectContent className="z-[1001]">
                 {field.options.map((option) => (
@@ -70,7 +66,7 @@ export const SelectField = ({
                     <div className="flex flex-col items-start justify-center">
                       <p
                         className={cn(
-                          "font-semibold text-black",
+                          "text-black",
                           option.value !== "" && option.desc && "mb-1",
                         )}
                       >

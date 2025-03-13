@@ -1,21 +1,10 @@
 import CustomForm from "@/components/common/CustomForm";
 import { Button } from "@/components/ui/button";
+import { COORDINATOR_OPTIONS, ROLE_OPTIONS } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-
-const COORDINATOR_OPTIONS = [
-  { label: "John Doe", value: "john-doe" },
-  { label: "Marry Jane", value: "marry-jane" },
-  { label: "Bruce Wayne", value: "bruce-wayne" },
-];
-
-const ROLES_OPTIONS = [
-  { label: "Teacher", value: "teacher" },
-  { label: "Assistant", value: "assistant" },
-  { label: "Admin", value: "admin" },
-];
 
 const departmentSchema = z.object({
   departmentName: z
@@ -107,7 +96,7 @@ function DepartmentForm() {
                     name: `staffs.${index}.role`,
                     label: "Role",
                     placeholder: "Select",
-                    options: ROLES_OPTIONS,
+                    options: ROLE_OPTIONS,
                   }}
                 />
               </div>

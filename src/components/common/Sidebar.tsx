@@ -7,7 +7,6 @@ import { cn, showDialog } from "@/lib/utils";
 import {
   Building2,
   ChartLine,
-  Ellipsis,
   LogOut,
   PanelLeftClose,
   Plus,
@@ -95,10 +94,17 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
           {DEPARTMENTS.map((department) => (
             <Link
               key={department.id}
-              to={PrivatePageEndPoints.departments.details.getHref(
+              to={PrivatePageEndPoints.departments.details.root.getHref(
                 department.id,
               )}
-              className="hover:bg-surface-weak group grid cursor-pointer grid-cols-[1fr_auto] items-center justify-between gap-x-2.5 rounded-md px-2 py-1.5 transition-colors"
+              className={cn(
+                "hover:bg-surface-weak group grid cursor-pointer items-center justify-between gap-x-2.5 rounded-md px-2 py-1.5 transition-colors",
+                isActive(
+                  PrivatePageEndPoints.departments.details.root.getHref(
+                    department.id,
+                  ),
+                ) && "bg-surface-weak",
+              )}
             >
               <div className="grid grid-cols-[20px_1fr] items-center gap-x-2.5">
                 <Building2 size={20} />
@@ -106,10 +112,6 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
                   {department.name}
                 </p>
               </div>
-              <Ellipsis
-                className="text-brand invisible group-hover:visible"
-                size={20}
-              />
             </Link>
           ))}
           <Button

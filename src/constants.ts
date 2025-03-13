@@ -1,23 +1,23 @@
-import { User } from "@/types/users";
-import { v4 as uuidv4 } from "uuid";
+import { TDepartment } from "@/types/departments";
+import { TUser } from "@/types/users";
 
-export const DEPARTMENTS = [
+export const DEPARTMENTS: TDepartment[] = [
   {
-    id: uuidv4(),
+    id: "1",
     name: "Business & Management",
   },
   {
-    id: uuidv4(),
+    id: "2",
     name: "Architecture & Design",
   },
   {
-    id: uuidv4(),
+    id: "3",
     name: "Education & Teaching",
   },
 ];
 
 // Sample data
-export const USER_DATA: User[] = [
+export const USER_DATA: TUser[] = [
   {
     id: "1",
     name: "John Smith",
@@ -129,4 +129,10 @@ export const ROLE_OPTIONS = [
   { label: "Researcher", value: "Researcher" },
   { label: "Project Manager", value: "Project Manager" },
   { label: "HR Specialist", value: "HR Specialist" },
+];
+
+export const COORDINATOR_OPTIONS = [
+  { label: "John Doe", value: "john-doe" },
+  { label: "Marry Jane", value: "marry-jane" },
+  { label: "Bruce Wayne", value: "bruce-wayne" },
 ];
