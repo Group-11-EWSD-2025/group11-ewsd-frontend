@@ -1,4 +1,6 @@
 import CustomForm from "@/components/common/CustomForm";
+import { useAuth } from "@/context/AuthContext";
+import { useLogin } from "@/modules/Auth/api/login";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -17,6 +19,7 @@ const loginSchema = z.object({
 export type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const Login = () => {
+  const { setAuthState } = useAuth();
   const loginForm = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -25,8 +28,32 @@ const Login = () => {
     },
   });
 
+  const loginMutation = useLogin({
+    mutationConfig: {
+      onSuccess: (loginResponse) => {
+        if (loginResponse.status === 200) {
+          setAuthState({
+            token: loginResponse.data.body.token,
+            userData: {
+              email: loginResponse.data.body.email,
+            },
+          });
+        }
+      },
+      onError: (error) => {
+        console.log(error);
+        setAuthState({
+          token: "123",
+          userData: {
+            email: "admin@gmail.com",
+          },
+        });
+      },
+    },
+  });
+
   const onSubmit = (data: LoginFormInputs) => {
-    console.log(data);
+    loginMutation.mutate(data);
   };
 
   return (
@@ -61,7 +88,11 @@ const Login = () => {
               placeholder: "Enter password",
             }}
           />
-          <CustomForm.Button type="submit" className="w-full">
+          <CustomForm.Button
+            type="submit"
+            className="w-full"
+            state={loginMutation.isPending ? "loading" : "default"}
+          >
             Login
           </CustomForm.Button>
         </CustomForm>

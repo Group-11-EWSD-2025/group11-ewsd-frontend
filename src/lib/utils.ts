@@ -28,3 +28,10 @@ export function getLoginState() {
 export function clearLoginState() {
   resetRecoil(loginState);
 }
+
+export function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((n) => n.charAt(0))
+    .join("");
+}

@@ -1,19 +1,16 @@
-import { API_AGENTIC_BASE_URL, API_KEYCLOAK_BASE_URL } from "@/config/env";
+import { API_BASE_URL } from "@/config/env";
 import { toast } from "@/hooks/use-toast";
 import { getLoginState } from "@/lib/utils";
 import Axios, { InternalAxiosRequestConfig } from "axios";
 import * as changeCase from "change-case";
 
-const PUBLIC_BASE_URLS = [`${API_AGENTIC_BASE_URL}`];
-
 function requestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
     config.headers.Accept = "application/json";
   }
-  config.withCredentials = !PUBLIC_BASE_URLS.includes(config.baseURL || "");
   const token = getLoginState().token;
 
-  if (config.withCredentials && !!token) {
+  if (!!token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -40,5 +37,4 @@ function createAxiosClient(baseURL: string) {
   return client;
 }
 
-export const AXIOS_KEYCLOAK_CLIENT = createAxiosClient(API_KEYCLOAK_BASE_URL);
-export const AXIOS_AGENTIC_CLIENT = createAxiosClient(API_AGENTIC_BASE_URL);
+export const AXIOS_CLIENT = createAxiosClient(API_BASE_URL);

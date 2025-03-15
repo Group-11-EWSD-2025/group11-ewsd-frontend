@@ -1,10 +1,11 @@
 import { loginState } from "@/recoil/auth";
 import { TLoginState } from "@/types";
 import React, { createContext, useContext } from "react";
-import { useRecoilValue, useResetRecoilState } from "recoil";
+import { useRecoilValue, useResetRecoilState, useSetRecoilState } from "recoil";
 
 type AuthContextType = {
   authState: TLoginState;
+  setAuthState: (authState: TLoginState) => void;
   logout: () => void;
 };
 
@@ -14,6 +15,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const authState = useRecoilValue(loginState);
+  const setAuthState = useSetRecoilState(loginState);
   const resetAuthState = useResetRecoilState(loginState);
 
   function logout() {
@@ -21,7 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   return (
-    <AuthContext.Provider value={{ authState, logout }}>
+    <AuthContext.Provider value={{ authState, setAuthState, logout }}>
       {children}
     </AuthContext.Provider>
   );
