@@ -16,7 +16,7 @@ function NotFound() {
   useEffect(() => {
     if (DEPARTMENTS.length > 0) {
       navigate(
-        PrivatePageEndPoints.departments.details.getHref(DEPARTMENTS[0].id),
+        PrivatePageEndPoints.departments.details.root.getHref(DEPARTMENTS[0].id),
       );
     }
   }, [DEPARTMENTS.length, navigate]);
