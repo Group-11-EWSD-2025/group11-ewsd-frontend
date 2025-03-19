@@ -55,7 +55,7 @@ const DepartmentDetails = () => {
       </h1>
       <Tabs defaultValue="all" className="w-full space-y-2">
         <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
-          <TabsList className="bg-muted bg-background flex">
+          <TabsList className="bg-background flex">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.value}

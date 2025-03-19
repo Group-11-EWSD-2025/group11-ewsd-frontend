@@ -41,7 +41,7 @@ import {
 } from "@/components/ui/table";
 import { ROLE_OPTIONS, USER_DATA } from "@/constants";
 import { showDialog } from "@/lib/utils";
-import { User } from "@/types/users";
+import { TUser } from "@/types/users";
 
 const Users = () => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -56,7 +56,7 @@ const Users = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
 
   // Define columns
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<TUser>[] = [
     {
       accessorKey: "name",
       header: () => {
@@ -262,7 +262,7 @@ const Users = () => {
                   >
                     {table
                       .getVisibleFlatColumns()
-                      .map((column: Column<User>) => {
+                      .map((column: Column<TUser>) => {
                         if (column.id === "select") {
                           return (
                             <TableCell key={column.id}>
