@@ -132,7 +132,7 @@ export const ROLE_OPTIONS = [
 ];
 
 export const COORDINATOR_OPTIONS = [
-  { label: "John Doe", value: "john-doe" },
-  { label: "Marry Jane", value: "marry-jane" },
-  { label: "Bruce Wayne", value: "bruce-wayne" },
+  { label: "John Doe", value: "1" },
+  { label: "Marry Jane", value: "2" },
+  { label: "Bruce Wayne", value: "3" },
 ];

@@ -1,7 +1,7 @@
 import CustomForm from "@/components/common/CustomForm";
 import { useAuth } from "@/context/AuthContext";
 import { useLogin } from "@/modules/Auth/api/mutateLogin";
-import { useGetProfile } from "@/modules/Auth/api/queryProfile";
+import { useGetProfile } from "@/modules/Auth/api/queryGetProfile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock } from "lucide-react";
 import { useForm } from "react-hook-form";
