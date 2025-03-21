@@ -28,7 +28,9 @@ const ProfileAndSecurity = () => {
           <div className="flex items-center gap-4">
             <Avatar className="h-24 w-24">
               <AvatarImage src={profileImage || ""} />
-              <AvatarFallback className="bg-muted">PP</AvatarFallback>
+              <AvatarFallback className="bg-muted">
+                {currentName.charAt(0)}
+              </AvatarFallback>
             </Avatar>
             <div className="space-x-2">
               <Button variant="default" className="relative">
