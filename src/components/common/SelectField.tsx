@@ -37,12 +37,6 @@ export const SelectField = ({
   field,
   className,
 }: SelectFieldProps) => {
-  // Find the selected option's label for the trigger display
-  const getSelectedLabel = (value: string) => {
-    const selectedOption = field.options.find((opt) => opt.value === value);
-    return selectedOption?.label;
-  };
-
   return (
     <FormField
       control={hookedForm.control}

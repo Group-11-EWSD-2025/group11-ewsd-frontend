@@ -1,9 +1,10 @@
-import DepartmentForm from "@/components/common/DepartmentForm";
 import { Button } from "@/components/ui/button";
-import { DEPARTMENTS } from "@/constants";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { cn, showDialog } from "@/lib/utils";
+import { useGetDepartmentList } from "@/modules/Departments/api/queryGetDepartmentList";
+import DepartmentForm from "@/modules/Departments/components/DepartmentForm";
 import {
   Building2,
   ChartLine,
@@ -68,8 +69,13 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
     return currentPath === path;
   };
 
+  const getDepartmentList = useGetDepartmentList({
+    queryConfig: {
+      retry: false,
+    },
+  });
+
   function handleCreateDepartment() {
-    console.log("create department");
     showDialog({
       title: "Create Department",
       children: <DepartmentForm />,
@@ -91,29 +97,37 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
         </div>
         <div className="flex flex-col gap-y-1 p-2">
           <p className="text-brand px-2 py-1.5 text-sm">Departments</p>
-          {DEPARTMENTS.map((department) => (
-            <Link
-              key={department.id}
-              to={PrivatePageEndPoints.departments.details.root.getHref(
-                department.id,
-              )}
-              className={cn(
-                "hover:bg-surface-weak group grid cursor-pointer items-center justify-between gap-x-2.5 rounded-md px-2 py-1.5 transition-colors",
-                isActive(
-                  PrivatePageEndPoints.departments.details.root.getHref(
-                    department.id,
-                  ),
-                ) && "bg-surface-weak",
-              )}
-            >
-              <div className="grid grid-cols-[20px_1fr] items-center gap-x-2.5">
-                <Building2 size={20} />
-                <p className="max-w-[180px] overflow-hidden text-ellipsis whitespace-nowrap text-black">
-                  {department.name}
-                </p>
-              </div>
-            </Link>
-          ))}
+          {getDepartmentList.isLoading ? (
+            <>
+              {Array.from({ length: 3 }).map((_, index) => (
+                <Skeleton key={index} className="h-9 w-full" />
+              ))}
+            </>
+          ) : (
+            getDepartmentList.data?.data.body.map((department: any) => (
+              <Link
+                key={department.id}
+                to={PrivatePageEndPoints.departments.details.root.getHref(
+                  department.id,
+                )}
+                className={cn(
+                  "hover:bg-surface-weak group grid cursor-pointer items-center justify-between gap-x-2.5 rounded-md px-2 py-1.5 transition-colors",
+                  isActive(
+                    PrivatePageEndPoints.departments.details.root.getHref(
+                      department.id,
+                    ),
+                  ) && "bg-surface-weak",
+                )}
+              >
+                <div className="grid grid-cols-[20px_1fr] items-center gap-x-2.5">
+                  <Building2 size={20} />
+                  <p className="max-w-[180px] overflow-hidden text-ellipsis whitespace-nowrap text-black">
+                    {department.name}
+                  </p>
+                </div>
+              </Link>
+            ))
+          )}
           <Button
             variant="ghost"
             className="justify-start gap-x-2.5 px-2 text-base font-normal"

@@ -281,12 +281,7 @@ const Users = () => {
                             <TableCell key={column.id}>
                               <Popover>
                                 <PopoverTrigger>
-                                  <Button
-                                    variant="ghost"
-                                    className="h-8 w-8 p-0"
-                                  >
-                                    <MoreVertical className="h-4 w-4" />
-                                  </Button>
+                                  <MoreVertical className="h-4 w-4 cursor-pointer" />
                                 </PopoverTrigger>
                                 <PopoverContent
                                   align="end"

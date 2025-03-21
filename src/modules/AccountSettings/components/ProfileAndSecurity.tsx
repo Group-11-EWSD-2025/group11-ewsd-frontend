@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const ProfileAndSecurity = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [originalName, setOriginalName] = useState("Lisa Chen");
+  const [originalName] = useState("Lisa Chen");
   const [currentName, setCurrentName] = useState("Lisa Chen");
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {

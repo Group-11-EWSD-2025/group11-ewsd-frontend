@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 
 export const login = (data: LoginFormInputs) => {
   return AXIOS_CLIENT.post(
-    `/login`,
+    `login`,
     {
       email: data.email,
       password: data.password,

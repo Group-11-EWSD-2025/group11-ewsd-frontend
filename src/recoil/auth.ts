@@ -9,7 +9,10 @@ export const loginState = atom<TLoginState>({
   default: {
     token: "",
     userData: {
+      name: "",
       email: "",
+      role: "",
+      phone: "",
     },
   },
   effects_UNSTABLE: [persistAtom],

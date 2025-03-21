@@ -1,3 +1,4 @@
+import { useLogout } from "@/modules/Auth/api/mutateLogout";
 import { loginState } from "@/recoil/auth";
 import { TLoginState } from "@/types";
 import React, { createContext, useContext } from "react";
@@ -5,7 +6,7 @@ import { useRecoilValue, useResetRecoilState, useSetRecoilState } from "recoil";
 
 type AuthContextType = {
   authState: TLoginState;
-  setAuthState: (authState: TLoginState) => void;
+  setAuthState: React.Dispatch<React.SetStateAction<TLoginState>>;
   logout: () => void;
 };
 
@@ -18,8 +19,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const setAuthState = useSetRecoilState(loginState);
   const resetAuthState = useResetRecoilState(loginState);
 
+  const logoutMutation = useLogout({
+    mutationConfig: {
+      onSuccess: () => {
+        resetAuthState();
+      },
+    },
+  });
+
   function logout() {
-    resetAuthState();
+    // @ts-ignore
+    logoutMutation.mutate();
   }
 
   return (

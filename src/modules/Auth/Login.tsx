@@ -1,6 +1,7 @@
 import CustomForm from "@/components/common/CustomForm";
 import { useAuth } from "@/context/AuthContext";
-import { useLogin } from "@/modules/Auth/api/login";
+import { useLogin } from "@/modules/Auth/api/mutateLogin";
+import { useGetProfile } from "@/modules/Auth/api/queryGetProfile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -28,26 +29,33 @@ const Login = () => {
     },
   });
 
+  const getProfile = useGetProfile({
+    queryConfig: {
+      enabled: false,
+    },
+  });
+
   const loginMutation = useLogin({
     mutationConfig: {
       onSuccess: (loginResponse) => {
-        if (loginResponse.status === 200) {
-          setAuthState({
+        if (loginResponse.status === 201) {
+          setAuthState((prev) => ({
+            ...prev,
             token: loginResponse.data.body.token,
-            userData: {
-              email: loginResponse.data.body.email,
-            },
+          }));
+          getProfile.refetch().then((res) => {
+            console.log(res.data?.data);
+            setAuthState((prev) => ({
+              ...prev,
+              userData: {
+                email: res.data?.data.body.email,
+                name: res.data?.data.body.name,
+                role: res.data?.data.body.role,
+                phone: res.data?.data.body.phone,
+              },
+            }));
           });
         }
-      },
-      onError: (error) => {
-        console.log(error);
-        setAuthState({
-          token: "123",
-          userData: {
-            email: "admin@gmail.com",
-          },
-        });
       },
     },
   });
@@ -91,7 +99,11 @@ const Login = () => {
           <CustomForm.Button
             type="submit"
             className="w-full"
-            state={loginMutation.isPending ? "loading" : "default"}
+            state={
+              loginMutation.isPending || getProfile.isLoading
+                ? "loading"
+                : "default"
+            }
           >
             Login
           </CustomForm.Button>

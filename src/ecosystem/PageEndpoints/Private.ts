@@ -45,7 +45,7 @@ export const PrivatePageEndPoints = {
         label: "Department Settings",
         getHref: (id: string) => `/departments/${id}/settings`,
         component: Loadable(
-          lazy(() => import("@/modules/Departments/details/settings")),
+          lazy(() => import("@/modules/Departments/details/Settings")),
         ),
       },
     },
