@@ -6,6 +6,7 @@ import {
   ChevronsRight,
 } from "lucide-react";
 import React from "react";
+import { StyledSelect } from "./StyledSelect";
 
 export interface PaginationProps {
   currentPage: number;
@@ -26,6 +27,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   totalItems,
   siblingsCount = 1,
   onPageChange,
+  onPageSizeChange,
   className = "",
   variant = "full",
 }) => {
@@ -84,9 +86,28 @@ export const Pagination: React.FC<PaginationProps> = ({
   // Render the simple pagination variant (previously SimplePagination)
   if (variant === "simple") {
     return (
-      <div className={`mt-4 flex items-center justify-between ${className}`}>
-        <div className="text-gray-500">
+      <div
+        className={`mt-4 flex flex-col items-center justify-between sm:flex-row ${className}`}
+      >
+        <div className="mb-4 flex items-center gap-2 text-gray-500 sm:mb-0">
           Showing {startItem} - {endItem} of {totalItems}
+          {onPageSizeChange && (
+            <>
+              <span className="mx-2 inline-block h-4 w-px bg-gray-500"></span>
+              <div className="flex items-center gap-2">
+                <p>Per page:</p>
+                <StyledSelect
+                  className="w-[75px]"
+                  value={pageSize}
+                  onChange={(value) => onPageSizeChange(Number(value))}
+                  options={[2, 4, 8, 12, 20].map((size) => ({
+                    label: size,
+                    value: size,
+                  }))}
+                />
+              </div>
+            </>
+          )}
         </div>
         <div className="flex items-center space-x-3">
           <Button
@@ -116,6 +137,23 @@ export const Pagination: React.FC<PaginationProps> = ({
       <div className={`mt-4 flex items-center justify-between ${className}`}>
         <div className="text-gray-500">
           Showing {totalItems > 0 ? 1 : 0} - {totalItems} of {totalItems}
+          {onPageSizeChange && (
+            <>
+              <span className="mx-2 inline-block h-4 w-px bg-gray-500"></span>
+              <span className="flex items-center">
+                <span className="mr-2">Per page:</span>
+                <StyledSelect
+                  className="h-8 w-[80px]"
+                  value={pageSize}
+                  onChange={(value) => onPageSizeChange(Number(value))}
+                  options={[4, 8, 12, 20].map((size) => ({
+                    label: size,
+                    value: size,
+                  }))}
+                />
+              </span>
+            </>
+          )}
         </div>
       </div>
     );
@@ -123,9 +161,28 @@ export const Pagination: React.FC<PaginationProps> = ({
 
   // Render the full pagination variant
   return (
-    <div className={`mt-4 flex items-center justify-between ${className}`}>
-      <div className="text-gray-500">
+    <div
+      className={`mt-4 flex flex-col items-center justify-between sm:flex-row ${className}`}
+    >
+      <div className="mb-4 text-gray-500 sm:mb-0">
         Showing {startItem} - {endItem} of {totalItems}
+        {onPageSizeChange && (
+          <>
+            <span className="mx-2 inline-block h-4 w-px bg-gray-500"></span>
+            <span className="flex items-center">
+              <span className="mr-2">Per page:</span>
+              <StyledSelect
+                className="h-8 w-[80px]"
+                value={pageSize}
+                onChange={(value) => onPageSizeChange(Number(value))}
+                options={[4, 8, 12, 20].map((size) => ({
+                  label: size,
+                  value: size,
+                }))}
+              />
+            </span>
+          </>
+        )}
       </div>
 
       <div className="flex items-center space-x-2">

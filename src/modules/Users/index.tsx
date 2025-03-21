@@ -1,5 +1,4 @@
 import {
-  Column,
   ColumnDef,
   ColumnFiltersState,
   SortingState,
@@ -13,11 +12,11 @@ import {
 } from "@tanstack/react-table";
 import { MoreVertical, Pencil, Plus, SearchIcon, Trash } from "lucide-react";
 import * as React from "react";
+import { useSearchParams } from "react-router-dom";
 
 import Pagination from "@/components/common/Pagination";
 import UserForm from "@/components/common/UserForm";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -39,21 +38,110 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ROLE_OPTIONS, USER_DATA } from "@/constants";
+import { ROLE_OPTIONS } from "@/constants";
 import { showDialog } from "@/lib/utils";
 import { TUser } from "@/types/users";
+import { useGetUsers } from "./api/queryGetUsers";
+
+// Custom hook for debounced value
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = React.useState<T>(value);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 const Users = () => {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [selectedRole, setSelectedRole] = React.useState("all");
-  const [pageSize] = React.useState(4);
-  const [currentPage, setCurrentPage] = React.useState(1);
+  // URL search params
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [tableState, setTableState] = React.useState({
+    sorting: [] as SortingState,
+    columnFilters: [] as ColumnFiltersState,
+    columnVisibility: {} as VisibilityState,
+    rowSelection: {} as Record<string, boolean>,
+  });
+
+  const [filtersAndPagination, setFiltersAndPagination] = React.useState({
+    role: searchParams.get("role") || "all",
+    pageSize: parseInt(searchParams.get("page_size") || "4"),
+    currentPage: parseInt(searchParams.get("page") || "1"),
+    searchTerm: searchParams.get("search") || "",
+    totalCount: 0,
+  });
+
+  // Apply debounce to search term
+  const debouncedSearchTerm = useDebounce(filtersAndPagination.searchTerm, 500);
+
+  // Helper functions to update specific parts of the state
+  const updateTableState = (newState: Partial<typeof tableState>) => {
+    setTableState((prev) => ({ ...prev, ...newState }));
+  };
+
+  const updateFiltersAndPagination = (
+    newState: Partial<typeof filtersAndPagination>,
+  ) => {
+    setFiltersAndPagination((prev) => ({ ...prev, ...newState }));
+  };
+
+  // Sync URL with state when filters change
+  React.useEffect(() => {
+    const params = new URLSearchParams();
+
+    // Always include page, page_size in URL
+    params.set("role", filtersAndPagination.role);
+    params.set("page", filtersAndPagination.currentPage.toString());
+    params.set("page_size", filtersAndPagination.pageSize.toString());
+
+    if (debouncedSearchTerm) {
+      params.set("search", debouncedSearchTerm);
+    }
+
+    setSearchParams(params, { replace: true });
+  }, [
+    debouncedSearchTerm,
+    filtersAndPagination.role,
+    filtersAndPagination.currentPage,
+    filtersAndPagination.pageSize,
+    setSearchParams,
+  ]);
+
+  // Update API call with search term
+  const {
+    data: usersData,
+    isLoading: isUsersLoading,
+    isError,
+    error,
+  } = useGetUsers({
+    params: {
+      ...(filtersAndPagination.role !== "all" && {
+        role: filtersAndPagination.role,
+      }),
+      ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+      perPage: filtersAndPagination.pageSize,
+      page: filtersAndPagination.currentPage,
+    },
+  });
+
+  // Extract users and metadata from the response
+  const users = React.useMemo(() => {
+    if (!usersData?.body) return [];
+
+    // Update total count from API response if available
+    if (usersData?.body?.total) {
+      updateFiltersAndPagination({ totalCount: usersData?.body.total });
+    }
+    return usersData?.body?.data || [];
+  }, [usersData?.body]);
 
   // Define columns
   const columns: ColumnDef<TUser>[] = [
@@ -76,14 +164,14 @@ const Users = () => {
       header: () => {
         return <div className="text-gray-500">Phone</div>;
       },
-      cell: ({ row }) => <div>{row.getValue("phone")}</div>,
+      cell: ({ row }) => <div>{row.getValue("phone") || "N/A"}</div>,
     },
     {
       accessorKey: "department",
       header: () => {
         return <div className="text-gray-500">Assigned Department</div>;
       },
-      cell: ({ row }) => <div>{row.getValue("department")}</div>,
+      cell: ({ row }) => <div>{row.getValue("department") || "N/A"}</div>,
     },
     {
       accessorKey: "role",
@@ -97,55 +185,101 @@ const Users = () => {
     {
       id: "actions",
       enableHiding: false,
+      header: () => <div className="text-gray-500">Actions</div>,
+      cell: ({ row }) => (
+        <Popover>
+          <PopoverTrigger>
+            <MoreVertical className="h-4 w-4 cursor-pointer" />
+          </PopoverTrigger>
+          <PopoverContent align="end" className="flex w-[186px] flex-col p-1">
+            <Button
+              variant="ghost"
+              onClick={() => handleEditUser(row.original)}
+              className="w-full justify-start p-2"
+            >
+              <Pencil className="size-4 text-slate-700" />
+              Edit User
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => handleDeleteUser(row.original)}
+              className="w-full justify-start p-2"
+            >
+              <Trash className="text-destructive size-4" />
+              <p className="text-destructive">Delete User</p>
+            </Button>
+          </PopoverContent>
+        </Popover>
+      ),
     },
   ];
 
-  // Filter data based on role selection
-  const filteredData = React.useMemo(() => {
-    return USER_DATA.filter((user) => {
-      return selectedRole === "all" || user.role === selectedRole;
-    });
-  }, [selectedRole]);
+  // Calculate total pages based on total items from API
+  const totalPages = Math.ceil(
+    filtersAndPagination.totalCount / filtersAndPagination.pageSize,
+  );
 
-  const totalItems = filteredData.length;
-  const totalPages = Math.ceil(totalItems / pageSize);
-
-  // Handle page change for SimplePagination
+  // Handle page change for pagination
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    updateFiltersAndPagination({ currentPage: page });
+  };
+
+  // Handle role change
+  const handleRoleChange = (value: string) => {
+    updateFiltersAndPagination({
+      role: value,
+      currentPage: 1, // Reset to first page when filter changes
+    });
+  };
+
+  // Handle page size change
+  const handlePageSizeChange = (size: number) => {
+    updateFiltersAndPagination({
+      pageSize: size,
+      currentPage: 1, // Reset to first page when page size changes
+    });
+  };
+
+  // Handle search term change
+  const handleSearchChange = (value: string) => {
+    updateFiltersAndPagination({
+      searchTerm: value,
+      ...(value === "" && { currentPage: 1 }), // Reset to first page when clearing search
+    });
   };
 
   const table = useReactTable({
-    data: filteredData,
+    data: users,
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
+    onSortingChange: (sorting) =>
+      updateTableState({ sorting: sorting as SortingState }),
+    onColumnFiltersChange: (columnFilters) =>
+      updateTableState({ columnFilters: columnFilters as ColumnFiltersState }),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onColumnVisibilityChange: (columnVisibility) =>
+      updateTableState({
+        columnVisibility: columnVisibility as VisibilityState,
+      }),
+    onRowSelectionChange: (rowSelection) =>
+      updateTableState({
+        rowSelection: rowSelection as Record<string, boolean>,
+      }),
     manualPagination: true,
     state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
+      sorting: tableState.sorting,
+      columnFilters: tableState.columnFilters,
+      columnVisibility: tableState.columnVisibility,
+      rowSelection: tableState.rowSelection,
       pagination: {
-        pageIndex: currentPage - 1, // Convert 1-indexed to 0-indexed
-        pageSize,
+        pageIndex: filtersAndPagination.currentPage - 1, // Convert 1-indexed to 0-indexed
+        pageSize: filtersAndPagination.pageSize,
       },
     },
     pageCount: totalPages,
   });
-
-  // Get current page data
-  const currentData = React.useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    const end = start + pageSize;
-    return filteredData.slice(start, end);
-  }, [filteredData, currentPage, pageSize]);
 
   function handleCreateUser() {
     showDialog({
@@ -154,20 +288,20 @@ const Users = () => {
     });
   }
 
-  function handleEditUser() {
+  function handleEditUser(user: TUser) {
     showDialog({
       title: "Edit User",
-      children: <UserForm />,
+      children: <UserForm user={user} />,
     });
   }
 
-  function handleDeleteUser() {
+  function handleDeleteUser(user: TUser) {
     showDialog({
       isAlert: true,
       title: "Are you sure you want to delete this user?",
       children: (
         <p className="text-brand text-sm">
-          This action cannot be undone, and the user will lose access to the
+          This action cannot be undone, and the user will lose access to the
           system. Any submitted ideas and comments will remain but will be
           marked as <b>Anonymous</b>.
         </p>
@@ -179,7 +313,7 @@ const Users = () => {
         label: "Yes, Delete",
         variant: "destructive",
         onClick: () => {
-          console.log("Delete user");
+          console.log("Delete user", user.id);
         },
       },
     });
@@ -192,10 +326,8 @@ const Users = () => {
         <div className="relative flex items-center gap-2">
           <Input
             placeholder="Search..."
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn("name")?.setFilterValue(event.target.value)
-            }
+            value={filtersAndPagination.searchTerm}
+            onChange={(event) => handleSearchChange(event.target.value)}
             className="min-w-xs border bg-white py-5 text-base placeholder:text-gray-400"
           />
           <SearchIcon className="absolute top-1/2 right-3 size-4 -translate-y-1/2 text-gray-400" />
@@ -203,10 +335,8 @@ const Users = () => {
         <div className="flex items-center gap-2">
           <Select
             defaultValue="all"
-            value={selectedRole}
-            onValueChange={(value) => {
-              setSelectedRole(value);
-            }}
+            value={filtersAndPagination.role}
+            onValueChange={handleRoleChange}
           >
             <SelectTrigger className="h-10 min-w-36 border bg-white shadow-none">
               <SelectValue placeholder="All Role" />
@@ -250,85 +380,45 @@ const Users = () => {
             ))}
           </TableHeader>
           <TableBody>
-            {currentData.length > 0 ? (
-              currentData.map((user) => {
-                const row = table
-                  .getRowModel()
-                  .rows.find((r) => r.original.id === user.id);
-                return (
-                  <TableRow
-                    key={user.id}
-                    data-state={row?.getIsSelected() && "selected"}
-                  >
-                    {table
-                      .getVisibleFlatColumns()
-                      .map((column: Column<TUser>) => {
-                        if (column.id === "select") {
-                          return (
-                            <TableCell key={column.id}>
-                              <Checkbox
-                                checked={row?.getIsSelected()}
-                                onCheckedChange={(value: boolean) =>
-                                  row?.toggleSelected(!!value)
-                                }
-                                aria-label="Select row"
-                              />
-                            </TableCell>
-                          );
-                        }
-                        if (column.id === "actions") {
-                          return (
-                            <TableCell key={column.id}>
-                              <Popover>
-                                <PopoverTrigger>
-                                  <MoreVertical className="h-4 w-4 cursor-pointer" />
-                                </PopoverTrigger>
-                                <PopoverContent
-                                  align="end"
-                                  className="flex w-[186px] flex-col p-1"
-                                >
-                                  <Button
-                                    variant="ghost"
-                                    onClick={handleEditUser}
-                                    className="w-full justify-start p-2"
-                                  >
-                                    <Pencil className="size-4 text-slate-700" />
-                                    Edit User
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    onClick={handleDeleteUser}
-                                    className="w-full justify-start p-2"
-                                  >
-                                    <Trash className="text-destructive size-4" />
-                                    <p className="text-destructive">
-                                      Delete User
-                                    </p>
-                                  </Button>
-                                </PopoverContent>
-                              </Popover>
-                            </TableCell>
-                          );
-                        }
-                        return (
-                          <TableCell key={column.id}>
-                            {column.id === "name" && user.name}
-                            {column.id === "email" && user.email}
-                            {column.id === "phone" && user.phone}
-                            {column.id === "department" && user.department}
-                            {column.id === "role" && (
-                              <div className="capitalize">{user.role}</div>
-                            )}
-                          </TableCell>
-                        );
-                      })}
-                  </TableRow>
-                );
-              })
+            {isUsersLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  Loading users...
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-red-500"
+                >
+                  Error loading users:{" "}
+                  {(error as Error)?.message || "Unknown error"}
+                </TableCell>
+              </TableRow>
+            ) : users.length > 0 ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={table.getAllColumns().length}
+                  colSpan={columns.length}
                   className="h-24 text-center"
                 >
                   No users found
@@ -342,11 +432,12 @@ const Users = () => {
       {/* Pagination */}
       <Pagination
         variant="simple"
-        currentPage={currentPage}
+        currentPage={filtersAndPagination.currentPage}
         totalPages={totalPages}
-        pageSize={pageSize}
-        totalItems={totalItems}
+        pageSize={filtersAndPagination.pageSize}
+        totalItems={filtersAndPagination.totalCount}
         onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
       />
     </div>
   );

@@ -1,5 +1,6 @@
 import CustomForm from "@/components/common/CustomForm";
 import { showDialog } from "@/lib/utils";
+import { TUser } from "@/types/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -58,21 +59,31 @@ const userSchema = z.object({
 
 export type UserFormInputs = z.infer<typeof userSchema>;
 
-function UserForm() {
+interface UserFormProps {
+  user?: TUser;
+}
+
+function UserForm({ user }: UserFormProps) {
+  const isEditMode = !!user;
+
   const userForm = useForm<UserFormInputs>({
     resolver: zodResolver(userSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phoneNumber: "",
-      role: "teacher",
-      assignedDepartments: [],
+      name: user?.name || "",
+      email: user?.email || "",
+      phoneNumber: user?.phone || "",
+      role: (user?.role as "teacher" | "assistant" | "admin") || "teacher",
+      assignedDepartments: user?.department ? [user.department] : [],
       userPassword: "",
     },
   });
 
   const onSubmit = (data: UserFormInputs) => {
-    console.log(data);
+    if (isEditMode) {
+      console.log("Update user", user.id, data);
+    } else {
+      console.log("Create user", data);
+    }
   };
 
   const handleDeleteUser = () => {
@@ -81,7 +92,7 @@ function UserForm() {
       title: "Are you sure you want to delete this user?",
       children: (
         <p className="text-brand text-sm">
-          This action cannot be undone, and the user will lose access to the
+          This action cannot be undone, and the user will lose access to the
           system. Any submitted ideas and comments will remain but will be
           marked as <b>Anonymous</b>.
         </p>
@@ -93,7 +104,7 @@ function UserForm() {
         label: "Yes, Delete",
         variant: "destructive",
         onClick: () => {
-          console.log("Delete user");
+          console.log("Delete user", user?.id);
         },
       },
     });
@@ -161,10 +172,16 @@ function UserForm() {
           }}
         />
         <div className="flex justify-between">
-          <Button variant="destructive" onClick={handleDeleteUser}>
-            Delete User
-          </Button>
-          <CustomForm.Button>Create</CustomForm.Button>
+          {isEditMode && (
+            <Button variant="destructive" onClick={handleDeleteUser}>
+              Delete User
+            </Button>
+          )}
+          <div className={isEditMode ? "" : "ml-auto"}>
+            <CustomForm.Button>
+              {isEditMode ? "Update" : "Create"}
+            </CustomForm.Button>
+          </div>
         </div>
       </div>
     </CustomForm>

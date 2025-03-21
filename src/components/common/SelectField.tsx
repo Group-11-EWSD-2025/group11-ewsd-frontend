@@ -6,13 +6,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
+  Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Select } from "@radix-ui/react-select";
 import { UseFormReturn } from "react-hook-form";
 
 export type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
@@ -37,6 +37,14 @@ export const SelectField = ({
   field,
   className,
 }: SelectFieldProps) => {
+  // Get current value
+  const currentValue = hookedForm.watch(field.name);
+
+  // Find the corresponding label
+  const currentLabel = currentValue
+    ? field.options.find((opt) => opt.value === currentValue)?.label || ""
+    : "";
+
   return (
     <FormField
       control={hookedForm.control}
@@ -52,7 +60,9 @@ export const SelectField = ({
           <FormControl>
             <Select onValueChange={formField.onChange} value={formField.value}>
               <SelectTrigger className="mb-0 w-full shadow-none">
-                <SelectValue placeholder={field.placeholder ?? "Select"} />
+                <SelectValue placeholder={field.placeholder ?? "Select"}>
+                  {currentLabel}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent className="z-[1001]">
                 {field.options.map((option) => (

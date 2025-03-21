@@ -1,8 +1,12 @@
 export type TUser = {
-  id: string;
+  id: number;
   name: string;
   email: string;
-  phone: string;
-  department: string;
+  email_verified_at: string | null;
   role: string;
+  created_at: string;
+  updated_at: string;
+  phone: string | null;
+  profile: string | null;
+  department?: string;
 };
