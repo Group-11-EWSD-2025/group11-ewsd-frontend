@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../../../components/ui/button";
 import { useCreateUser } from "../api/mutateCreateUser";
+import { useEditUser } from "../api/mutateEditUser";
 
 const ROLES_OPTIONS = [
   { label: "Teacher", value: "teacher", desc: "Teacher role for teaching" },
@@ -96,9 +97,19 @@ function UserForm({ user }: UserFormProps) {
     },
   });
 
+  const editUser = useEditUser({
+    mutationConfig: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["getUsers"] });
+        toast({ title: "User updated successfully" });
+      },
+    },
+  });
+
   const onSubmit = (data: UserFormInputs) => {
     if (isEditMode) {
-      console.log("Update user", user.id, data);
+      editUser.mutate({ ...data, id: user?.id.toString() });
+      hideDialog();
     } else {
       createUser.mutate(data);
       hideDialog();

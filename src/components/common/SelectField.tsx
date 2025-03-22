@@ -54,7 +54,7 @@ export const SelectField = ({
         <FormItem className={cn("flex flex-col space-y-2", className)}>
           {field.label && (
             <FormLabel className="text-sm">
-              {field.label}fdsf
+              {field.label}
               {field.required && <span className="text-red-500">*</span>}
             </FormLabel>
           )}
