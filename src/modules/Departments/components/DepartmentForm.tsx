@@ -26,7 +26,7 @@ function DepartmentForm() {
     resolver: zodResolver(departmentSchema),
     defaultValues: {
       name: "",
-      user_id: "",
+      user_id: "1",
     },
   });
 

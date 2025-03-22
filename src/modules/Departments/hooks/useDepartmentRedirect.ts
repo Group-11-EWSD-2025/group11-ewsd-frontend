@@ -1,13 +1,12 @@
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { useGetDepartmentList } from "@/modules/Departments/api/queryGetDepartmentList";
 import { useCallback } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export function useDepartmentRedirect() {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const pathname = location.pathname;
-  const departmentId = pathname.split("/").pop();
+  const departmentId = id;
 
   const getDepartmentList = useGetDepartmentList({});
 
@@ -17,17 +16,20 @@ export function useDepartmentRedirect() {
       if (departments.length === 0) {
         navigate(PrivatePageEndPoints.departments.notFound.path);
       } else {
-        navigate(
-          !!departmentId
-            ? `${PrivatePageEndPoints.departments.details.root.path.replace(
-                ":id",
-                departmentId,
-              )}`
-            : `${PrivatePageEndPoints.departments.details.root.path.replace(
-                ":id",
-                departments[0].id,
-              )}`,
-        );
+        setTimeout(() => {
+          console.log(!!departmentId, departments[0].id);
+          navigate(
+            !!departmentId
+              ? `${PrivatePageEndPoints.departments.details.root.path.replace(
+                  ":id",
+                  departmentId,
+                )}`
+              : `${PrivatePageEndPoints.departments.details.root.path.replace(
+                  ":id",
+                  departments[0].id,
+                )}`,
+          );
+        }, 100);
       }
     }
   }, [getDepartmentList.data]);

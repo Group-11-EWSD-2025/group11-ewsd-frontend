@@ -7,8 +7,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-const ideasCount = 3;
+import { useEffect } from "react";
+import { useDepartmentRedirect } from "../hooks/useDepartmentRedirect";
 
 const tabs = [
   {
@@ -40,19 +40,16 @@ const tabs = [
 ];
 
 const DepartmentDetails = () => {
-  // const { redirectDepartment } = useDepartmentRedirect();
+  const { redirectDepartment } = useDepartmentRedirect();
 
-  // useEffect(() => {
-  //   redirectDepartment();
-  // }, [redirectDepartment]);
+  useEffect(() => {
+    redirectDepartment();
+  }, [redirectDepartment]);
 
   return (
-    <div className="space-y-4 p-4 lg:p-6">
-      <h1 className="border-border-weak border-b pb-6 text-lg font-medium lg:text-xl">
-        {ideasCount} Ideas Posted
-      </h1>
+    <div>
       <Tabs defaultValue="all" className="w-full space-y-2">
-        <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
+        <div className="border-border-weak -md fixed top-[var(--topbar-height)] z-10 flex h-[var(--topbar-height)] w-[calc(100%-var(--sidebar-width))] justify-between gap-2 border-y bg-[#FEFEFE] px-4 md:items-center">
           <TabsList className="bg-background flex">
             {tabs.map((tab) => (
               <TabsTrigger
@@ -76,11 +73,13 @@ const DepartmentDetails = () => {
             </SelectContent>
           </Select>
         </div>
-        {tabs.map((tab) => (
-          <TabsContent key={tab.value} value={tab.value}>
-            {tab.content}
-          </TabsContent>
-        ))}
+        <div className="mx-auto mt-[var(--topbar-height)] space-y-4 p-4 lg:max-w-[var(--content-width)] lg:p-6">
+          {tabs.map((tab) => (
+            <TabsContent key={tab.value} value={tab.value}>
+              {tab.content}
+            </TabsContent>
+          ))}
+        </div>
       </Tabs>
     </div>
   );
