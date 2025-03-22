@@ -5,6 +5,7 @@ import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { cn, showDialog } from "@/lib/utils";
 import { useGetDepartmentList } from "@/modules/Departments/api/queryGetDepartmentList";
 import DepartmentForm from "@/modules/Departments/components/DepartmentForm";
+import { TDepartment } from "@/types/departments";
 import {
   Building2,
   ChartLine,
@@ -104,18 +105,20 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
               ))}
             </>
           ) : (
-            getDepartmentList.data?.data.body.map((department: any) => (
+            getDepartmentList.data?.data.body.map((department: TDepartment) => (
               <Link
                 key={department.id}
-                to={PrivatePageEndPoints.departments.details.root.getHref(
+                to={`${PrivatePageEndPoints.departments.details.root.path.replace(
+                  ":id",
                   department.id,
-                )}
+                )}`}
                 className={cn(
                   "hover:bg-surface-weak group grid cursor-pointer items-center justify-between gap-x-2.5 rounded-md px-2 py-1.5 transition-colors",
                   isActive(
-                    PrivatePageEndPoints.departments.details.root.getHref(
+                    `${PrivatePageEndPoints.departments.details.root.path.replace(
+                      ":id",
                       department.id,
-                    ),
+                    )}`,
                   ) && "bg-surface-weak",
                 )}
               >

@@ -7,8 +7,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useEffect } from "react";
-import { useDepartmentRedirect } from "../hooks/useDepartmentRedirect";
 
 const ideasCount = 3;
 
@@ -42,11 +40,11 @@ const tabs = [
 ];
 
 const DepartmentDetails = () => {
-  const { redirectDepartment } = useDepartmentRedirect();
+  // const { redirectDepartment } = useDepartmentRedirect();
 
-  useEffect(() => {
-    redirectDepartment();
-  }, [redirectDepartment]);
+  // useEffect(() => {
+  //   redirectDepartment();
+  // }, [redirectDepartment]);
 
   return (
     <div className="space-y-4 p-4 lg:p-6">

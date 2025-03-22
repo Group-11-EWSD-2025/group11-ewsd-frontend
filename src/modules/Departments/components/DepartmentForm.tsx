@@ -1,11 +1,13 @@
 import CustomForm from "@/components/common/CustomForm";
+import FetchErrorText from "@/components/common/FetchErrorText";
 import { toast } from "@/hooks/use-toast";
 import { hideDialog } from "@/lib/utils";
 import { useCreateDepartment } from "@/modules/Departments/api/mutateCreateDepartment";
 import { useGetUsers } from "@/modules/Users/api/queryGetUsers";
+import { TUser } from "@/types/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -30,13 +32,9 @@ function DepartmentForm() {
 
   const getUsers = useGetUsers({
     params: {
-      departmentId: "1",
-      perPage: 10,
+      perPage: 1000,
       page: 1,
-      role: "admin",
-    },
-    queryConfig: {
-      retry: false,
+      role: "qa-coordinator",
     },
   });
 
@@ -67,13 +65,10 @@ function DepartmentForm() {
   }
 
   if (getUsers.isError) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-y-2 text-red-500">
-        <AlertCircle className="size-4" />
-        <p>Failed to fetch coordinators</p>
-      </div>
-    );
+    return <FetchErrorText />;
   }
+
+  const coordinators = getUsers.data.body.data;
 
   return (
     <CustomForm
@@ -81,28 +76,27 @@ function DepartmentForm() {
       onSubmit={onSubmit}
       className="mt-6 space-y-6"
     >
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold">Basic Information</h2>
-        <CustomForm.InputField
-          field={{
-            label: "Department Name",
-            name: "name",
-            type: "text",
-            placeholder: "Enter department name",
-          }}
-        />
+      <CustomForm.InputField
+        field={{
+          label: "Department Name",
+          name: "name",
+          type: "text",
+          placeholder: "Enter department name",
+        }}
+      />
+      {coordinators.length > 0 && (
         <CustomForm.SelectField
           field={{
             label: "Assigned QR Coordinator",
             name: "user_id",
             placeholder: "Select",
-            options: getUsers.data?.data.body.data.map((user: any) => ({
+            options: coordinators.map((user: TUser) => ({
               label: user.name,
               value: `${user.id}`,
             })),
           }}
         />
-      </div>
+      )}
       <div className="flex justify-end">
         <CustomForm.Button
           state={createDepartment.isPending ? "loading" : "default"}

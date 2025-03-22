@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { DEPARTMENTS } from "@/constants";
-import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
+import { showDialog } from "@/lib/utils";
+import DepartmentForm from "@/modules/Departments/components/DepartmentForm";
+import { useDepartmentRedirect } from "@/modules/Departments/hooks/useDepartmentRedirect";
 import { CircleCheck, Plus } from "lucide-react";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 const steps = [
   "Once departments are available, staff can start submitting their ideas.",
@@ -11,15 +11,18 @@ const steps = [
 ];
 
 function NotFound() {
-  const navigate = useNavigate();
+  const { redirectDepartment } = useDepartmentRedirect();
 
   useEffect(() => {
-    if (DEPARTMENTS.length > 0) {
-      navigate(
-        PrivatePageEndPoints.departments.details.root.getHref(DEPARTMENTS[0].id),
-      );
-    }
-  }, [DEPARTMENTS.length, navigate]);
+    redirectDepartment();
+  }, [redirectDepartment]);
+
+  function handleCreateDepartment() {
+    showDialog({
+      title: "Create Department",
+      children: <DepartmentForm />,
+    });
+  }
 
   return (
     <div className="flex h-full items-center justify-center p-4">
@@ -43,9 +46,13 @@ function NotFound() {
             ))}
           </ul>
         </div>
-        <Button className="w-full">
+        <Button
+          type="button"
+          className="w-full"
+          onClick={handleCreateDepartment}
+        >
           <Plus size={20} />
-          Create Department
+          Create New Department
         </Button>
       </div>
     </div>

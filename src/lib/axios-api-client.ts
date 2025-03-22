@@ -1,8 +1,7 @@
 import { API_BASE_URL } from "@/config/env";
 import { toast } from "@/hooks/use-toast";
-import { getLoginState } from "@/lib/utils";
+import { clearLoginState, getLoginState } from "@/lib/utils";
 import Axios, { InternalAxiosRequestConfig } from "axios";
-import * as changeCase from "change-case";
 
 function requestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
@@ -17,15 +16,13 @@ function requestInterceptor(config: InternalAxiosRequestConfig) {
 }
 
 function handleResponseError(error: any) {
-  toast({
-    title: changeCase.sentenceCase(error.response.data.error),
-    description: error.response.data.error_description,
-    variant: "destructive",
-  });
-  if (error.response?.status === 401) {
-    return new Response(error.response.data, { status: 401 });
-  } else {
-    console.error("API Error:", error);
+  if (error.response.status === 401 || error.response.status === 403) {
+    toast({
+      title: "Unauthorized",
+      description: "Please login again",
+      variant: "destructive",
+    });
+    clearLoginState();
   }
   return Promise.reject(error);
 }

@@ -9,30 +9,28 @@ export function useDepartmentRedirect() {
   const pathname = location.pathname;
   const departmentId = pathname.split("/").pop();
 
-  const getDepartmentList = useGetDepartmentList({
-    queryConfig: {
-      retry: false,
-    },
-  });
+  const getDepartmentList = useGetDepartmentList({});
 
   const redirectDepartment = useCallback(() => {
-    if (getDepartmentList.isSuccess) {
+    if (getDepartmentList.data?.status === 200) {
       const departments = getDepartmentList.data?.data.body;
       if (departments.length === 0) {
         navigate(PrivatePageEndPoints.departments.notFound.path);
       } else {
         navigate(
           !!departmentId
-            ? PrivatePageEndPoints.departments.details.root.getHref(
+            ? `${PrivatePageEndPoints.departments.details.root.path.replace(
+                ":id",
                 departmentId,
-              )
-            : PrivatePageEndPoints.departments.details.root.getHref(
+              )}`
+            : `${PrivatePageEndPoints.departments.details.root.path.replace(
+                ":id",
                 departments[0].id,
-              ),
+              )}`,
         );
       }
     }
-  }, [navigate, departmentId, getDepartmentList.data]);
+  }, [getDepartmentList.data]);
 
   return { redirectDepartment };
 }

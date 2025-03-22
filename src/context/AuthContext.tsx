@@ -1,7 +1,9 @@
+import { PublicPageEndPoints } from "@/ecosystem/PageEndpoints/Public";
 import { useLogout } from "@/modules/Auth/api/mutateLogout";
 import { loginState } from "@/recoil/auth";
 import { TLoginState } from "@/types";
 import React, { createContext, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRecoilValue, useResetRecoilState, useSetRecoilState } from "recoil";
 
 type AuthContextType = {
@@ -15,6 +17,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const navigate = useNavigate();
   const authState = useRecoilValue(loginState);
   const setAuthState = useSetRecoilState(loginState);
   const resetAuthState = useResetRecoilState(loginState);
@@ -28,8 +31,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   function logout() {
-    // @ts-ignore
-    logoutMutation.mutate();
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        navigate(PublicPageEndPoints.login.path);
+      },
+    });
   }
 
   return (

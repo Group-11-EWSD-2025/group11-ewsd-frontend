@@ -1,4 +1,5 @@
 import CustomForm from "@/components/common/CustomForm";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useLogin } from "@/modules/Auth/api/mutateLogin";
 import { useGetProfile } from "@/modules/Auth/api/queryGetProfile";
@@ -107,6 +108,9 @@ const Login = () => {
           >
             Login
           </CustomForm.Button>
+          <Button type="button" variant="link" className="w-full">
+            Request Password Reset
+          </Button>
         </CustomForm>
       </div>
     </div>

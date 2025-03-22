@@ -1,11 +1,17 @@
 import CustomForm from "@/components/common/CustomForm";
+import FetchErrorText from "@/components/common/FetchErrorText";
+import NoDataFound from "@/components/common/NoDataFound";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { COORDINATOR_OPTIONS } from "@/constants";
 import { getInitials } from "@/lib/utils";
+import { useGetUsers } from "@/modules/Users/api/queryGetUsers";
+import { TUser } from "@/types/users";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import { z } from "zod";
 
 function Settings() {
@@ -20,14 +26,13 @@ function Settings() {
   );
 }
 
+// TODO: Implement update department
 function DepartmentDetailsForm() {
   const schema = z.object({
     departmentName: z
       .string()
       .min(3, { message: "Department name must be at least 3 characters" }),
-    coordinator: z
-      .string()
-      .min(6, { message: "Coordinator must be at least 6 characters" }),
+    coordinator: z.string(),
   });
   type FormInputs = z.infer<typeof schema>;
 
@@ -67,85 +72,88 @@ function DepartmentDetailsForm() {
             options: COORDINATOR_OPTIONS,
           }}
         />
-        <CustomForm.Button disabled={!form.formState.isValid}>
-          Save Changes
-        </CustomForm.Button>
+        <CustomForm.Button type="submit">Save Changes</CustomForm.Button>
       </div>
     </CustomForm>
   );
 }
 
 function DepartmentMembers() {
-  const members = [
-    {
-      name: "Sarah Johnson",
-      email: "sarah@gmail.com",
-      role: "QA Coordinator",
+  const { id } = useParams();
+  const getUsers = useGetUsers({
+    params: {
+      departmentId: id,
+      perPage: 1000,
+      page: 1,
     },
-    {
-      name: "John Smith",
-      email: "john@gmail.com",
-      role: "Staff",
-    },
-  ];
+  });
+  const allUsers = getUsers.data?.body.data;
+
   return (
     <div className="border-border-weak space-y-4 rounded-xl border bg-white p-4 lg:p-5">
       <div className="space-y-6">
         <div className="space-y-2">
           <h2 className="text-lg font-semibold">Department Members</h2>
           <p className="text-brand">
-            View and manage all members assigned to this department
-            including staff and QA coordinator role.
+            View and manage all members assigned to this department including
+            staff and QA coordinator role.
           </p>
         </div>
-        <Button>
-          <Plus size={20} />
-          Add Staffs
-        </Button>
       </div>
       <div>
         {/* header */}
-        <div className="grid grid-cols-11 gap-4 border-b py-3.5">
-          <div className="col-span-4">
+        <div className="mb-2 grid grid-cols-12 gap-4 border-b py-3.5">
+          <div className="col-span-6">
             <p className="text-brand text-sm">Name</p>
           </div>
-          <div className="col-span-4">
+          <div className="col-span-6">
             <p className="text-brand text-sm">Role</p>
           </div>
-          <div className="col-span-3"></div>
         </div>
         {/* items */}
-        {members.map((member) => (
-          <div
-            key={member.name}
-            className="grid grid-cols-11 gap-4 border-b py-4 last:border-b-0 last:pb-0"
-          >
-            <div className="col-span-4 flex gap-x-4">
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p>{member.name}</p>
-                <p className="text-brand text-sm">{member.email}</p>
+        {getUsers.isLoading && (
+          <div className="flex flex-col gap-y-2">
+            {[...Array(3)].map((_, index) => (
+              <Skeleton key={index} className="h-14 w-full" />
+            ))}
+          </div>
+        )}
+        {getUsers.isError && <FetchErrorText />}
+        {getUsers.isSuccess && allUsers.length === 0 && <NoDataFound />}
+        {getUsers.isSuccess &&
+          allUsers.length > 0 &&
+          allUsers.map((member: TUser) => (
+            <div
+              key={member.name}
+              className="grid grid-cols-12 gap-4 border-b py-4 last:border-b-0 last:pb-0"
+            >
+              <div className="col-span-6 flex items-center gap-x-4">
+                <Avatar>
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p>{member.name}</p>
+                  <p className="text-brand text-sm">{member.email}</p>
+                </div>
+              </div>
+              <div className="col-span-6">
+                <p>{member.role}</p>
               </div>
             </div>
-            <div className="col-span-4">
-              <p>{member.role}</p>
-            </div>
-            <div className="col-span-3 flex items-center justify-end">
-              {member.role !== "QA Coordinator" && (
-                <Button variant="ghost">Remove</Button>
-              )}
-            </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
 }
 
+// TODO: Implement delete department
 function DeleteDepartment() {
+  const { id } = useParams();
+  function handleDeleteDepartment() {
+    console.log(id);
+  }
+
   return (
     <div className="border-border-weak space-y-6 rounded-xl border bg-white p-4 lg:p-5">
       <div className="space-y-2">
@@ -156,7 +164,7 @@ function DeleteDepartment() {
           department. This action cannot be undone.
         </p>
       </div>
-      <Button variant="destructive">
+      <Button variant="destructive" onClick={handleDeleteDepartment}>
         <Trash size={20} />
         Delete Department
       </Button>
