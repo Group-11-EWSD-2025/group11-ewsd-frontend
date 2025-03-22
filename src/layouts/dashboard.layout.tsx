@@ -7,7 +7,7 @@ import { Outlet, useLocation } from "react-router-dom";
 function DashboardLayout() {
   const { pathname } = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const widthFullRoutes = ["/users"];
+  const widthFullRoutes = ["/users", "/categories"];
   const isWidthFull = widthFullRoutes.includes(pathname);
 
   return (
