@@ -10,8 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect } from "react";
 import { useDepartmentRedirect } from "../hooks/useDepartmentRedirect";
 
-const ideasCount = 3;
-
 const tabs = [
   {
     label: "All",

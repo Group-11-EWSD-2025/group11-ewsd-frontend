@@ -1,6 +1,6 @@
 import { AXIOS_CLIENT } from "@/lib/axios-api-client";
 import { MutationConfig } from "@/lib/react-query";
-import { CategoryFormInputs } from "@/modules/Categories/components/CategoryForm";
+import { CategoryFormInputs } from "@/modules/Categories/components/CategoryEditForm";
 import { useMutation } from "@tanstack/react-query";
 
 interface UpdateCategoryData extends CategoryFormInputs {
