@@ -8,7 +8,7 @@ export type TUser = {
   updated_at?: string;
   phone: string | null;
   profile?: string | null;
-  department?: string;
+  department_id?: string;
   avatar?: string; // URL to the user's avatar image
   status?: "active" | "pending" | "disabled"; // User account status
 };

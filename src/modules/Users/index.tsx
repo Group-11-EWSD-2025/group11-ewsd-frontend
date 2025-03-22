@@ -16,7 +16,6 @@ import * as React from "react";
 import { useSearchParams } from "react-router-dom";
 
 import Pagination from "@/components/common/Pagination";
-import UserForm from "@/components/common/UserForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -42,6 +41,7 @@ import {
 import { ROLE_OPTIONS } from "@/constants";
 import { toast } from "@/hooks/use-toast";
 import { showDialog } from "@/lib/utils";
+import UserForm from "@/modules/Users/components/UserForm";
 import { TUser } from "@/types/users";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteUser } from "./api/mutateDeleteUser";
@@ -129,6 +129,7 @@ const Users = () => {
     isLoading: isUsersLoading,
     isError,
     error,
+    refetch,
   } = useGetUsers({
     params: {
       ...(filtersAndPagination.role !== "all" && {
@@ -141,7 +142,23 @@ const Users = () => {
       perPage: filtersAndPagination.pageSize,
       page: filtersAndPagination.currentPage,
     },
+    queryConfig: {
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+    },
   });
+
+  // Force refetch when filter parameters change
+  React.useEffect(() => {
+    refetch();
+  }, [
+    debouncedSearchTerm,
+    filtersAndPagination.role,
+    filtersAndPagination.status,
+    filtersAndPagination.currentPage,
+    filtersAndPagination.pageSize,
+    refetch,
+  ]);
 
   const { mutate: deleteUser, isPending: isDeletingUser } = useDeleteUser({
     mutationConfig: {
@@ -149,7 +166,11 @@ const Users = () => {
         toast({
           title: "User deleted successfully",
         });
-        queryClient.invalidateQueries({ queryKey: ["getUsers"] });
+        // Invalidate all getUsers queries regardless of params
+        queryClient.invalidateQueries({
+          queryKey: ["getUsers"],
+          exact: false,
+        });
       },
     },
   });

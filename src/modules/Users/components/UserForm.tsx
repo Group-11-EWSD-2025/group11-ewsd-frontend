@@ -1,18 +1,14 @@
 import CustomForm from "@/components/common/CustomForm";
-import { showDialog } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
+import { hideDialog, showDialog } from "@/lib/utils";
+import { useGetDepartmentList } from "@/modules/Departments/api/queryGetDepartmentList";
 import { TUser } from "@/types/users";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "../ui/button";
-
-export const DEPARTMENTS_OPTIONS = [
-  { value: "react", label: "React" },
-  { value: "angular", label: "Angular" },
-  { value: "vue", label: "Vue" },
-  { value: "svelte", label: "Svelte" },
-  { value: "ember", label: "Ember" },
-];
+import { Button } from "../../../components/ui/button";
+import { useCreateUser } from "../api/mutateCreateUser";
 
 const ROLES_OPTIONS = [
   { label: "Teacher", value: "teacher", desc: "Teacher role for teaching" },
@@ -32,20 +28,17 @@ const userSchema = z.object({
     .string()
     .email({ message: "Invalid email address" })
     .min(3, { message: "Email must be at least 3 characters" }),
-  phoneNumber: z
+  phone: z
     .string()
-    .min(10, { message: "Phone number must be at least 10 characters" })
-    .regex(/^[0-9+\-\s()]*$/, { message: "Invalid phone number format" })
-    .refine((val) => val.replace(/[\s()+\-]/g, "").length >= 10, {
-      message: "Phone number must have at least 10 digits",
-    }),
+    .min(3, { message: "Phone number is required" })
+    .regex(/^[0-9+\-\s()]*$/, { message: "Invalid phone number format" }),
   role: z.enum(["teacher", "assistant", "admin"], {
     message: "Invalid role selected",
   }),
-  assignedDepartments: z
-    .array(z.string().min(1, { message: "Invalid department" }))
+  department_id: z
+    .string()
     .min(1, { message: "At least one department must be selected" }),
-  userPassword: z
+  password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters" })
     .regex(
@@ -64,17 +57,42 @@ interface UserFormProps {
 }
 
 function UserForm({ user }: UserFormProps) {
+  const queryClient = useQueryClient();
   const isEditMode = !!user;
 
-  const userForm = useForm<UserFormInputs>({
+  const UserForm = useForm<UserFormInputs>({
     resolver: zodResolver(userSchema),
     defaultValues: {
       name: user?.name || "",
       email: user?.email || "",
-      phoneNumber: user?.phone || "",
+      phone: user?.phone || "",
       role: (user?.role as "teacher" | "assistant" | "admin") || "teacher",
-      assignedDepartments: user?.department ? [user.department] : [],
-      userPassword: "",
+      department_id: user?.department_id || "",
+      password: "",
+    },
+  });
+
+  const getDepartmentList = useGetDepartmentList({
+    queryConfig: {
+      retry: false,
+    },
+  });
+
+  const departmentsOptions = getDepartmentList.data?.data.body.map(
+    (department: { id: string; name: string }) => ({
+      value: department.id,
+      label: department.name,
+    }),
+  );
+
+  const createUser = useCreateUser({
+    mutationConfig: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["getUsers"],
+        });
+        toast({ title: "User created successfully" });
+      },
     },
   });
 
@@ -82,7 +100,8 @@ function UserForm({ user }: UserFormProps) {
     if (isEditMode) {
       console.log("Update user", user.id, data);
     } else {
-      console.log("Create user", data);
+      createUser.mutate(data);
+      hideDialog();
     }
   };
 
@@ -112,7 +131,7 @@ function UserForm({ user }: UserFormProps) {
 
   return (
     <CustomForm
-      formMethods={userForm}
+      formMethods={UserForm}
       onSubmit={onSubmit}
       className="mt-6 space-y-6"
     >
@@ -123,6 +142,7 @@ function UserForm({ user }: UserFormProps) {
             name: "name",
             type: "text",
             placeholder: "Enter name",
+            required: true,
           }}
         />
         <div className="grid grid-cols-2 gap-x-4">
@@ -138,9 +158,10 @@ function UserForm({ user }: UserFormProps) {
           <CustomForm.InputField
             field={{
               label: "Phone Number",
-              name: "phoneNumber",
+              name: "phone",
               type: "text",
               placeholder: "Enter phone number",
+              required: true,
             }}
           />
         </div>
@@ -153,20 +174,19 @@ function UserForm({ user }: UserFormProps) {
             required: true,
           }}
         />
-        <CustomForm.MultiSelectField
+        <CustomForm.SelectField
           field={{
-            name: "assignedDepartments",
+            name: "department_id",
             label: "Assigned Department",
-            options: DEPARTMENTS_OPTIONS,
+            placeholder: "Select",
+            options: departmentsOptions,
             required: true,
-            modalPopover: true,
-            onValueChange: () => {},
           }}
         />
         <CustomForm.PasswordField
           field={{
             label: "Set User Password to Login",
-            name: "userPassword",
+            name: "password",
             placeholder: "Enter password",
             required: true,
           }}

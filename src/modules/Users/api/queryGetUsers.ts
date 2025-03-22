@@ -8,12 +8,14 @@ export const getUsers = ({
   page,
   role,
   search,
+  status,
 }: {
   departmentId?: string;
   perPage?: number;
   page?: number;
   role?: string;
   search?: string;
+  status?: string;
 }) => {
   // Build query params dynamically
   const params = new URLSearchParams();
@@ -22,12 +24,16 @@ export const getUsers = ({
   if (perPage) params.append("per_page", perPage.toString());
   if (page) params.append("page", page.toString());
   if (role) params.append("role", role);
+  if (status) params.append("status", status);
   if (search) params.append("search", search);
 
   const queryString = params.toString();
 
   return queryOptions({
-    queryKey: ["getUsers"],
+    queryKey: [
+      "getUsers",
+      { departmentId, perPage, page, role, search, status },
+    ],
     queryFn: () =>
       AXIOS_CLIENT.get(`users${queryString ? `?${queryString}` : ""}`),
     select: (data) => data?.data,
@@ -41,6 +47,7 @@ type UseGetUsersOptions = {
     page?: number;
     role?: string;
     search?: string;
+    status?: string;
   };
   queryConfig?: QueryConfig<typeof getUsers>;
 };

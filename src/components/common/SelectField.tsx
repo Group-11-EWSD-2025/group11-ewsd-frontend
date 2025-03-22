@@ -42,7 +42,8 @@ export const SelectField = ({
 
   // Find the corresponding label
   const currentLabel = currentValue
-    ? field.options.find((opt) => opt.value === currentValue)?.label || ""
+    ? field.options.find((opt) => String(opt.value) === String(currentValue))
+        ?.label || ""
     : "";
 
   return (
@@ -53,7 +54,7 @@ export const SelectField = ({
         <FormItem className={cn("flex flex-col space-y-2", className)}>
           {field.label && (
             <FormLabel className="text-sm">
-              {field.label}
+              {field.label}fdsf
               {field.required && <span className="text-red-500">*</span>}
             </FormLabel>
           )}
