@@ -1,18 +1,11 @@
 import Sidebar from "@/components/common/Sidebar";
 import Topbar from "@/components/common/Topbar";
-import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
 function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const maxWidthRoutes = [PrivatePageEndPoints.accountSettings.path];
-
-  const isMaxWidthRoute = maxWidthRoutes.includes(
-    window.location.pathname as any,
-  );
 
   return (
     <div className="bg-muted flex">
@@ -27,13 +20,7 @@ function DashboardLayout() {
       <div className="ml-0 w-full lg:ml-[var(--sidebar-width)] lg:w-[calc(100%-var(--sidebar-width))]">
         <Topbar setIsSidebarOpen={setIsSidebarOpen} />
         <div className="overflow-y-auto">
-          <div
-            className={cn(
-              "mt-[var(--topbar-height)] h-[calc(100vh-var(--topbar-height))]",
-              isMaxWidthRoute &&
-                "mx-auto w-full lg:max-w-[var(--content-width)]",
-            )}
-          >
+          <div className="mt-[var(--topbar-height)] h-[calc(100vh-var(--topbar-height))]">
             <Outlet />
           </div>
         </div>

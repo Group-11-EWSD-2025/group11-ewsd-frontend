@@ -81,6 +81,7 @@ const Dialog = () => {
             variant={action.variant ?? "default"}
             {...action}
             onClick={handleAction}
+            state={action?.state ?? "default"}
           >
             {action.label ?? "Confirm"}
           </Button>
