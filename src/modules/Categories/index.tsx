@@ -10,10 +10,18 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { MoreVertical, Pencil, Plus, SearchIcon, Trash, Tag } from "lucide-react";
+import {
+  MoreVertical,
+  Pencil,
+  Plus,
+  SearchIcon,
+  Tag,
+  Trash,
+} from "lucide-react";
 import * as React from "react";
 
 import Pagination from "@/components/common/Pagination";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -29,15 +37,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { showDialog, hideDialog } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
-import { useGetCategoryList } from "@/modules/Categories/api/queryGetCategoryList";
+import { hideDialog, showDialog } from "@/lib/utils";
 import { useDeleteCategory } from "@/modules/Categories/api/mutateDeleteCategory";
+import { useGetCategoryList } from "@/modules/Categories/api/queryGetCategoryList";
 import { Category } from "@/modules/Categories/types";
-import CategoryForm from "./components/CategoryForm";
+import { useQueryClient } from "@tanstack/react-query";
+import CategoryCreateForm from "./components/CategoryCreateForm";
 import CategoryEditForm from "./components/CategoryEditForm";
-import { Badge } from "@/components/ui/badge";
 
 const Categories = () => {
   const queryClient = useQueryClient();
@@ -74,7 +81,7 @@ const Categories = () => {
   });
 
   const categoryResult = apiResponse?.body;
-  
+
   const pageSize = categoryResult?.per_page || 10;
 
   const formatDate = (dateString: string) => {
@@ -91,7 +98,9 @@ const Categories = () => {
     {
       accessorKey: "name",
       header: () => <div className="text-gray-500">Category Name</div>,
-      cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+      cell: ({ row }) => (
+        <div className="font-medium">{row.getValue("name")}</div>
+      ),
     },
     {
       accessorKey: "created_at",
@@ -131,10 +140,7 @@ const Categories = () => {
           <PopoverTrigger>
             <MoreVertical className="h-4 w-4 cursor-pointer" />
           </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            className="flex w-[186px] flex-col p-1"
-          >
+          <PopoverContent align="end" className="flex w-[186px] flex-col p-1">
             <Button
               variant="ghost"
               onClick={() => handleEditCategory(row.original)}
@@ -149,9 +155,7 @@ const Categories = () => {
               className="w-full justify-start p-2"
             >
               <Trash className="text-destructive size-4" />
-              <p className="text-destructive">
-                Delete Category
-              </p>
+              <p className="text-destructive">Delete Category</p>
             </Button>
           </PopoverContent>
         </Popover>
@@ -191,7 +195,7 @@ const Categories = () => {
   function handleCreateCategory() {
     showDialog({
       title: "Create Category",
-      children: <CategoryForm />,
+      children: <CategoryCreateForm />,
     });
   }
 
@@ -208,7 +212,8 @@ const Categories = () => {
       title: "Are you sure you want to delete this category?",
       children: (
         <p className="text-brand text-sm">
-          This action cannot be undone. Categories associated with existing items will be removed.
+          This action cannot be undone. Categories associated with existing
+          items will be removed.
         </p>
       ),
       cancel: {
@@ -233,7 +238,7 @@ const Categories = () => {
   };
 
   return (
-    <div className="container mx-auto">
+    <div className="p-4 lg:p-6">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="relative flex items-center gap-2">
           <Input
@@ -293,7 +298,7 @@ const Categories = () => {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

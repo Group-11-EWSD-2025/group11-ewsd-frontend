@@ -4,7 +4,6 @@ import { hideDialog } from "@/lib/utils";
 import { useCreateCategory } from "@/modules/Categories/api/mutateCreateCategory";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -42,14 +41,6 @@ function CategoryForm() {
   const onSubmit = (data: CategoryFormInputs) => {
     createCategory.mutate(data);
   };
-
-  if (createCategory.isPending) {
-    return (
-      <div className="flex h-10 items-center justify-center">
-        <Loader2 className="size-4 animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <CustomForm

@@ -1,33 +1,37 @@
 import Sidebar from "@/components/common/Sidebar";
 import Topbar from "@/components/common/Topbar";
+import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 function DashboardLayout() {
-  const { pathname } = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const widthFullRoutes = ["/users", "/categories"];
-  const isWidthFull = widthFullRoutes.includes(pathname);
+
+  const maxWidthRoutes = [PrivatePageEndPoints.accountSettings.path];
+
+  const isMaxWidthRoute = maxWidthRoutes.includes(
+    window.location.pathname as any,
+  );
 
   return (
     <div className="bg-muted flex">
       <div
         className={cn(
-          "border-border-weak fixed top-0 left-0 z-10 w-[var(--sidebar-width)] translate-x-[-100%] border-r bg-white transition-transform duration-300 ease-in-out lg:translate-x-0",
+          "border-border-weak fixed top-0 left-0 z-20 w-[var(--sidebar-width)] translate-x-[-100%] border-r bg-white transition-transform duration-300 ease-in-out lg:translate-x-0",
           isSidebarOpen && "translate-x-0",
         )}
       >
         <Sidebar setIsSidebarOpen={setIsSidebarOpen} />
       </div>
-      <div className="ml-0 w-full lg:ml-[var(--sidebar-width)] lg:w-[calc(100vw-var(--sidebar-width))]">
+      <div className="ml-0 w-full lg:ml-[var(--sidebar-width)] lg:w-[calc(100%-var(--sidebar-width))]">
         <Topbar setIsSidebarOpen={setIsSidebarOpen} />
-        <div className="overflow-y-auto lg:h-[calc(100vh-var(--topbar-height))]">
+        <div className="overflow-y-auto">
           <div
             className={cn(
-              "mx-auto h-full",
-              !isWidthFull && "lg:max-w-[var(--content-width)]",
-              isWidthFull && "w-full px-5 py-6",
+              "mt-[var(--topbar-height)] h-[calc(100vh-var(--topbar-height))]",
+              isMaxWidthRoute &&
+                "mx-auto w-full lg:max-w-[var(--content-width)]",
             )}
           >
             <Outlet />
