@@ -27,7 +27,7 @@ export const getUsers = ({
   const queryString = params.toString();
 
   return queryOptions({
-    queryKey: ["getUsers", departmentId, perPage, page, role, search],
+    queryKey: ["getUsers"],
     queryFn: () =>
       AXIOS_CLIENT.get(`users${queryString ? `?${queryString}` : ""}`),
     select: (data) => data?.data,

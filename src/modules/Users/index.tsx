@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -39,8 +40,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ROLE_OPTIONS } from "@/constants";
+import { toast } from "@/hooks/use-toast";
 import { showDialog } from "@/lib/utils";
 import { TUser } from "@/types/users";
+import { useQueryClient } from "@tanstack/react-query";
+import { useDeleteUser } from "./api/mutateDeleteUser";
 import { useGetUsers } from "./api/queryGetUsers";
 
 // Custom hook for debounced value
@@ -62,6 +66,7 @@ function useDebounce<T>(value: T, delay: number): T {
 
 const Users = () => {
   // URL search params
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [tableState, setTableState] = React.useState({
@@ -73,6 +78,7 @@ const Users = () => {
 
   const [filtersAndPagination, setFiltersAndPagination] = React.useState({
     role: searchParams.get("role") || "all",
+    status: searchParams.get("status") || "all",
     pageSize: parseInt(searchParams.get("page_size") || "4"),
     currentPage: parseInt(searchParams.get("page") || "1"),
     searchTerm: searchParams.get("search") || "",
@@ -99,6 +105,7 @@ const Users = () => {
 
     // Always include page, page_size in URL
     params.set("role", filtersAndPagination.role);
+    params.set("status", filtersAndPagination.status);
     params.set("page", filtersAndPagination.currentPage.toString());
     params.set("page_size", filtersAndPagination.pageSize.toString());
 
@@ -110,6 +117,7 @@ const Users = () => {
   }, [
     debouncedSearchTerm,
     filtersAndPagination.role,
+    filtersAndPagination.status,
     filtersAndPagination.currentPage,
     filtersAndPagination.pageSize,
     setSearchParams,
@@ -126,9 +134,23 @@ const Users = () => {
       ...(filtersAndPagination.role !== "all" && {
         role: filtersAndPagination.role,
       }),
+      ...(filtersAndPagination.status !== "all" && {
+        status: filtersAndPagination.status,
+      }),
       ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
       perPage: filtersAndPagination.pageSize,
       page: filtersAndPagination.currentPage,
+    },
+  });
+
+  const { mutate: deleteUser, isPending: isDeletingUser } = useDeleteUser({
+    mutationConfig: {
+      onSuccess: () => {
+        toast({
+          title: "User deleted successfully",
+        });
+        queryClient.invalidateQueries({ queryKey: ["getUsers"] });
+      },
     },
   });
 
@@ -150,14 +172,19 @@ const Users = () => {
       header: () => {
         return <div className="text-gray-500">Name</div>;
       },
-      cell: ({ row }) => <div>{row.getValue("name")}</div>,
-    },
-    {
-      accessorKey: "email",
-      header: () => {
-        return <div className="text-gray-500">Email</div>;
+      cell: ({ row }) => {
+        const userName = row.getValue("name") as string;
+        const userEmail = row.original.email;
+
+        // Debug logging
+
+        return (
+          <div className="flex flex-col">
+            <p className="font-medium">{userName}</p>
+            <p className="text-sm text-gray-600">{userEmail}</p>
+          </div>
+        );
       },
-      cell: ({ row }) => <div>{row.getValue("email")}</div>,
     },
     {
       accessorKey: "phone",
@@ -183,9 +210,25 @@ const Users = () => {
       ),
     },
     {
+      accessorKey: "status",
+      header: () => <div className="text-gray-500">Status</div>,
+      cell: ({ row }) => {
+        // Default to "active" if status is not provided
+        const status = (row.original.status || "active") as string;
+        const badgeVariant = getBadgeVariantForStatus(status);
+        return (
+          <Badge
+            variant={badgeVariant}
+            className="rounded-full px-3 py-1 capitalize"
+          >
+            {status}
+          </Badge>
+        );
+      },
+    },
+    {
       id: "actions",
       enableHiding: false,
-      header: () => <div className="text-gray-500">Actions</div>,
       cell: ({ row }) => (
         <Popover>
           <PopoverTrigger>
@@ -213,6 +256,33 @@ const Users = () => {
       ),
     },
   ];
+
+  // Helper function to determine badge variant based on status
+  const getBadgeVariantForStatus = (
+    status: string,
+  ):
+    | "default"
+    | "secondary"
+    | "destructive"
+    | "outline"
+    | "success"
+    | "warning"
+    | "info" => {
+    switch (status.toLowerCase()) {
+      case "active":
+        return "success";
+      case "pending":
+        return "warning";
+      case "disabled":
+        return "outline";
+      case "suspended":
+        return "destructive";
+      case "new":
+        return "info";
+      default:
+        return "default";
+    }
+  };
 
   // Calculate total pages based on total items from API
   const totalPages = Math.ceil(
@@ -302,8 +372,7 @@ const Users = () => {
       children: (
         <p className="text-brand text-sm">
           This action cannot be undone, and the user will lose access to the
-          system. Any submitted ideas and comments will remain but will be
-          marked as <b>Anonymous</b>.
+          system.
         </p>
       ),
       cancel: {
@@ -313,7 +382,7 @@ const Users = () => {
         label: "Yes, Delete",
         variant: "destructive",
         onClick: () => {
-          console.log("Delete user", user.id);
+          deleteUser({ id: user.id });
         },
       },
     });
@@ -380,7 +449,7 @@ const Users = () => {
             ))}
           </TableHeader>
           <TableBody>
-            {isUsersLoading ? (
+            {isUsersLoading || isDeletingUser ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
