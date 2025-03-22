@@ -4,7 +4,6 @@ import { hideDialog } from "@/lib/utils";
 import { useUpdateCategory } from "@/modules/Categories/api/mutateUpdateCategory";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -61,14 +60,6 @@ function CategoryEditForm({ category }: CategoryEditFormProps) {
       ...data,
     });
   };
-
-  if (updateCategory.isPending) {
-    return (
-      <div className="flex h-10 items-center justify-center">
-        <Loader2 className="size-4 animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <CustomForm

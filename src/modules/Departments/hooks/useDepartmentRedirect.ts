@@ -29,7 +29,7 @@ export function useDepartmentRedirect() {
                   departments[0].id,
                 )}`,
           );
-        }, 1000);
+        }, 100);
       }
     }
   }, [getDepartmentList.data]);

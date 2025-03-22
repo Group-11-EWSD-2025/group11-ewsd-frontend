@@ -222,6 +222,7 @@ const Categories = () => {
       action: {
         label: "Yes, Delete",
         variant: "destructive",
+        state: deleteCategory.isPending ? "loading" : "default",
         onClick: () => {
           deleteCategory.mutate(id);
         },
