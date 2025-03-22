@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { COORDINATOR_OPTIONS } from "@/constants";
+import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { toast } from "@/hooks/use-toast";
 import { getInitials, showDialog } from "@/lib/utils";
 import { useDeleteDepartment } from "@/modules/Departments/api/mutateDeleteDepartment";
@@ -14,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 function Settings() {
@@ -152,6 +153,7 @@ function DepartmentMembers() {
 
 function DeleteDepartment() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const deleteDepartment = useDeleteDepartment({
@@ -160,7 +162,8 @@ function DeleteDepartment() {
         queryClient.invalidateQueries({
           queryKey: ["getDepartmentList"],
         });
-        toast({ title: "Department deleted successfull." });
+        toast({ title: "Department deleted successfully." });
+        navigate(PrivatePageEndPoints.root.path);
       },
     },
   });
