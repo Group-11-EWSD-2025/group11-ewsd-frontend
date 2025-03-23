@@ -20,7 +20,7 @@ function DashboardLayout() {
       <div className="ml-0 w-full lg:ml-[var(--sidebar-width)] lg:w-[calc(100%-var(--sidebar-width))]">
         <Topbar setIsSidebarOpen={setIsSidebarOpen} />
         <div className="overflow-y-auto">
-          <div className="mt-[var(--topbar-height)] h-[calc(100vh-var(--topbar-height))]">
+          <div className="h-[calc(100vh-var(--topbar-height))]">
             <Outlet />
           </div>
         </div>

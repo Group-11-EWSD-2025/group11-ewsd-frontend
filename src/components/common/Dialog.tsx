@@ -82,6 +82,7 @@ const Dialog = () => {
             {...action}
             onClick={handleAction}
             state={action?.state ?? "default"}
+            disabled={action?.state === "loading"}
           >
             {action.label ?? "Confirm"}
           </Button>

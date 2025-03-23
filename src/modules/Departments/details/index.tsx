@@ -73,7 +73,10 @@ const DepartmentDetails = () => {
             </SelectContent>
           </Select>
         </div>
-        <div className="mx-auto mt-[var(--topbar-height)] space-y-4 p-4 lg:max-w-[var(--content-width)] lg:p-6">
+        <div
+          className="mx-auto space-y-4 p-4 lg:max-w-[var(--content-width)] lg:p-6"
+          style={{ marginTop: "calc(var(--topbar-height) * 2)" }}
+        >
           {tabs.map((tab) => (
             <TabsContent key={tab.value} value={tab.value}>
               {tab.content}

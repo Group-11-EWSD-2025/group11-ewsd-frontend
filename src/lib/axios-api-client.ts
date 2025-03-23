@@ -23,6 +23,11 @@ function handleResponseError(error: any) {
       variant: "destructive",
     });
     clearLoginState();
+  } else {
+    toast({
+      title: error.response.data.meta.message,
+      variant: "destructive",
+    });
   }
   return Promise.reject(error);
 }

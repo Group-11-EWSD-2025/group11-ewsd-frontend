@@ -16,6 +16,7 @@ import * as React from "react";
 import { useSearchParams } from "react-router-dom";
 
 import Pagination from "@/components/common/Pagination";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -40,7 +41,7 @@ import {
 } from "@/components/ui/table";
 import { ROLE_OPTIONS } from "@/constants";
 import { toast } from "@/hooks/use-toast";
-import { showDialog } from "@/lib/utils";
+import { getInitials, hideDialog, showDialog } from "@/lib/utils";
 import UserForm from "@/modules/Users/components/UserForm";
 import { TUser } from "@/types/users";
 import { useQueryClient } from "@tanstack/react-query";
@@ -171,6 +172,7 @@ const Users = () => {
           queryKey: ["getUsers"],
           exact: false,
         });
+        hideDialog();
       },
     },
   });
@@ -200,9 +202,15 @@ const Users = () => {
         // Debug logging
 
         return (
-          <div className="flex flex-col">
-            <p className="font-medium">{userName}</p>
-            <p className="text-sm text-gray-600">{userEmail}</p>
+          <div className="flex items-center gap-3">
+            <Avatar>
+              <AvatarImage src={row.original.avatar} />
+              <AvatarFallback>{getInitials(userName)}</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <p className="font-medium">{userName}</p>
+              <p className="text-sm text-gray-600">{userEmail}</p>
+            </div>
           </div>
         );
       },
@@ -402,6 +410,7 @@ const Users = () => {
       action: {
         label: "Yes, Delete",
         variant: "destructive",
+        state: isDeletingUser ? "loading" : "default",
         onClick: () => {
           deleteUser({ id: user.id });
         },

@@ -41,14 +41,7 @@ const userSchema = z.object({
     .min(1, { message: "At least one department must be selected" }),
   password: z
     .string()
-    .min(8, { message: "Password must be at least 8 characters" })
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-      {
-        message:
-          "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
-      },
-    ),
+    .min(8, { message: "Password must be at least 8 characters" }),
 });
 
 export type UserFormInputs = z.infer<typeof userSchema>;
@@ -60,6 +53,8 @@ interface UserFormProps {
 function UserForm({ user }: UserFormProps) {
   const queryClient = useQueryClient();
   const isEditMode = !!user;
+
+  console.log(user);
 
   const UserForm = useForm<UserFormInputs>({
     resolver: zodResolver(userSchema),
@@ -93,6 +88,7 @@ function UserForm({ user }: UserFormProps) {
           queryKey: ["getUsers"],
         });
         toast({ title: "User created successfully" });
+        hideDialog();
       },
     },
   });
@@ -102,6 +98,7 @@ function UserForm({ user }: UserFormProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["getUsers"] });
         toast({ title: "User updated successfully" });
+        hideDialog();
       },
     },
   });
@@ -109,10 +106,8 @@ function UserForm({ user }: UserFormProps) {
   const onSubmit = (data: UserFormInputs) => {
     if (isEditMode) {
       editUser.mutate({ ...data, id: user?.id.toString() });
-      hideDialog();
     } else {
       createUser.mutate(data);
-      hideDialog();
     }
   };
 
@@ -209,7 +204,13 @@ function UserForm({ user }: UserFormProps) {
             </Button>
           )}
           <div className={isEditMode ? "" : "ml-auto"}>
-            <CustomForm.Button>
+            <CustomForm.Button
+              state={
+                createUser.isPending || editUser.isPending
+                  ? "loading"
+                  : "default"
+              }
+            >
               {isEditMode ? "Update" : "Create"}
             </CustomForm.Button>
           </div>
