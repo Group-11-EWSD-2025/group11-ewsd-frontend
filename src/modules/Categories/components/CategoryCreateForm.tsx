@@ -51,9 +51,10 @@ function CategoryForm() {
       <div className="space-y-4">
         <CustomForm.InputField
           field={{
-            label: "Category Name",
+            label: "Name",
             name: "name",
             type: "text",
+            required: true,
             placeholder: "Enter category name",
           }}
         />
