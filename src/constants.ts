@@ -1,20 +1,3 @@
-import { TDepartment } from "@/types/departments";
-
-export const DEPARTMENTS: TDepartment[] = [
-  {
-    id: "1",
-    name: "Business & Management",
-  },
-  {
-    id: "2",
-    name: "Architecture & Design",
-  },
-  {
-    id: "3",
-    name: "Education & Teaching",
-  },
-];
-
 export const ROLE_OPTIONS = [
   { label: "Staff", value: "Staff" },
   { label: "QA Coordinator", value: "QA Coordinator" },

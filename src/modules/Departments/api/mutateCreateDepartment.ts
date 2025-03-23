@@ -8,7 +8,6 @@ export const createDepartment = (data: DepartmentFormInputs) => {
     `department/store`,
     {
       name: data.name,
-      user_id: data.user_id,
     },
     {
       headers: { "Content-Type": "application/json" },
