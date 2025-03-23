@@ -49,7 +49,7 @@ const DepartmentDetails = () => {
   return (
     <div>
       <Tabs defaultValue="all" className="w-full space-y-2">
-        <div className="border-border-weak -md fixed top-[var(--topbar-height)] z-10 flex h-[var(--topbar-height)] w-[calc(100%-var(--sidebar-width))] justify-between gap-2 border-y bg-[#FEFEFE] px-4 md:items-center">
+        <div className="border-border-weak fixed top-[var(--topbar-height)] z-10 flex h-[var(--topbar-height)] w-[calc(100%-var(--sidebar-width))] justify-between gap-2 border-y bg-[#FEFEFE] px-4 md:items-center">
           <TabsList className="bg-background flex">
             {tabs.map((tab) => (
               <TabsTrigger
@@ -73,10 +73,7 @@ const DepartmentDetails = () => {
             </SelectContent>
           </Select>
         </div>
-        <div
-          className="mx-auto space-y-4 p-4 lg:max-w-[var(--content-width)] lg:p-6"
-          style={{ marginTop: "calc(var(--topbar-height) * 2)" }}
-        >
+        <div className="mx-auto space-y-4 p-4 lg:mt-[calc(var(--topbar-height))] lg:max-w-[var(--content-width)] lg:p-6">
           {tabs.map((tab) => (
             <TabsContent key={tab.value} value={tab.value}>
               {tab.content}

@@ -39,7 +39,7 @@ const Login = () => {
   const loginMutation = useLogin({
     mutationConfig: {
       onSuccess: (loginResponse) => {
-        if (loginResponse.status === 201) {
+        if (!!loginResponse.data.meta.status) {
           setAuthState((prev) => ({
             ...prev,
             token: loginResponse.data.body.token,

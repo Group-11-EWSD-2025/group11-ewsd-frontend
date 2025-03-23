@@ -1,24 +1,29 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
+import { useGetDepartmentDetails } from "@/modules/Departments/api/queryGetDepartmentDetails";
 import { Bell, ChevronLeft, Menu, Settings } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Button } from "../ui/button";
+import { Skeleton } from "../ui/skeleton";
 
 type Props = {
   setIsSidebarOpen: (isSidebarOpen: boolean) => void;
 };
 
 const Topbar = ({ setIsSidebarOpen }: Props) => {
+  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const pathname = location.pathname;
 
-  // TODO: This is a temporary solution to get the details id
-  const getDetailsId = () => {
-    const parts = pathname.split("/");
-    return parts[2];
-  };
-  const detailsId = getDetailsId();
+  const getDepartmentDetails = useGetDepartmentDetails({
+    queryConfig: {
+      enabled: !!id,
+    },
+    data: { id: id as string },
+  });
+
+  const departmentData = getDepartmentDetails.data?.data.body;
 
   const getAllDirectEndpoints = Object.values(PrivatePageEndPoints)
     .map((endpoint: any) => {
@@ -26,21 +31,30 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
     })
     .filter(Boolean);
 
-  const header = (): string => {
-    // TODO: Add more endpoints to the mapper
+  const header = (): React.ReactNode => {
     const headerMapper = {
       [PrivatePageEndPoints.departments.details.root.path.replace(
         ":id",
-        detailsId ?? "",
-      )]: "Departments",
+        id ?? "",
+      )]: (
+        <div className="flex items-center gap-x-2">
+          <p>{departmentData?.name}</p>
+          <div className="bg-ring size-1.5 rounded-full"></div>
+          <p className="text-ring">{departmentData?.idea_count} Ideas</p>
+        </div>
+      ),
       [PrivatePageEndPoints.departments.details.settings.path.replace(
         ":id",
-        detailsId ?? "",
+        id ?? "",
       )]: "Department Settings",
       DEFAULT: getAllDirectEndpoints.find(
         (endpoint) => endpoint.path === pathname,
       )?.label,
     };
+
+    if (getDepartmentDetails.isLoading) {
+      return <Skeleton className="bg-input h-8 w-40" />;
+    }
 
     return (
       headerMapper[pathname as keyof typeof headerMapper] ??
@@ -52,7 +66,7 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
     const detailsPath =
       PrivatePageEndPoints.departments.details.root.path.replace(
         ":id",
-        detailsId ?? "",
+        id ?? "",
       );
     return pathname === detailsPath;
   };
@@ -61,7 +75,7 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
     const showBackBtnRoutes = [
       PrivatePageEndPoints.departments.details.settings.path.replace(
         ":id",
-        detailsId ?? "",
+        id ?? "",
       ),
     ];
     const showBackButton = showBackBtnRoutes.includes(pathname);
@@ -95,7 +109,7 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
             <Link
               to={`${PrivatePageEndPoints.departments.details.settings.path.replace(
                 ":id",
-                detailsId ?? "",
+                id ?? "",
               )}`}
               className="hover:bg-foreground/5 flex cursor-pointer items-center gap-x-2 rounded-md p-2 transition-colors duration-200"
             >
@@ -125,7 +139,7 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
             <Link
               to={`${PrivatePageEndPoints.departments.details.settings.path.replace(
                 ":id",
-                detailsId ?? "",
+                id ?? "",
               )}`}
               className="hover:bg-foreground/5 flex cursor-pointer items-center gap-x-2 rounded-md p-2 transition-colors duration-200"
             >

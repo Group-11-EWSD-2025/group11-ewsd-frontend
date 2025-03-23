@@ -11,13 +11,12 @@ export function useDepartmentRedirect() {
   const getDepartmentList = useGetDepartmentList({});
 
   const redirectDepartment = useCallback(() => {
-    if (getDepartmentList.data?.status === 200) {
+    if (!!getDepartmentList.data?.data.meta.status) {
       const departments = getDepartmentList.data?.data.body;
       if (departments.length === 0) {
         navigate(PrivatePageEndPoints.departments.notFound.path);
       } else {
         setTimeout(() => {
-          console.log(!!departmentId, departments[0].id);
           navigate(
             !!departmentId
               ? `${PrivatePageEndPoints.departments.details.root.path.replace(

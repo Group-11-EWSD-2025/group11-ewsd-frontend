@@ -4,7 +4,6 @@ import { toast } from "@/hooks/use-toast";
 import { hideDialog } from "@/lib/utils";
 import { useCreateDepartment } from "@/modules/Departments/api/mutateCreateDepartment";
 import { useGetUsers } from "@/modules/Users/api/queryGetUsers";
-import { TUser } from "@/types/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -15,7 +14,6 @@ const departmentSchema = z.object({
   name: z
     .string()
     .min(2, { message: "Department name must be at least 2 characters" }),
-  user_id: z.string(),
 });
 
 export type DepartmentFormInputs = z.infer<typeof departmentSchema>;
@@ -26,7 +24,6 @@ function DepartmentForm() {
     resolver: zodResolver(departmentSchema),
     defaultValues: {
       name: "",
-      user_id: "1",
     },
   });
 
@@ -69,6 +66,7 @@ function DepartmentForm() {
   }
 
   const coordinators = getUsers.data.body.data;
+  console.log(coordinators);
 
   return (
     <CustomForm
@@ -84,7 +82,7 @@ function DepartmentForm() {
           placeholder: "Enter department name",
         }}
       />
-      {coordinators.length > 0 && (
+      {/* {coordinators.length > 0 && (
         <CustomForm.SelectField
           field={{
             label: "Assigned QR Coordinator",
@@ -96,7 +94,7 @@ function DepartmentForm() {
             })),
           }}
         />
-      )}
+      )} */}
       <div className="flex justify-end">
         <CustomForm.Button
           state={createDepartment.isPending ? "loading" : "default"}

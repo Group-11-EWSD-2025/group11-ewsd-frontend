@@ -4,12 +4,14 @@ import NoDataFound from "@/components/common/NoDataFound";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { COORDINATOR_OPTIONS } from "@/constants";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { toast } from "@/hooks/use-toast";
 import { getInitials, showDialog } from "@/lib/utils";
 import { useDeleteDepartment } from "@/modules/Departments/api/mutateDeleteDepartment";
+import { useUpdateDepartment } from "@/modules/Departments/api/mutateUpdateDepartment";
+import { useGetDepartmentDetails } from "@/modules/Departments/api/queryGetDepartmentDetails";
 import { useGetUsers } from "@/modules/Users/api/queryGetUsers";
+import { TDepartment } from "@/types/departments";
 import { TUser } from "@/types/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -19,10 +21,22 @@ import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 function Settings() {
+  const { id } = useParams();
+  const getDepartmentDetails = useGetDepartmentDetails({
+    queryConfig: {
+      retry: false,
+    },
+    data: { id: id as string },
+  });
+
   return (
-    <div className="mx-auto w-full py-4 lg:max-w-[var(--content-width)] lg:py-6">
+    <div className="mx-auto w-full p-4 lg:mt-[calc(var(--topbar-height))] lg:max-w-[var(--content-width)] lg:p-6">
       <div className="flex flex-col gap-y-4">
-        <DepartmentDetailsForm />
+        {getDepartmentDetails.isSuccess && (
+          <DepartmentDetailsForm
+            departmentDetails={getDepartmentDetails.data?.data.body}
+          />
+        )}
         <DepartmentMembers />
         <DeleteDepartment />
       </div>
@@ -30,26 +44,42 @@ function Settings() {
   );
 }
 
-// TODO: Implement update department
-function DepartmentDetailsForm() {
-  const schema = z.object({
-    departmentName: z
-      .string()
-      .min(3, { message: "Department name must be at least 3 characters" }),
-    coordinator: z.string(),
-  });
-  type FormInputs = z.infer<typeof schema>;
-
-  const form = useForm<FormInputs>({
-    resolver: zodResolver(schema),
+const departmentDetailsSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: "Department name must be at least 3 characters" }),
+  id: z.string(),
+});
+export type DepartmentDetailsFormInputs = z.infer<
+  typeof departmentDetailsSchema
+>;
+function DepartmentDetailsForm({
+  departmentDetails,
+}: {
+  departmentDetails: TDepartment;
+}) {
+  const queryClient = useQueryClient();
+  const form = useForm<DepartmentDetailsFormInputs>({
+    resolver: zodResolver(departmentDetailsSchema),
     defaultValues: {
-      departmentName: "",
-      coordinator: "",
+      name: departmentDetails.name ?? "",
+      id: `${departmentDetails.id}`,
     },
   });
 
-  const onSubmit = (data: FormInputs) => {
-    console.log(data);
+  const updateDepartment = useUpdateDepartment({
+    mutationConfig: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["getDepartmentDetails", `${departmentDetails.id}`],
+        });
+        queryClient.invalidateQueries({ queryKey: ["getDepartmentList"] });
+      },
+    },
+  });
+
+  const onSubmit = (data: DepartmentDetailsFormInputs) => {
+    updateDepartment.mutate(data);
   };
 
   return (
@@ -62,21 +92,19 @@ function DepartmentDetailsForm() {
       <div className="space-y-4">
         <CustomForm.InputField
           field={{
+            name: "name",
             label: "Department Name",
-            name: "departmentName",
             type: "text",
             placeholder: "Enter department name",
           }}
         />
-        <CustomForm.SelectField
-          field={{
-            name: "coordinator",
-            label: "Assigned QR Coordinator",
-            placeholder: "Select",
-            options: COORDINATOR_OPTIONS,
-          }}
-        />
-        <CustomForm.Button type="submit">Save Changes</CustomForm.Button>
+        <CustomForm.Button
+          type="submit"
+          state={updateDepartment.isPending ? "loading" : "default"}
+          disabled={!form.formState.isDirty}
+        >
+          Save Changes
+        </CustomForm.Button>
       </div>
     </CustomForm>
   );
