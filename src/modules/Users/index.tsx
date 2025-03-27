@@ -39,12 +39,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ROLE_OPTIONS } from "@/constants";
 import { toast } from "@/hooks/use-toast";
 import { getInitials, hideDialog, showDialog } from "@/lib/utils";
 import UserForm from "@/modules/Users/components/UserForm";
 import { TUser } from "@/types/users";
 import { useQueryClient } from "@tanstack/react-query";
+import { useGetRoles } from "../Auth/api/queryGetRoles";
 import { useDeleteUser } from "./api/mutateDeleteUser";
 import { useGetUsers } from "./api/queryGetUsers";
 
@@ -82,12 +82,12 @@ const Users = () => {
     status: searchParams.get("status") || "all",
     pageSize: parseInt(searchParams.get("page_size") || "4"),
     currentPage: parseInt(searchParams.get("page") || "1"),
-    searchTerm: searchParams.get("search") || "",
+    search: searchParams.get("search") || "",
     totalCount: 0,
   });
 
   // Apply debounce to search term
-  const debouncedSearchTerm = useDebounce(filtersAndPagination.searchTerm, 500);
+  const debouncedSearchTerm = useDebounce(filtersAndPagination.search, 500);
 
   // Helper functions to update specific parts of the state
   const updateTableState = (newState: Partial<typeof tableState>) => {
@@ -124,6 +124,12 @@ const Users = () => {
     setSearchParams,
   ]);
 
+  const { data: rolesData } = useGetRoles({
+    queryConfig: {
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+    },
+  });
   // Update API call with search term
   const {
     data: usersData,
@@ -176,6 +182,8 @@ const Users = () => {
       },
     },
   });
+
+  console.log(rolesData?.body);
 
   // Extract users and metadata from the response
   const users = React.useMemo(() => {
@@ -342,7 +350,7 @@ const Users = () => {
   // Handle search term change
   const handleSearchChange = (value: string) => {
     updateFiltersAndPagination({
-      searchTerm: value,
+      search: value,
       ...(value === "" && { currentPage: 1 }), // Reset to first page when clearing search
     });
   };
@@ -425,7 +433,7 @@ const Users = () => {
         <div className="relative flex items-center gap-2">
           <Input
             placeholder="Search..."
-            value={filtersAndPagination.searchTerm}
+            value={filtersAndPagination.search}
             onChange={(event) => handleSearchChange(event.target.value)}
             className="min-w-xs border bg-white py-5 text-base placeholder:text-gray-400"
           />
@@ -442,11 +450,17 @@ const Users = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Role</SelectItem>
-              {ROLE_OPTIONS.map((role) => (
-                <SelectItem key={role.value} value={role.value}>
-                  {role.label}
-                </SelectItem>
-              ))}
+              {rolesData?.body?.map(
+                (role: {
+                  value: string;
+                  label: string;
+                  description: string;
+                }) => (
+                  <SelectItem key={role.value} value={role.value}>
+                    {role.label}
+                  </SelectItem>
+                ),
+              )}
             </SelectContent>
           </Select>
           <Button
