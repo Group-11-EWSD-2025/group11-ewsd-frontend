@@ -25,7 +25,7 @@ export const CheckboxField = ({ hookedForm, field }: CheckboxFieldProps) => {
       name={field.name}
       render={({ field: formField }) => (
         <FormItem>
-          <div className="flex items-center gap-x-2">
+          <div className="flex gap-x-2">
             <Checkbox
               id={field.name}
               onCheckedChange={formField.onChange}

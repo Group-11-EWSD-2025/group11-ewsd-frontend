@@ -48,6 +48,7 @@
   --sidebar-width: 256px;
   --topbar-height: 64px;
   --content-width: 728px;
+  --notification-height: 44px;
 }
 
 .dark {

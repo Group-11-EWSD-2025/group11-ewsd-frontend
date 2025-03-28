@@ -19,9 +19,17 @@ import {
   PasswordFieldProps,
 } from "@/components/common/PasswordField";
 import {
+  RadioField as CustomRadioField,
+  RadioProps,
+} from "@/components/common/RadioField";
+import {
   SelectField as CustomSelectField,
   SelectProps,
 } from "@/components/common/SelectField";
+import {
+  TextareaField as CustomTextareaField,
+  TextareaProps,
+} from "@/components/common/TextareaField";
 import { Button as CustomButton } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
@@ -171,4 +179,23 @@ CustomForm.CustomField = function CustomField({
   return <CustomFormField hookedForm={formMethods} field={field} />;
 };
 
+CustomForm.RadioField = function RadioField({ field }: { field: RadioProps }) {
+  const formMethods = useContext(FormMethodsContext);
+  if (!formMethods) {
+    throw new Error("RadioField must be used within a CustomForm");
+  }
+  return <CustomRadioField hookedForm={formMethods} field={field} />;
+};
 export default CustomForm;
+
+CustomForm.TextareaField = function TextareaField({
+  field,
+}: {
+  field: TextareaProps;
+}) {
+  const formMethods = useContext(FormMethodsContext);
+  if (!formMethods) {
+    throw new Error("TextareaField must be used within a CustomForm");
+  }
+  return <CustomTextareaField hookedForm={formMethods} field={field} />;
+};
