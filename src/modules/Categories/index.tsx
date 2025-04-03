@@ -19,6 +19,7 @@ import {
   Trash,
 } from "lucide-react";
 import * as React from "react";
+import { useSearchParams } from "react-router-dom";
 
 import Pagination from "@/components/common/Pagination";
 import { Badge } from "@/components/ui/badge";
@@ -45,32 +46,81 @@ import { Category } from "@/modules/Categories/types";
 import { useQueryClient } from "@tanstack/react-query";
 import CategoryCreateForm from "./components/CategoryCreateForm";
 import CategoryEditForm from "./components/CategoryEditForm";
+import { useDebounce } from "@/hooks/use-debounce";
 
 const Categories = () => {
   const queryClient = useQueryClient();
+  
+  const [searchParams, setSearchParams] = useSearchParams();
+  
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [currentPage, setCurrentPage] = React.useState(1);
 
-  const { data: apiResponse, isLoading } = useGetCategoryList({
+  const [filtersAndPagination, setFiltersAndPagination] = React.useState({
+    pageSize: parseInt(searchParams.get("page_size") || "10"),
+    currentPage: parseInt(searchParams.get("page") || "1"),
+    search: searchParams.get("search") || "",
+  });
+
+  const debouncedSearchTerm = useDebounce(filtersAndPagination.search, 500);
+
+  const updateFiltersAndPagination = (
+    newState: Partial<typeof filtersAndPagination>,
+  ) => {
+    setFiltersAndPagination((prev) => ({ ...prev, ...newState }));
+  };
+
+  React.useEffect(() => {
+    const params = new URLSearchParams();
+
+    params.set("page", filtersAndPagination.currentPage.toString());
+    params.set("page_size", filtersAndPagination.pageSize.toString());
+
+    if (debouncedSearchTerm) {
+      params.set("search", debouncedSearchTerm);
+    }
+
+    setSearchParams(params, { replace: true });
+  }, [
+    debouncedSearchTerm,
+    filtersAndPagination.currentPage,
+    filtersAndPagination.pageSize,
+    setSearchParams,
+  ]);
+
+  const {
+    data: apiResponse,
+    isLoading,
+    refetch,
+  } = useGetCategoryList({
     params: {
-      page: currentPage,
+      page: filtersAndPagination.currentPage,
+      perPage: filtersAndPagination.pageSize,
+      ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
     },
     queryConfig: {
-      retry: false,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
     },
   });
+
+  React.useEffect(() => {
+    refetch();
+  }, [
+    debouncedSearchTerm,
+    filtersAndPagination.currentPage,
+    filtersAndPagination.pageSize,
+    refetch,
+  ]);
 
   const deleteCategory = useDeleteCategory({
     mutationConfig: {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: ["getCategoryList"],
+          exact: false,
         });
         hideDialog();
         toast({
@@ -81,7 +131,6 @@ const Categories = () => {
   });
 
   const categoryResult = apiResponse?.body;
-
   const pageSize = categoryResult?.per_page || 10;
 
   const formatDate = (dateString: string) => {
@@ -164,7 +213,14 @@ const Categories = () => {
   ];
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    updateFiltersAndPagination({ currentPage: page });
+  };
+
+  const handleSearchChange = (value: string) => {
+    updateFiltersAndPagination({
+      search: value,
+      ...(value === "" && { currentPage: 1 }),
+    });
   };
 
   const table = useReactTable({
@@ -230,22 +286,14 @@ const Categories = () => {
     });
   }
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    table.getColumn("name")?.setFilterValue(value);
-    if (currentPage !== 1) {
-      setCurrentPage(1);
-    }
-  };
-
   return (
     <div className="p-4 lg:p-6">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="relative flex items-center gap-2">
           <Input
             placeholder="Search categories..."
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-            onChange={handleSearch}
+            value={filtersAndPagination.search}
+            onChange={(event) => handleSearchChange(event.target.value)}
             className="min-w-xs border bg-white py-5 text-base placeholder:text-gray-400"
           />
           <SearchIcon className="absolute top-1/2 right-3 size-4 -translate-y-1/2 text-gray-400" />
@@ -322,7 +370,7 @@ const Categories = () => {
       {categoryResult && (
         <Pagination
           variant="simple"
-          currentPage={currentPage}
+          currentPage={filtersAndPagination.currentPage}
           totalPages={categoryResult.last_page}
           pageSize={categoryResult.per_page}
           totalItems={categoryResult.total}

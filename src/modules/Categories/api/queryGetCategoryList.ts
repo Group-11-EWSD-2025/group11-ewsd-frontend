@@ -17,7 +17,9 @@ export const getCategoryList = (params?: { page?: number }) => {
 
 type UseGetCategoryListOptions = {
   params?: {
+    perPage?: number;
     page?: number;
+    search?: string;
   }
   queryConfig?: QueryConfig<typeof getCategoryList>;
 };
