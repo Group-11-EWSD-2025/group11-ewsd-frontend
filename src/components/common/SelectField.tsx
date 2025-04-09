@@ -22,7 +22,7 @@ export type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
   options: {
     label: string;
     value: string;
-    desc?: string;
+    description?: string;
   }[];
 };
 
@@ -72,13 +72,15 @@ export const SelectField = ({
                       <p
                         className={cn(
                           "text-black",
-                          option.value !== "" && option.desc && "mb-1",
+                          option.value !== "" && option.description && "mb-0.5",
                         )}
                       >
                         {option.label}
                       </p>
-                      {option.desc && (
-                        <p className="text-sm text-gray-500">{option.desc}</p>
+                      {option.description && (
+                        <p className="text-sm text-gray-500">
+                          {option.description}
+                        </p>
                       )}
                     </div>
                   </SelectItem>

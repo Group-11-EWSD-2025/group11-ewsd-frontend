@@ -2,6 +2,7 @@ import CustomForm from "@/components/common/CustomForm";
 import { toast } from "@/hooks/use-toast";
 import { hideDialog, showDialog } from "@/lib/utils";
 import { useGetDepartmentList } from "@/modules/Departments/api/queryGetDepartmentList";
+import { TRole } from "@/types/roles";
 import { TUser } from "@/types/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,16 +11,6 @@ import { z } from "zod";
 import { Button } from "../../../components/ui/button";
 import { useCreateUser } from "../api/mutateCreateUser";
 import { useEditUser } from "../api/mutateEditUser";
-
-const ROLES_OPTIONS = [
-  { label: "Teacher", value: "teacher", desc: "Teacher role for teaching" },
-  {
-    label: "Assistant",
-    value: "assistant",
-    desc: "Assistant role for assisting",
-  },
-  { label: "Admin", value: "admin", desc: "Admin role for managing" },
-];
 
 const userSchema = z.object({
   name: z
@@ -33,28 +24,25 @@ const userSchema = z.object({
     .string()
     .min(3, { message: "Phone number is required" })
     .regex(/^[0-9+\-\s()]*$/, { message: "Invalid phone number format" }),
-  role: z.enum(["teacher", "assistant", "admin"], {
-    message: "Invalid role selected",
-  }),
+  role: z.string().min(1, { message: "Role is required" }),
   department_id: z
     .string()
     .min(1, { message: "At least one department must be selected" }),
   password: z
     .string()
-    .min(8, { message: "Password must be at least 8 characters" }),
+    .min(6, { message: "Password must be at least 6 characters" }),
 });
 
 export type UserFormInputs = z.infer<typeof userSchema>;
 
 interface UserFormProps {
   user?: TUser;
+  rolesData: TRole[];
 }
 
-function UserForm({ user }: UserFormProps) {
+function UserForm({ user, rolesData }: UserFormProps) {
   const queryClient = useQueryClient();
   const isEditMode = !!user;
-
-  console.log(user);
 
   const UserForm = useForm<UserFormInputs>({
     resolver: zodResolver(userSchema),
@@ -62,7 +50,7 @@ function UserForm({ user }: UserFormProps) {
       name: user?.name || "",
       email: user?.email || "",
       phone: user?.phone || "",
-      role: (user?.role as "teacher" | "assistant" | "admin") || "teacher",
+      role: user?.role || "",
       department_id: user?.department_id || "",
       password: "",
     },
@@ -176,7 +164,7 @@ function UserForm({ user }: UserFormProps) {
             name: "role",
             label: "Role",
             placeholder: "Select",
-            options: ROLES_OPTIONS,
+            options: rolesData,
             required: true,
           }}
         />

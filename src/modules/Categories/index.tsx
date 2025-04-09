@@ -17,6 +17,7 @@ import {
   SearchIcon,
   Tag,
   Trash,
+  X,
 } from "lucide-react";
 import * as React from "react";
 import { useSearchParams } from "react-router-dom";
@@ -38,6 +39,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "@/hooks/use-toast";
 import { hideDialog, showDialog } from "@/lib/utils";
 import { useDeleteCategory } from "@/modules/Categories/api/mutateDeleteCategory";
@@ -46,16 +48,18 @@ import { Category } from "@/modules/Categories/types";
 import { useQueryClient } from "@tanstack/react-query";
 import CategoryCreateForm from "./components/CategoryCreateForm";
 import CategoryEditForm from "./components/CategoryEditForm";
-import { useDebounce } from "@/hooks/use-debounce";
 
 const Categories = () => {
   const queryClient = useQueryClient();
-  
+
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const [filtersAndPagination, setFiltersAndPagination] = React.useState({
@@ -296,6 +300,12 @@ const Categories = () => {
             onChange={(event) => handleSearchChange(event.target.value)}
             className="min-w-xs border bg-white py-5 text-base placeholder:text-gray-400"
           />
+          {filtersAndPagination.search && (
+            <X
+              className="absolute top-1/2 right-9 size-4 -translate-y-1/2 cursor-pointer text-gray-400"
+              onClick={() => handleSearchChange("")}
+            />
+          )}
           <SearchIcon className="absolute top-1/2 right-3 size-4 -translate-y-1/2 text-gray-400" />
         </div>
         <div className="flex items-center gap-2">

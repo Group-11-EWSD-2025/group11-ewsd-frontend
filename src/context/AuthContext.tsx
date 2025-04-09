@@ -1,4 +1,3 @@
-import { PublicPageEndPoints } from "@/ecosystem/PageEndpoints/Public";
 import { useLogout } from "@/modules/Auth/api/mutateLogout";
 import { loginState } from "@/recoil/auth";
 import { TLoginState } from "@/types";
@@ -31,11 +30,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   function logout() {
-    logoutMutation.mutate(undefined, {
-      onSuccess: () => {
-        navigate(PublicPageEndPoints.login.path);
-      },
-    });
+    resetAuthState();
+    // logoutMutation.mutate(undefined, {
+    //   onSuccess: () => {
+    //     navigate(PublicPageEndPoints.login.path);
+    //   },
+    // });
   }
 
   return (

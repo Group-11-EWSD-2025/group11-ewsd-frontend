@@ -103,9 +103,11 @@ const DepartmentDetails = () => {
           </div>
         </div>
         {IS_FINAL_CLOSURE_DATE && (
-          <div className="fixed top-[calc(var(--topbar-height)*2)] z-10 flex h-[var(--notification-height)] w-[calc(100%-var(--sidebar-width))] justify-between gap-2 border-y bg-slate-300 px-4">
-            <div className="flex items-center gap-2">
-              <Bell size={16} />
+          <div className="fixed top-[calc(var(--topbar-height)*2)] z-10 flex w-[calc(100%-var(--sidebar-width))] items-center justify-between gap-2 border-y bg-slate-300 px-4">
+            <div className="flex gap-4 py-2">
+              <div className="flex items-center">
+                <Bell size={16} />
+              </div>
               <p className="text-sm">
                 The Final Closure Date has been reached. You can now download
                 all data (ideas, comments, and documents).

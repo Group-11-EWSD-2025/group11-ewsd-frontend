@@ -15,7 +15,7 @@ const loginSchema = z.object({
     .min(3, { message: "Email must be at least 3 characters" }),
   password: z
     .string()
-    .min(8, { message: "Password must be at least 8 characters" }),
+    .min(6, { message: "Password must be at least 6 characters" }),
 });
 
 export type LoginFormInputs = z.infer<typeof loginSchema>;
@@ -65,6 +65,10 @@ const Login = () => {
     loginMutation.mutate(data);
   };
 
+  const handleRequestPasswordReset = () => {
+    console.log("Request password reset");
+  };
+
   return (
     <div className="bg-muted flex h-screen flex-col items-center justify-center gap-y-7">
       <h2 className="text-2xl font-semibold">IdeaHub</h2>
@@ -108,7 +112,12 @@ const Login = () => {
           >
             Login
           </CustomForm.Button>
-          <Button type="button" variant="link" className="w-full">
+          <Button
+            type="button"
+            variant="link"
+            className="w-full"
+            onClick={handleRequestPasswordReset}
+          >
             Request Password Reset
           </Button>
         </CustomForm>

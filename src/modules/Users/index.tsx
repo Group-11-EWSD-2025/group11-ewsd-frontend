@@ -39,15 +39,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "@/hooks/use-toast";
 import { getInitials, hideDialog, showDialog } from "@/lib/utils";
 import UserForm from "@/modules/Users/components/UserForm";
+import { TRole } from "@/types/roles";
 import { TUser } from "@/types/users";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetRoles } from "../Auth/api/queryGetRoles";
 import { useDeleteUser } from "./api/mutateDeleteUser";
 import { useGetUsers } from "./api/queryGetUsers";
-import { useDebounce } from "@/hooks/use-debounce";
 
 const Users = () => {
   // URL search params
@@ -64,7 +65,7 @@ const Users = () => {
   const [filtersAndPagination, setFiltersAndPagination] = React.useState({
     role: searchParams.get("role") || "all",
     status: searchParams.get("status") || "all",
-    pageSize: parseInt(searchParams.get("page_size") || "4"),
+    pageSize: parseInt(searchParams.get("page_size") || "8"),
     currentPage: parseInt(searchParams.get("page") || "1"),
     search: searchParams.get("search") || "",
     totalCount: 0,
@@ -167,8 +168,6 @@ const Users = () => {
     },
   });
 
-  console.log(rolesData?.body);
-
   // Extract users and metadata from the response
   const users = React.useMemo(() => {
     if (!usersData?.body) return [];
@@ -191,13 +190,13 @@ const Users = () => {
         const userName = row.getValue("name") as string;
         const userEmail = row.original.email;
 
-        // Debug logging
-
         return (
           <div className="flex items-center gap-3">
             <Avatar>
               <AvatarImage src={row.original.avatar} />
-              <AvatarFallback>{getInitials(userName)}</AvatarFallback>
+              <AvatarFallback className="text-sm">
+                {getInitials(userName)}
+              </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
               <p className="font-medium">{userName}</p>
@@ -219,7 +218,16 @@ const Users = () => {
       header: () => {
         return <div className="text-gray-500">Assigned Department</div>;
       },
-      cell: ({ row }) => <div>{row.getValue("department") || "N/A"}</div>,
+      cell: ({ row }) => {
+        const departmentsText = (): string => {
+          const departmentsArray = row.original.departments;
+          if (!departmentsArray?.length) return "N/A";
+          if (departmentsArray.length > 1)
+            return `${departmentsArray.length} departments`;
+          return departmentsArray[0]?.name ?? "N/A";
+        };
+        return <div>{departmentsText()}</div>;
+      },
     },
     {
       accessorKey: "role",
@@ -227,7 +235,13 @@ const Users = () => {
         return <div className="text-gray-500">Role</div>;
       },
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("role")}</div>
+        <div>
+          {
+            rolesData?.body?.find(
+              (role: TRole) => role.value === row.original.role,
+            )?.label
+          }
+        </div>
       ),
     },
     {
@@ -375,14 +389,14 @@ const Users = () => {
   function handleCreateUser() {
     showDialog({
       title: "Create User",
-      children: <UserForm />,
+      children: <UserForm rolesData={rolesData?.body} />,
     });
   }
 
   function handleEditUser(user: TUser) {
     showDialog({
       title: "Edit User",
-      children: <UserForm user={user} />,
+      children: <UserForm user={user} rolesData={rolesData?.body} />,
     });
   }
 
@@ -434,17 +448,11 @@ const Users = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Role</SelectItem>
-              {rolesData?.body?.map(
-                (role: {
-                  value: string;
-                  label: string;
-                  description: string;
-                }) => (
-                  <SelectItem key={role.value} value={role.value}>
-                    {role.label}
-                  </SelectItem>
-                ),
-              )}
+              {rolesData?.body?.map((role: TRole) => (
+                <SelectItem key={role.value} value={role.value}>
+                  {role.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Button

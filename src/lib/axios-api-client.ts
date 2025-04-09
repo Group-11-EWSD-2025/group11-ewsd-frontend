@@ -18,7 +18,7 @@ function requestInterceptor(config: InternalAxiosRequestConfig) {
 function handleResponseError(error: any) {
   if (error.response.status === 401 || error.response.status === 403) {
     toast({
-      title: "Unauthorized",
+      title: error.response.data.meta.message,
       description: "Please login again",
       variant: "destructive",
     });
