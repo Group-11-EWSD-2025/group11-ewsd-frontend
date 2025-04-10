@@ -168,13 +168,15 @@ function UserForm({ user, rolesData }: UserFormProps) {
             required: true,
           }}
         />
-        <CustomForm.SelectField
+        <CustomForm.MultiSelectField
           field={{
-            name: "department_id",
             label: "Assigned Department",
-            placeholder: "Select",
-            options: departmentsOptions,
+            name: "department_id",
             required: true,
+            options: departmentsOptions,
+            onValueChange: (value) => {
+              console.log("value", value);
+            },
           }}
         />
         <CustomForm.PasswordField

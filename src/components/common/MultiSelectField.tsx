@@ -52,6 +52,7 @@ export const MultiSelectField = ({
               onValueChange={(value) => {
                 formField.onChange(value);
               }}
+              modalPopover
               {...restFieldProps}
             />
           </FormControl>

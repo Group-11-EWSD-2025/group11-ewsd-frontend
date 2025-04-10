@@ -107,7 +107,7 @@ const Dialog = () => {
         }}
       >
         <AlertDialogContent>
-          <AlertDialogHeader>
+          <AlertDialogHeader className="flex">
             <AlertDialogTitle className={titleClassName}>
               {title}
             </AlertDialogTitle>
@@ -131,6 +131,7 @@ const Dialog = () => {
         !isOpen && setDialog(undefined);
         onClose?.();
       }}
+      modal
     >
       <DialogContent className={classes({ size, className })}>
         <DialogHeader>

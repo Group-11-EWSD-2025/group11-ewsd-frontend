@@ -11,7 +11,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { MoreVertical, Pencil, Plus, SearchIcon, Trash } from "lucide-react";
+import {
+  Laptop,
+  MoreVertical,
+  Pencil,
+  Plus,
+  SearchIcon,
+  Trash,
+  UserX,
+} from "lucide-react";
 import * as React from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -42,6 +50,7 @@ import {
 import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "@/hooks/use-toast";
 import { getInitials, hideDialog, showDialog } from "@/lib/utils";
+import LoginActivity from "@/modules/Users/components/LoginActivity";
 import UserForm from "@/modules/Users/components/UserForm";
 import { TRole } from "@/types/roles";
 import { TUser } from "@/types/users";
@@ -269,23 +278,46 @@ const Users = () => {
           <PopoverTrigger>
             <MoreVertical className="h-4 w-4 cursor-pointer" />
           </PopoverTrigger>
-          <PopoverContent align="end" className="flex w-[186px] flex-col p-1">
-            <Button
-              variant="ghost"
-              onClick={() => handleEditUser(row.original)}
-              className="w-full justify-start p-2"
-            >
-              <Pencil className="size-4 text-slate-700" />
-              Edit User
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => handleDeleteUser(row.original)}
-              className="w-full justify-start p-2"
-            >
-              <Trash className="text-destructive size-4" />
-              <p className="text-destructive">Delete User</p>
-            </Button>
+          <PopoverContent
+            align="end"
+            className="flex w-[186px] flex-col divide-y divide-gray-200 p-1"
+          >
+            <div>
+              <Button
+                variant="ghost"
+                onClick={() => handleViewLoginActivity(row.original)}
+                className="w-full justify-start rounded-none p-2"
+              >
+                <Laptop className="size-4 text-slate-700" />
+                View Login Activity
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => handleEditUser(row.original)}
+                className="w-full justify-start rounded-none p-2"
+              >
+                <Pencil className="size-4 text-slate-700" />
+                Edit User
+              </Button>
+            </div>
+            <div>
+              <Button
+                variant="ghost"
+                onClick={() => handleDeleteUser(row.original)}
+                className="w-full justify-start rounded-none p-2"
+              >
+                <Trash className="text-destructive size-4" />
+                <p className="text-destructive">Delete User</p>
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => handleDisableUser(row.original)}
+                className="w-full justify-start rounded-none p-2"
+              >
+                <UserX className="size-4 text-slate-700" />
+                Disable User
+              </Button>
+            </div>
           </PopoverContent>
         </Popover>
       ),
@@ -400,21 +432,60 @@ const Users = () => {
     });
   }
 
+  function handleViewLoginActivity(user: TUser) {
+    showDialog({
+      children: <LoginActivity user={user} />,
+      cancel: {
+        label: "Close",
+        variant: "default",
+      },
+    });
+  }
+
   function handleDeleteUser(user: TUser) {
     showDialog({
       isAlert: true,
       title: "Are you sure you want to delete this user?",
       children: (
-        <p className="text-brand text-sm">
-          This action cannot be undone, and the user will lose access to the
-          system.
-        </p>
+        <div>
+          <p className="text-brand text-sm">
+            This action cannot be undone, and the user will lose access to the
+            system. Any submitted ideas and comments will remain but will be
+            marked as <span className="font-bold">Anonymous</span>.
+          </p>
+        </div>
       ),
       cancel: {
         label: "Cancel",
       },
       action: {
         label: "Yes, Delete",
+        variant: "destructive",
+        state: isDeletingUser ? "loading" : "default",
+        onClick: () => {
+          deleteUser({ id: user.id });
+        },
+      },
+    });
+  }
+
+  function handleDisableUser(user: TUser) {
+    showDialog({
+      isAlert: true,
+      title: "Are you sure you want to disable this user?",
+      children: (
+        <div>
+          <p className="text-brand text-sm">
+            This action cannot be undone, and the user will lose access to the
+            system.
+          </p>
+        </div>
+      ),
+      cancel: {
+        label: "Cancel",
+      },
+      action: {
+        label: "Yes, Disable",
         variant: "destructive",
         state: isDeletingUser ? "loading" : "default",
         onClick: () => {
