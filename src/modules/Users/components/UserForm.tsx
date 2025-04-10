@@ -26,8 +26,10 @@ const userSchema = z.object({
     .regex(/^[0-9+\-\s()]*$/, { message: "Invalid phone number format" }),
   role: z.string().min(1, { message: "Role is required" }),
   department_id: z
-    .string()
-    .min(1, { message: "At least one department must be selected" }),
+    .array(z.union([z.string(), z.number()]).transform((val) => String(val)))
+    .min(1, {
+      message: "At least one department must be selected",
+    }),
   password: z
     .string()
     .min(6, { message: "Password must be at least 6 characters" }),
@@ -51,7 +53,7 @@ function UserForm({ user, rolesData }: UserFormProps) {
       email: user?.email || "",
       phone: user?.phone || "",
       role: user?.role || "",
-      department_id: user?.department_id || "",
+      department_id: user?.departments?.map((dept) => dept.id) || [],
       password: "",
     },
   });
@@ -123,6 +125,7 @@ function UserForm({ user, rolesData }: UserFormProps) {
     });
   };
 
+  console.log("form", UserForm.formState.errors);
   return (
     <CustomForm
       formMethods={UserForm}
@@ -173,10 +176,9 @@ function UserForm({ user, rolesData }: UserFormProps) {
             label: "Assigned Department",
             name: "department_id",
             required: true,
-            options: departmentsOptions,
-            onValueChange: (value) => {
-              console.log("value", value);
-            },
+            options: departmentsOptions || [],
+            placeholder: "Select departments",
+            onValueChange: (value) => UserForm.setValue("department_id", value),
           }}
         />
         <CustomForm.PasswordField

@@ -12,6 +12,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import {
+  ChevronDown,
   Laptop,
   MoreVertical,
   Pencil,
@@ -228,14 +229,33 @@ const Users = () => {
         return <div className="text-gray-500">Assigned Department</div>;
       },
       cell: ({ row }) => {
-        const departmentsText = (): string => {
-          const departmentsArray = row.original.departments;
-          if (!departmentsArray?.length) return "N/A";
-          if (departmentsArray.length > 1)
-            return `${departmentsArray.length} departments`;
-          return departmentsArray[0]?.name ?? "N/A";
-        };
-        return <div>{departmentsText()}</div>;
+        const departmentsArray = row.original.departments;
+        if (!departmentsArray?.length) return <div>N/A</div>;
+
+        if (departmentsArray.length === 1) {
+          return <div>{departmentsArray[0]?.name ?? "N/A"}</div>;
+        }
+
+        return (
+          <Popover>
+            <PopoverTrigger className="flex items-center gap-1">
+              <span>{departmentsArray.length} departments</span>
+              <ChevronDown className="h-4 w-4" />
+            </PopoverTrigger>
+            <PopoverContent className="w-48 p-2">
+              <div className="flex flex-col gap-1">
+                {departmentsArray.map((dept) => (
+                  <div
+                    key={dept.id}
+                    className="rounded px-2 py-1 hover:bg-gray-100"
+                  >
+                    {dept.name}
+                  </div>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        );
       },
     },
     {
