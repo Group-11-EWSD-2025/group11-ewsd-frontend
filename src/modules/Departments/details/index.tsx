@@ -1,4 +1,4 @@
-import IdeaCard from "@/components/common/IdeaCard";
+import { DateRangePicker } from "@/components/common/DateRangePicker";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -7,47 +7,68 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, showDialog } from "@/lib/utils";
+import { useGetCategoryList } from "@/modules/Categories/api/queryGetCategoryList";
 import ExportDataDialog from "@/modules/Departments/details/components/ExportDataDialog";
 import IdeaForm from "@/modules/Departments/details/components/IdeaForm";
+import IdeaListView from "@/modules/Departments/details/components/IdeaListView";
 import { useDepartmentRedirect } from "@/modules/Departments/hooks/useDepartmentRedirect";
 import { Bell, Download } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const tabs = [
   {
-    label: "All",
-    value: "all",
-    content: (
-      <div className="space-y-4">
-        <IdeaCard />
-        <IdeaCard />
-        <IdeaCard />
-      </div>
-    ),
+    label: "Latest",
+    value: "latest",
   },
   {
     label: "Most Popular",
     value: "most-popular",
-    content: null,
   },
   {
     label: "Most Viewed",
     value: "most-viewed",
-    content: null,
-  },
-  {
-    label: "Latest",
-    value: "latest",
-    content: null,
   },
 ];
 
 const IS_FINAL_CLOSURE_DATE = true;
 
+export type Filter = {
+  tab: string;
+  dateRange: {
+    from: Date;
+    to: Date;
+  };
+  categoryId: string;
+};
+
 const DepartmentDetails = () => {
   const { redirectDepartment } = useDepartmentRedirect();
+  const {
+    data: categoriesResponse,
+    isLoading: isLoadingCategories,
+    refetch,
+  } = useGetCategoryList({
+    params: {
+      page: 1,
+      perPage: 1000,
+    },
+    queryConfig: {
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+    },
+  });
+
+  const [filter, setFilter] = useState<Filter>({
+    tab: "latest",
+    dateRange: {
+      from: new Date(),
+      to: new Date(),
+    },
+    categoryId: "",
+  });
 
   useEffect(() => {
     redirectDepartment();
@@ -71,7 +92,7 @@ const DepartmentDetails = () => {
 
   return (
     <div>
-      <Tabs defaultValue="all" className="w-full space-y-2">
+      <Tabs defaultValue="latest" className="w-full space-y-2">
         <div className="border-border-weak fixed top-[var(--topbar-height)] z-10 flex h-[var(--topbar-height)] w-[calc(100%-var(--sidebar-width))] justify-between gap-2 border-y border-b-0 bg-[#FEFEFE] px-4 md:items-center">
           <TabsList className="bg-background flex">
             {tabs.map((tab) => (
@@ -79,6 +100,12 @@ const DepartmentDetails = () => {
                 key={tab.value}
                 value={tab.value}
                 className="data-[state=active]:bg-slate-100"
+                onClick={() => {
+                  setFilter({
+                    ...filter,
+                    tab: tab.value,
+                  });
+                }}
               >
                 {tab.label}
               </TabsTrigger>
@@ -86,22 +113,50 @@ const DepartmentDetails = () => {
           </TabsList>
 
           <div className="flex items-center gap-2">
-            <Select defaultValue="all">
-              <SelectTrigger className="bg-background w-[180px] shadow-none">
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="category1">Category 1</SelectItem>
-                <SelectItem value="category2">Category 2</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="h-10">
+              <DateRangePicker
+                value={filter.dateRange}
+                onChange={(value) => {
+                  setFilter({
+                    ...filter,
+                    dateRange: {
+                      from: value.from ?? new Date(),
+                      to: value.to ?? new Date(),
+                    },
+                  });
+                }}
+              />
+            </div>
 
+            {isLoadingCategories ? (
+              <Skeleton className="h-10 w-24" />
+            ) : (
+              <Select
+                onValueChange={(value) => {
+                  setFilter({
+                    ...filter,
+                    categoryId: value,
+                  });
+                }}
+              >
+                <SelectTrigger className="bg-background h-10 min-w-[180px] shadow-none">
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categoriesResponse?.body.data.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
             <Button type="button" onClick={handleCreateNewIdea}>
               Create New Idea
             </Button>
           </div>
         </div>
+
         {IS_FINAL_CLOSURE_DATE && (
           <div className="fixed top-[calc(var(--topbar-height)*2)] z-10 flex w-[calc(100%-var(--sidebar-width))] items-center justify-between gap-2 border-y bg-slate-300 px-4">
             <div className="flex gap-4 py-2">
@@ -130,7 +185,7 @@ const DepartmentDetails = () => {
         >
           {tabs.map((tab) => (
             <TabsContent key={tab.value} value={tab.value}>
-              {tab.content}
+              <IdeaListView filter={filter} />
             </TabsContent>
           ))}
         </div>

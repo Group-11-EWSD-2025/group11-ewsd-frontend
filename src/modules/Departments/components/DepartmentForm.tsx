@@ -72,7 +72,7 @@ function DepartmentForm() {
     <CustomForm
       formMethods={departmentForm}
       onSubmit={onSubmit}
-      className="mt-6 space-y-6"
+      className="mt-6 space-y-4"
     >
       <CustomForm.InputField
         field={{
@@ -82,6 +82,10 @@ function DepartmentForm() {
           placeholder: "Enter department name",
         }}
       />
+      <p className="text-brand">
+        Note: Newly created departments will be automatically assigned to the
+        current academic year.
+      </p>
       {/* {coordinators.length > 0 && (
         <CustomForm.SelectField
           field={{
