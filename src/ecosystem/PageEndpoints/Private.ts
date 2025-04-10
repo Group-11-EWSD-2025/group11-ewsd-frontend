@@ -43,6 +43,11 @@ export const PrivatePageEndPoints = {
           lazy(() => import("@/modules/Departments/details/Settings")),
         ),
       },
+      ideaDetails: {
+        path: "/departments/:id/ideas/:ideaId",
+        label: "Idea Details",
+        component: Loadable(lazy(() => import("@/modules/Ideas/details"))),
+      },
     },
   },
   categories: {

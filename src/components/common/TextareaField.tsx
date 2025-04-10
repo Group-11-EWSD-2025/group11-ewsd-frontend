@@ -37,15 +37,18 @@ export const TextareaField = <T extends FieldValues>({
             field.type === "hidden" && "hidden",
           )}
         >
-          <FormLabel className="text-sm">
-            {field.label}
-            {field.required && <span className="text-red-500">*</span>}
-          </FormLabel>
+          {field.label && (
+            <FormLabel className="text-sm">
+              {field.label}
+              {field.required && <span className="text-red-500">*</span>}
+            </FormLabel>
+          )}
           <FormControl>
             <Textarea
               value={formField.value}
               onChange={formField.onChange}
               placeholder={field.placeholder}
+              className={field.className}
             />
           </FormControl>
           <FormMessage />

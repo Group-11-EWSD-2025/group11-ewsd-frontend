@@ -11,7 +11,7 @@ type Props = {
 };
 
 const Topbar = ({ setIsSidebarOpen }: Props) => {
-  const { id } = useParams();
+  const { id, ideaId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const pathname = location.pathname;
@@ -47,6 +47,9 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
         ":id",
         id ?? "",
       )]: "Department Settings",
+      [PrivatePageEndPoints.departments.details.ideaDetails.path
+        .replace(":id", id ?? "")
+        .replace(":ideaId", ideaId ?? "")]: "Replying on Idea",
       DEFAULT: getAllDirectEndpoints.find(
         (endpoint) => endpoint.path === pathname,
       )?.label,
