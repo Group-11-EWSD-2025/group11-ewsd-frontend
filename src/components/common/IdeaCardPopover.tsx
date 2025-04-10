@@ -1,10 +1,15 @@
 import { MoreHorizontal, Trash } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 import { showDialog } from "@/lib/utils";
 import IdeaForm from "@/modules/Departments/details/components/IdeaForm";
 import { Pencil } from "lucide-react";
-import { Button } from "../ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 function IdeaCardPopover() {
   function handleEditIdea() {
@@ -35,6 +40,7 @@ function IdeaCardPopover() {
             <Pencil className="size-4" />
             Edit Idea
           </Button>
+          <Separator />
           <Button
             variant="ghost"
             onClick={handleDeleteIdea}
