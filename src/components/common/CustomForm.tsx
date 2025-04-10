@@ -7,6 +7,10 @@ import {
   CustomFormField,
 } from "@/components/common/CustomFormField";
 import {
+  FileUploadField as CustomFileUploadField,
+  UploadFieldProps,
+} from "@/components/common/FileUploadDragAndDrop";
+import {
   InputField as CustomInputField,
   InputProps,
 } from "@/components/common/InputField";
@@ -163,6 +167,28 @@ CustomForm.PasswordField = function PasswordField({
       hookedForm={formMethods}
       className={className}
       field={field}
+    />
+  );
+};
+
+type FileUploadFieldProps = {
+  field: UploadFieldProps;
+  CustomFileList?: React.ComponentType;
+};
+
+CustomForm.FileUploadField = function FileUploadField({
+  field,
+  CustomFileList,
+}: FileUploadFieldProps) {
+  const formMethods = useContext(FormMethodsContext);
+  if (!formMethods) {
+    throw new Error("FileUploadField must be used within a CustomForm");
+  }
+  return (
+    <CustomFileUploadField
+      hookedForm={formMethods}
+      field={field}
+      CustomFileList={CustomFileList}
     />
   );
 };
