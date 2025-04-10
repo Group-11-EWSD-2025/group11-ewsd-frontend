@@ -2,32 +2,72 @@ import CustomForm from "@/components/common/CustomForm";
 import { FileUploadField } from "@/components/common/FileUploadDragAndDrop";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "@/hooks/use-toast";
+import { hideDialog } from "@/lib/utils";
+import { useGetCategoryList } from "@/modules/Categories/api/queryGetCategoryList";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { PaperclipIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useCreateIdea } from "../api/mutateIdea";
 
 const ideaSchema = z.object({
-  privacySettings: z.enum(["public", "anonymous"]),
-  message: z.string().min(1),
+  privacy: z.enum(["public", "anonymous"]),
+  content: z.string().min(1),
+  category_id: z.string().min(1),
   "agree-terms-conditions": z.boolean(),
-  file: z.array(z.instanceof(File)).optional(),
+  files: z.array(z.instanceof(File)).optional(),
 });
 export type IdeaFormInputs = z.infer<typeof ideaSchema>;
 
 export default function IdeaForm() {
+  const queryClient = useQueryClient();
   const ideaForm = useForm<IdeaFormInputs>({
     resolver: zodResolver(ideaSchema),
     defaultValues: {
-      privacySettings: "public",
-      message: "",
+      privacy: "public",
+      content: "",
+      category_id: "",
       "agree-terms-conditions": false,
-      file: [],
+      files: [],
+    },
+  });
+
+  const { data: categoriesResponse } = useGetCategoryList({
+    params: {
+      page: 1,
+      perPage: 1000,
+    },
+    queryConfig: {
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+    },
+  });
+
+  const createIdea = useCreateIdea({
+    mutationConfig: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["getIdeas"],
+        });
+        toast({ title: "Idea created successfully" });
+        hideDialog();
+      },
     },
   });
 
   function onSubmit(data: IdeaFormInputs) {
-    console.log(data);
+    const formData = new FormData();
+    formData.append("privacy", data.privacy);
+    formData.append("content", data.content);
+    formData.append("category_id", data.category_id);
+    if (data.files) {
+      data.files.forEach((file) => {
+        formData.append("files", file);
+      });
+    }
+    createIdea.mutate(formData);
   }
 
   return (
@@ -35,7 +75,7 @@ export default function IdeaForm() {
       <div className="space-y-4 py-6">
         <div className="flex justify-between gap-10">
           <div>
-            <Label htmlFor="privacySettings" className="font-semibold">
+            <Label htmlFor="privacy" className="font-semibold">
               Privacy Settings
             </Label>
             <p className="text-sm text-[#64748B]">
@@ -44,12 +84,9 @@ export default function IdeaForm() {
           </div>
           <Tabs
             defaultValue="public"
-            value={ideaForm.watch("privacySettings")}
+            value={ideaForm.watch("privacy")}
             onValueChange={(value) => {
-              ideaForm.setValue(
-                "privacySettings",
-                value as "public" | "anonymous",
-              );
+              ideaForm.setValue("privacy", value as "public" | "anonymous");
             }}
           >
             <TabsList className="flex w-full">
@@ -62,20 +99,20 @@ export default function IdeaForm() {
         <CustomForm.TextareaField
           field={{
             label: "Idea Message",
-            name: "message",
+            name: "content",
           }}
         />
 
         <CustomForm.SelectField
           field={{
-            label: "Tagged with",
-            name: "category",
+            label: "Category",
+            name: "category_id",
             placeholder: "Select a category",
-            options: [
-              { label: "Category 1", value: "category1" },
-              { label: "Category 2", value: "category2" },
-              { label: "Category 3", value: "category3" },
-            ],
+            options:
+              categoriesResponse?.body?.data?.map((category) => ({
+                label: category.name,
+                value: category.id,
+              })) || [],
           }}
         />
 
@@ -84,7 +121,7 @@ export default function IdeaForm() {
           <div className="mt-2">
             <CustomForm.FileUploadField
               field={{
-                name: "file",
+                name: "files",
                 children: (
                   <FileUploadField.SimpleUpload>
                     <div className="relative mx-auto flex size-[128px] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 p-4 hover:bg-gray-50">
