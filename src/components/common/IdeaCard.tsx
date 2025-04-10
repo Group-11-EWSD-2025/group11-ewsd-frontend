@@ -12,19 +12,9 @@ import {
 
 const sampleImages = [
   "https://images.unsplash.com/photo-1597684018919-b68344127b5f?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDF8fHxlbnwwfHx8fHw%3D",
-  "https://plus.unsplash.com/premium_photo-1670425787574-8c9441830854?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDIyfHx8ZW58MHx8fHx8",
-  "https://plus.unsplash.com/premium_photo-1669641609657-22a10cffbfd3?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDUwfHx8ZW58MHx8fHx8",
-  "https://plus.unsplash.com/premium_photo-1669549911786-440cc468f75c?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDU0fHx8ZW58MHx8fHx8",
-  "https://images.unsplash.com/photo-1653997500354-c9711cbc0136?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDgyfHx8ZW58MHx8fHx8",
 ];
 
-const sampleAttachments = [
-  "file-1.pdf",
-  "file-2.pdf",
-  "file-3.pdf",
-  "file-4.pdf",
-  "file-5.pdf",
-];
+const sampleAttachments = ["file-1.pdf", "file-2.pdf"];
 
 const ImageCard = ({ image }: { image: string }) => {
   return (
@@ -40,12 +30,13 @@ const ImageCard = ({ image }: { image: string }) => {
 
 const AttachmentCard = ({ attachment }: { attachment: string }) => {
   return (
-    <div className="bg-surface-weak flex items-center gap-x-2 rounded-md px-2 py-1 md:px-4 md:py-3">
-      <File size={20} />
+    <div className="flex aspect-square w-full flex-col items-center justify-center gap-2 rounded-lg bg-slate-100">
+      <File size={24} className="text-slate-500" />
       <p className="text-text-strong">{attachment}</p>
     </div>
   );
 };
+
 const IdeaCard = () => {
   return (
     <div className="border-border-weak space-y-8 rounded-xl border bg-white p-4 lg:p-5">
@@ -71,55 +62,17 @@ const IdeaCard = () => {
         </p>
         <div className="space-y-2">
           <p className="text-brand text-sm">Attached with</p>
-          {sampleImages.length > 0 && (
-            <div className="grid grid-cols-4 items-center gap-x-2">
-              {sampleImages.length > 4 ? (
-                <>
-                  {sampleImages.slice(0, 3).map((image, index) => (
-                    <ImageCard key={`img-${index}`} image={image} />
-                  ))}
-                  <div className="relative">
-                    <ImageCard image={sampleImages[3]} />
-                    <div className="absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-lg bg-black/50">
-                      <p className="text-lg text-white">
-                        +{sampleImages.length - 4}
-                      </p>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                sampleImages.map((image, index) => (
-                  <ImageCard key={`img-${index}`} image={image} />
-                ))
-              )}
-            </div>
-          )}
-          {sampleAttachments.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2">
-              {sampleAttachments.length > 4 ? (
-                <>
-                  {sampleAttachments.slice(0, 3).map((attachment, index) => (
-                    <AttachmentCard
-                      key={`attachment-${index}`}
-                      attachment={attachment}
-                    />
-                  ))}
-                  <div className="bg-surface-weak flex items-center gap-x-2 rounded-md px-2 py-1 md:px-4 md:py-3">
-                    <p className="text-brand">
-                      +{sampleAttachments.length - 3} More
-                    </p>
-                  </div>
-                </>
-              ) : (
-                sampleAttachments.map((attachment, index) => (
-                  <AttachmentCard
-                    key={`attachment-${index}`}
-                    attachment={attachment}
-                  />
-                ))
-              )}
-            </div>
-          )}
+          <div className="grid grid-cols-4 items-center gap-x-2">
+            {sampleImages.map((image, index) => (
+              <ImageCard key={`img-${index}`} image={image} />
+            ))}
+            {sampleAttachments.map((attachment, index) => (
+              <AttachmentCard
+                key={`attachment-${index}`}
+                attachment={attachment}
+              />
+            ))}
+          </div>
         </div>
       </div>
       <div className="flex flex-col gap-4 md:flex-row md:justify-between">
