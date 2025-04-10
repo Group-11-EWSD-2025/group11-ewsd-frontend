@@ -447,13 +447,11 @@ const Users = () => {
       isAlert: true,
       title: "Are you sure you want to delete this user?",
       children: (
-        <div>
-          <p className="text-brand text-sm">
-            This action cannot be undone, and the user will lose access to the
-            system. Any submitted ideas and comments will remain but will be
-            marked as <span className="font-bold">Anonymous</span>.
-          </p>
-        </div>
+        <p className="text-brand text-sm">
+          This action cannot be undone, and the user will lose access to the
+          system. Any submitted ideas and comments will remain but will be
+          marked as <span className="font-bold">Anonymous</span>.
+        </p>
       ),
       cancel: {
         label: "Cancel",
