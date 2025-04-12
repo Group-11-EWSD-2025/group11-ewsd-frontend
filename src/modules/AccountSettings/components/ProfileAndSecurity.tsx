@@ -1,13 +1,34 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { Loader2, Upload } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import CustomForm from "@/components/common/CustomForm";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Upload } from "lucide-react";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "@/hooks/use-toast";
+import { useUpdateUserDetail } from "../api/mutateUpdateUserDetail";
 
+// Types
+type UserInfo = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  profile: string | null;
+};
+
+interface ProfileAndSecurityProps {
+  userInfo: UserInfo;
+  isUserDetailLoading: boolean;
+}
+
+// Schema
 const userInfoSchema = z.object({
   id: z.number().min(1, { message: "ID is required" }),
   name: z.string().min(3, { message: "Name must be at least 3 characters" }),
@@ -20,24 +41,18 @@ const userInfoSchema = z.object({
 
 export type UserDetailFormInputs = z.infer<typeof userInfoSchema>;
 
-interface ProfileAndSecurityProps {
-  userInfo: {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    role: string;
-    profile: string | null;
-  };
-  isLoading: boolean;
-  onUpdateUserDetail: (data: UserDetailFormInputs) => void;
-}
-
 const ProfileAndSecurity = ({
   userInfo,
-  onUpdateUserDetail,
-  isLoading,
+  isUserDetailLoading,
 }: ProfileAndSecurityProps) => {
+  // State
+  const [currentImagePreview, setCurrentImagePreview] = useState<string | null>(
+    null,
+  );
+  const queryClient = useQueryClient();
+  const { authState, setAuthState } = useAuth();
+
+  // Form setup
   const userDetailForm = useForm<UserDetailFormInputs>({
     resolver: zodResolver(userInfoSchema),
     defaultValues: {
@@ -51,8 +66,68 @@ const ProfileAndSecurity = ({
     },
   });
 
+  // Mutations
+  const updateUserDetailMutation = useUpdateUserDetail({
+    mutationConfig: {
+      onSuccess: (res) => {
+        toast({
+          title: "Profile updated successfully",
+        });
+
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+        queryClient.invalidateQueries({
+          queryKey: ["getUserDetail", authState.userData.id],
+        });
+        setAuthState((prev) => ({
+          ...prev,
+          userData: {
+            ...prev.userData,
+            id: String(res.data.body.id),
+            email: res.data.body.email,
+            name: res.data.body.name,
+            role: res.data.body.role,
+            phone: res.data.body.phone,
+            profile: res.data.body.profile,
+          },
+        }));
+      },
+      onError: (error) => {
+        toast({
+          title: "Failed to update profile",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const imageUrl = reader.result as string;
+      userDetailForm.setValue("profile", file);
+      userDetailForm.setValue("profilePreview", imageUrl);
+      setCurrentImagePreview(imageUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = () => {
+    userDetailForm.setValue("profile", null);
+    userDetailForm.setValue("profilePreview", null);
+    setCurrentImagePreview(null);
+  };
+
+  const onSubmit = (data: UserDetailFormInputs) => {
+    updateUserDetailMutation.mutate(data);
+  };
+
   useEffect(() => {
-    if (userInfo) {
+    if (userInfo && !updateUserDetailMutation.isPending) {
+      setCurrentImagePreview(userInfo.profile);
       userDetailForm.reset({
         id: userInfo.id,
         name: userInfo.name,
@@ -63,42 +138,26 @@ const ProfileAndSecurity = ({
         profilePreview: userInfo.profile,
       });
     }
-  }, [userInfo]);
+  }, [userInfo, updateUserDetailMutation.isPending]);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        userDetailForm.setValue("profile", file);
-        const imageUrl = reader.result as string;
-        userDetailForm.setValue("profilePreview", imageUrl);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const onSubmit = (data: UserDetailFormInputs) => {
-    userDetailForm.setValue("profile", null);
-    userDetailForm.setValue("profilePreview", null);
-    onUpdateUserDetail(data);
-  };
+  // Derived values
+  const isUpdating = updateUserDetailMutation.isPending || isUserDetailLoading;
+  const isFormDirty =
+    userDetailForm.formState.isDirty || userDetailForm.watch("profile");
 
   return (
     <div className="space-y-6">
       <div className="bg-card rounded-lg border p-6 shadow-sm">
         <h2 className="mb-6 text-xl font-semibold">Profile</h2>
         <div className="space-y-6">
+          {/* Avatar Section */}
           <div className="flex items-center gap-4">
-            {!isLoading ? (
+            {!isUpdating ? (
               <Avatar className="h-24 w-24">
                 <AvatarImage
-                  src={
-                    userDetailForm.watch("profilePreview") ||
-                    userInfo?.profile ||
-                    ""
-                  }
+                  src={currentImagePreview || userInfo?.profile || ""}
                   alt={userInfo?.name}
+                  className="object-cover"
                 />
                 <AvatarFallback className="bg-muted">
                   {userInfo?.name?.charAt(0) || "U"}
@@ -128,19 +187,14 @@ const ProfileAndSecurity = ({
                 Upload Image
               </Button>
               {userDetailForm.watch("profile") && (
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    userDetailForm.setValue("profile", null);
-                    userDetailForm.setValue("profilePreview", null);
-                  }}
-                >
+                <Button variant="outline" onClick={handleRemoveImage}>
                   Remove
                 </Button>
               )}
             </div>
           </div>
 
+          {/* Form Section */}
           <CustomForm
             formMethods={userDetailForm}
             onSubmit={onSubmit}
@@ -195,12 +249,10 @@ const ProfileAndSecurity = ({
             <CustomForm.Button
               type="submit"
               className="mt-4"
-              state={isLoading ? "loading" : "default"}
-              disabled={
-                !userDetailForm.formState.isDirty &&
-                !userDetailForm.watch("profile")
-              }
+              state={isUpdating ? "loading" : "default"}
+              disabled={!isFormDirty}
             >
+              {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save Changes
             </CustomForm.Button>
           </CustomForm>
