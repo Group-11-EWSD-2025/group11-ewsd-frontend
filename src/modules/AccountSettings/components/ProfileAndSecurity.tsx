@@ -167,8 +167,6 @@ const ProfileAndSecurity = ({
                   type: "tel",
                   placeholder: "Enter your phone number",
                   required: true,
-                  disabled: true,
-                  className: "opacity-70",
                 }}
               />
             </div>
