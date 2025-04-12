@@ -19,7 +19,7 @@ import {
 import { UserDetailFormInputs } from "./components/ProfileAndSecurity";
 
 const AccountSettings = () => {
-  const { authState } = useAuth();
+  const { authState, setAuthState } = useAuth();
   const queryClient = useQueryClient();
   const { checkFeatureAvailability } = useAuthorize();
 
@@ -43,13 +43,27 @@ const AccountSettings = () => {
 
   const updateUserDetailMutation = useUpdateUserDetail({
     mutationConfig: {
-      onSuccess: () => {
+      onSuccess: (res) => {
         toast({
           title: "Profile updated successfully",
         });
         queryClient.invalidateQueries({
           queryKey: ["getUserDetail", authState.userData.id],
         });
+        queryClient.invalidateQueries({
+          queryKey: ["me"],
+        });
+        setAuthState((prev) => ({
+          ...prev,
+          userData: {
+            id: res.data.body.id,
+            email: res.data.body.email,
+            name: res.data.body.name,
+            role: res.data.body.role,
+            phone: res.data.body.phone,
+            profile: res.data.body.profile,
+          },
+        }));
       },
       onError: (error) => {
         toast({
@@ -147,6 +161,9 @@ const AccountSettings = () => {
         <ProfileAndSecurity
           userInfo={userInfo}
           onUpdateUserDetail={handleUpdateUserDetail}
+          isLoading={
+            updateUserDetailMutation.isPending || getUserDetail.isLoading
+          }
         />
       ),
     },
@@ -191,6 +208,9 @@ const AccountSettings = () => {
         <ProfileAndSecurity
           userInfo={userInfo}
           onUpdateUserDetail={handleUpdateUserDetail}
+          isLoading={
+            updateUserDetailMutation.isPending || getUserDetail.isLoading
+          }
         />
       )}
     </div>

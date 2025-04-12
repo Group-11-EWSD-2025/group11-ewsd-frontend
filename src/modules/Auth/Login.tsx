@@ -57,6 +57,7 @@ const Login = () => {
                 name: res.data?.data.body.name,
                 role: res.data?.data.body.role,
                 phone: res.data?.data.body.phone,
+                profile: res.data?.data.body.profile,
               },
             }));
           });

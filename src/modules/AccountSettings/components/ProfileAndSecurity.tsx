@@ -1,6 +1,7 @@
 import CustomForm from "@/components/common/CustomForm";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Upload } from "lucide-react";
 import { useEffect } from "react";
@@ -28,12 +29,14 @@ interface ProfileAndSecurityProps {
     role: string;
     profile: string | null;
   };
+  isLoading: boolean;
   onUpdateUserDetail: (data: UserDetailFormInputs) => void;
 }
 
 const ProfileAndSecurity = ({
   userInfo,
   onUpdateUserDetail,
+  isLoading,
 }: ProfileAndSecurityProps) => {
   const userDetailForm = useForm<UserDetailFormInputs>({
     resolver: zodResolver(userInfoSchema),
@@ -76,6 +79,8 @@ const ProfileAndSecurity = ({
   };
 
   const onSubmit = (data: UserDetailFormInputs) => {
+    userDetailForm.setValue("profile", null);
+    userDetailForm.setValue("profilePreview", null);
     onUpdateUserDetail(data);
   };
 
@@ -85,34 +90,50 @@ const ProfileAndSecurity = ({
         <h2 className="mb-6 text-xl font-semibold">Profile</h2>
         <div className="space-y-6">
           <div className="flex items-center gap-4">
-            <Avatar className="h-24 w-24">
-              <AvatarImage
-                src={
-                  userDetailForm.watch("profilePreview") ||
-                  userInfo?.profile ||
-                  ""
-                }
-                alt={userInfo?.name}
-              />
-              <AvatarFallback className="bg-muted">
-                {userInfo?.name?.charAt(0) || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="space-x-2">
-              <Button variant="default" className="relative">
-                <Upload className="mr-2 h-4 w-4" />
-                Upload Image
-                <input
-                  type="file"
-                  className="absolute inset-0 cursor-pointer opacity-0"
-                  accept="image/*"
-                  onChange={handleImageUpload}
+            {!isLoading ? (
+              <Avatar className="h-24 w-24">
+                <AvatarImage
+                  src={
+                    userDetailForm.watch("profilePreview") ||
+                    userInfo?.profile ||
+                    ""
+                  }
+                  alt={userInfo?.name}
                 />
+                <AvatarFallback className="bg-muted">
+                  {userInfo?.name?.charAt(0) || "U"}
+                </AvatarFallback>
+              </Avatar>
+            ) : (
+              <Skeleton className="h-24 w-24 rounded-full" />
+            )}
+
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="default"
+                className="relative"
+                onClick={() => {
+                  const input = document.createElement("input");
+                  input.type = "file";
+                  input.accept = "image/*";
+                  input.onchange = (event) => {
+                    handleImageUpload(
+                      event as unknown as React.ChangeEvent<HTMLInputElement>,
+                    );
+                  };
+                  input.click();
+                }}
+              >
+                <Upload className="h-4 w-4" />
+                Upload Image
               </Button>
               {userDetailForm.watch("profile") && (
                 <Button
                   variant="outline"
-                  onClick={() => userDetailForm.setValue("profile", null)}
+                  onClick={() => {
+                    userDetailForm.setValue("profile", null);
+                    userDetailForm.setValue("profilePreview", null);
+                  }}
                 >
                   Remove
                 </Button>
@@ -174,6 +195,7 @@ const ProfileAndSecurity = ({
             <CustomForm.Button
               type="submit"
               className="mt-4"
+              state={isLoading ? "loading" : "default"}
               disabled={
                 !userDetailForm.formState.isDirty &&
                 !userDetailForm.watch("profile")
