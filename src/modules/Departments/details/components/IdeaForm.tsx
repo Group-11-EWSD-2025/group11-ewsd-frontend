@@ -49,7 +49,7 @@ export default function IdeaForm() {
     mutationConfig: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["getIdeas"],
+          queryKey: ["getIdeaList"],
         });
         toast({ title: "Idea created successfully" });
         hideDialog();
