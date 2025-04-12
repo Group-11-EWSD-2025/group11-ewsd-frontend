@@ -17,8 +17,8 @@ import IdeaForm from "@/modules/Departments/details/components/IdeaForm";
 import IdeaListView from "@/modules/Departments/details/components/IdeaListView";
 import { useDepartmentRedirect } from "@/modules/Departments/hooks/useDepartmentRedirect";
 import { format, parseISO } from "date-fns";
-import { Bell, Download } from "lucide-react";
-import { useQueryState } from "nuqs";
+import { Bell, Download, Loader2 } from "lucide-react";
+import { parseAsString, useQueryState } from "nuqs";
 import { useEffect } from "react";
 
 const tabs = [
@@ -48,20 +48,27 @@ export type Filter = {
 };
 
 const DepartmentDetails = () => {
-  const { redirectDepartment } = useDepartmentRedirect();
   const { checkFeatureAvailability } = useAuthorize();
+  const { isDepartmentListLoading, redirectDepartment } =
+    useDepartmentRedirect();
   const [, setTab] = useQueryState("tab", {
     defaultValue: "latest",
   });
-  const [startDate, setStartDate] = useQueryState("startDate", {
-    defaultValue: format(new Date(), "yyyy-MM-dd"),
-  });
-  const [endDate, setEndDate] = useQueryState("endDate", {
-    defaultValue: format(new Date(), "yyyy-MM-dd"),
-  });
+  const [startDate, setStartDate] = useQueryState(
+    "startDate",
+    parseAsString.withDefault(format(new Date(), "yyyy-MM-dd")),
+  );
+  const [endDate, setEndDate] = useQueryState(
+    "endDate",
+    parseAsString.withDefault(format(new Date(), "yyyy-MM-dd")),
+  );
   const [, setCategoryId] = useQueryState("categoryId", {
     defaultValue: "",
   });
+
+  useEffect(() => {
+    redirectDepartment();
+  }, [redirectDepartment]);
 
   const IS_SHOW_EXPORT_DATA_BUTTON =
     IS_FINAL_CLOSURE_DATE && checkFeatureAvailability(FEATURES.EXPORT_DATA);
@@ -78,10 +85,6 @@ const DepartmentDetails = () => {
       },
     });
 
-  useEffect(() => {
-    redirectDepartment();
-  }, [redirectDepartment]);
-
   function handleExportData() {
     showDialog({
       title: "Export All Data",
@@ -96,6 +99,14 @@ const DepartmentDetails = () => {
       title: "Create New Idea",
       children: <IdeaForm />,
     });
+  }
+
+  if (isDepartmentListLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Loader2 className="animate-spin" size={24} />
+      </div>
+    );
   }
 
   return (
@@ -121,12 +132,12 @@ const DepartmentDetails = () => {
             <div className="h-10">
               <DateRangePicker
                 value={{
-                  from: parseISO(startDate),
-                  to: parseISO(endDate),
+                  from: startDate ? parseISO(startDate) : new Date(),
+                  to: endDate ? parseISO(endDate) : new Date(),
                 }}
                 onChange={(value) => {
-                  setStartDate(format(value.from ?? new Date(), "yyyy-MM-dd"));
-                  setEndDate(format(value.to ?? new Date(), "yyyy-MM-dd"));
+                  setStartDate(format(value?.from ?? new Date(), "yyyy-MM-dd"));
+                  setEndDate(format(value?.to ?? new Date(), "yyyy-MM-dd"));
                 }}
               />
             </div>
@@ -151,9 +162,11 @@ const DepartmentDetails = () => {
                 </SelectContent>
               </Select>
             )}
-            <Button type="button" onClick={handleCreateNewIdea}>
-              Create New Idea
-            </Button>
+            {checkFeatureAvailability(FEATURES.CREATE_IDEA) && (
+              <Button type="button" onClick={handleCreateNewIdea}>
+                Create New Idea
+              </Button>
+            )}
           </div>
         </div>
 

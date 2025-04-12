@@ -1,14 +1,32 @@
+import { useAuth } from "@/context/AuthContext";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { useGetDepartmentList } from "@/modules/Departments/api/queryGetDepartmentList";
+import { TDepartment } from "@/types/departments";
 import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export function useDepartmentRedirect() {
-  const { id } = useParams();
+  const { id: departmentId } = useParams();
   const navigate = useNavigate();
-  const departmentId = id;
+  const { authState } = useAuth();
 
-  const getDepartmentList = useGetDepartmentList({});
+  const getDepartmentList = useGetDepartmentList({
+    params: {
+      userId: authState.userData.id,
+    },
+  });
+
+  function isDepartmentIdValid(departmentId: string) {
+    if (
+      departmentId &&
+      !getDepartmentList.data?.data.body.some(
+        (dept: TDepartment) => dept.id.toString() === departmentId,
+      )
+    ) {
+      return false;
+    }
+    return true;
+  }
 
   const redirectDepartment = useCallback(() => {
     if (!!getDepartmentList.data?.data.meta.status) {
@@ -17,21 +35,29 @@ export function useDepartmentRedirect() {
         navigate(PrivatePageEndPoints.departments.notFound.path);
       } else {
         setTimeout(() => {
-          navigate(
-            !!departmentId
-              ? `${PrivatePageEndPoints.departments.details.root.path.replace(
-                  ":id",
-                  departmentId,
-                )}`
-              : `${PrivatePageEndPoints.departments.details.root.path.replace(
-                  ":id",
-                  departments[0].id,
-                )}`,
-          );
+          if (!!departmentId && isDepartmentIdValid(departmentId)) {
+            navigate(
+              `${PrivatePageEndPoints.departments.details.root.path.replace(
+                ":id",
+                departmentId,
+              )}`,
+            );
+          } else {
+            navigate(
+              `${PrivatePageEndPoints.departments.details.root.path.replace(
+                ":id",
+                departments[0].id,
+              )}`,
+            );
+          }
         }, 100);
       }
     }
   }, [getDepartmentList.data]);
 
-  return { redirectDepartment };
+  return {
+    isDepartmentListLoading: getDepartmentList.isLoading,
+    isDepartmentIdValid,
+    redirectDepartment,
+  };
 }

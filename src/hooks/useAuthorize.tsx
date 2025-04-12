@@ -6,6 +6,8 @@ import { ChartLine, Tags, Users } from "lucide-react";
 export const FEATURES = {
   ACADEMIC_YEAR_SETTING: "ACADEMIC_YEAR_SETTING",
   EXPORT_DATA: "EXPORT_DATA",
+  CREATE_DEPARTMENT: "CREATE_DEPARTMENT",
+  CREATE_IDEA: "CREATE_IDEA",
 } as const;
 
 const MAIN_NAV_ITEMS = {
@@ -47,7 +49,11 @@ export const ROLES: Role[] = [
     value: "admin",
     label: "Admin",
     description: "Admin role",
-    features: [FEATURES.ACADEMIC_YEAR_SETTING, FEATURES.EXPORT_DATA],
+    features: [
+      FEATURES.ACADEMIC_YEAR_SETTING,
+      FEATURES.EXPORT_DATA,
+      FEATURES.CREATE_DEPARTMENT,
+    ],
     authorizedEndpoints: excludedRoutes([
       PrivatePageEndPoints.categories.path,
     ]).map((route) => route.path),
@@ -70,8 +76,12 @@ export const ROLES: Role[] = [
     value: "staff",
     label: "Staff",
     description: "Staff role",
-    features: [],
-    authorizedEndpoints: [],
+    features: [FEATURES.CREATE_IDEA],
+    authorizedEndpoints: excludedRoutes([
+      PrivatePageEndPoints.categories.path,
+      PrivatePageEndPoints.insights.path,
+      PrivatePageEndPoints.users.path,
+    ]).map((route) => route.path),
   },
 ];
 

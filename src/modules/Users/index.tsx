@@ -40,6 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -305,48 +306,42 @@ const Users = () => {
             <PopoverTrigger>
               <MoreVertical className="h-4 w-4 cursor-pointer" />
             </PopoverTrigger>
-            <PopoverContent
-              align="end"
-              className="flex w-[186px] flex-col divide-y divide-gray-200 p-1"
-            >
-              {!isAdmin ? (
+            <PopoverContent align="end" className="flex w-[186px] flex-col p-1">
+              {isAdmin ? (
                 <>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleViewLoginActivity(row.original)}
-                      className="w-full justify-start rounded-none p-2"
-                    >
-                      <Laptop className="size-4 text-slate-700" />
-                      View Login Activity
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleEditUser(row.original)}
-                      className="w-full justify-start rounded-none p-2"
-                    >
-                      <Pencil className="size-4 text-slate-700" />
-                      Edit User
-                    </Button>
-                  </div>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleDeleteUser(row.original)}
-                      className="w-full justify-start rounded-none p-2"
-                    >
-                      <Trash className="text-destructive size-4" />
-                      <p className="text-destructive">Delete User</p>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleDisableUser(row.original)}
-                      className="w-full justify-start rounded-none p-2"
-                    >
-                      <UserX className="size-4 text-slate-700" />
-                      Disable User
-                    </Button>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleViewLoginActivity(row.original)}
+                    className="w-full justify-start rounded-none p-2"
+                  >
+                    <Laptop className="size-4 text-slate-700" />
+                    View Login Activity
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleEditUser(row.original)}
+                    className="w-full justify-start rounded-none p-2"
+                  >
+                    <Pencil className="size-4 text-slate-700" />
+                    Edit User
+                  </Button>
+                  <Separator />
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleDisableUser(row.original)}
+                    className="w-full justify-start rounded-none p-2"
+                  >
+                    <UserX className="size-4 text-slate-700" />
+                    Disable User
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleDeleteUser(row.original)}
+                    className="w-full justify-start rounded-none p-2"
+                  >
+                    <Trash className="text-destructive size-4" />
+                    <p className="text-destructive">Delete User</p>
+                  </Button>
                 </>
               ) : (
                 <Button

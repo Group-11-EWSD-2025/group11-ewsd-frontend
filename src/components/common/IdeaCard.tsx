@@ -5,7 +5,9 @@ import ReportButton from "@/components/common/ReportButton";
 import Tag from "@/components/common/Tag";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
+import { getInitials } from "@/lib/utils";
 import { TIdea } from "@/types/idea";
+import { formatDistanceToNow } from "date-fns";
 import {
   ChevronRight,
   MessageCircle,
@@ -22,20 +24,26 @@ const sampleImages = [
 const sampleAttachments = ["file-1.pdf", "file-2.pdf"];
 
 export const IdeaCard = ({ idea }: { idea: TIdea }) => {
-  console.log(idea);
   return (
     <div className="border-border-weak space-y-8 rounded-xl border bg-white p-4 lg:p-5">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-x-2">
-            <Tag content="#Label" />
+            <Tag content={`#${idea.category?.name}`} />
           </div>
-          <div className="flex items-center gap-x-6">
+          <div className="flex items-center gap-x-2">
             <ReportButton />
             <IdeaCardPopover />
           </div>
         </div>
-        <p className="text-text-strong">{idea.content}</p>
+        <Link
+          to={`${PrivatePageEndPoints.departments.details.ideaDetails.path
+            .replace(":id", idea.department_id)
+            .replace(":ideaId", idea.id)}`}
+          className="flex cursor-pointer items-center gap-x-2"
+        >
+          <p className="text-text-strong">{idea.content}</p>
+        </Link>
         {idea.files.length > 0 && (
           <div className="space-y-2">
             <p className="text-brand text-sm">Attached with</p>
@@ -55,13 +63,21 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
       </div>
       <div className="flex flex-col gap-4 md:flex-row md:justify-between">
         <div className="flex items-center gap-x-3">
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
+          <Avatar className="border-border-weak border">
+            <AvatarImage
+              src={idea.privacy === "anonymous" ? "" : idea.user.profile}
+            />
+            <AvatarFallback>{getInitials(idea.user.name)}</AvatarFallback>
           </Avatar>
           <p className="text-text-strong text-sm font-medium">
-            Phyo Hein
-            <span className="text-brand"> ∙ 1 min ago</span>
+            {idea.privacy === "anonymous" ? "Anonymous" : idea.user.name}
+            <span className="text-brand">
+              {" "}
+              ∙{" "}
+              {formatDistanceToNow(new Date(idea.created_at), {
+                addSuffix: true,
+              })}
+            </span>
           </p>
         </div>
         <div className="flex items-center gap-x-6">
@@ -75,8 +91,8 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
           </div>
           <Link
             to={`${PrivatePageEndPoints.departments.details.ideaDetails.path
-              .replace(":id", "1")
-              .replace(":ideaId", "1")}`}
+              .replace(":id", idea.department_id)
+              .replace(":ideaId", idea.id)}`}
             className="flex cursor-pointer items-center gap-x-2"
           >
             <MessageCircle size={20} />

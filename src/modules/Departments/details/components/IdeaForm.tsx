@@ -100,6 +100,7 @@ export default function IdeaForm() {
           field={{
             label: "Idea Message",
             name: "content",
+            required: true,
           }}
         />
 
@@ -107,6 +108,7 @@ export default function IdeaForm() {
           field={{
             label: "Category",
             name: "category_id",
+            required: true,
             placeholder: "Select a category",
             options:
               categoriesResponse?.body?.data?.map((category) => ({
@@ -148,6 +150,7 @@ export default function IdeaForm() {
         <CustomForm.Button
           disabled={!ideaForm.getValues("agree-terms-conditions")}
           type="submit"
+          state={createIdea.isPending ? "loading" : "default"}
         >
           Submit
         </CustomForm.Button>

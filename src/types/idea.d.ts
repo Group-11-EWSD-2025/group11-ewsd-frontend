@@ -1,13 +1,45 @@
 export type TIdea = {
   id: string;
   category_id: string;
+  category: {
+    id: number;
+    name: string;
+    created_at: string;
+    updated_at: string;
+  };
   department_id: string;
+  department: {
+    id: number;
+    name: string;
+    created_at: string;
+    updated_at: string;
+  };
   user_id: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    email_verified_at: string;
+    role: string;
+    created_at: string;
+    updated_at: string;
+    phone: string;
+    profile: string;
+  };
   content: string;
   status: string;
   privacy: string;
   views: number;
   academic_year_id: string;
+  academic_year: {
+    id: number;
+    start_date: string;
+    end_date: string;
+    idea_submission_deadline: string;
+    final_closure_date: string;
+    created_at: string;
+    updated_at: string;
+  };
   created_at: string;
   updated_at: string;
   files: {

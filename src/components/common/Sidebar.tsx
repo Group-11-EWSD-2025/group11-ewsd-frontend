@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
-import { useAuthorize } from "@/hooks/useAuthorize";
+import { FEATURES, useAuthorize } from "@/hooks/useAuthorize";
 import { cn, showDialog } from "@/lib/utils";
 import { useGetDepartmentList } from "@/modules/Departments/api/queryGetDepartmentList";
 import DepartmentForm from "@/modules/Departments/components/DepartmentForm";
@@ -23,7 +23,8 @@ type SidebarItem = {
 
 const Sidebar = ({ setIsSidebarOpen }: Props) => {
   const currentPath = useLocation().pathname;
-  const { logout } = useAuth();
+  const { authState, logout } = useAuth();
+  const { checkFeatureAvailability } = useAuthorize();
 
   const { roleNavItems } = useAuthorize();
 
@@ -49,6 +50,9 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
   };
 
   const getDepartmentList = useGetDepartmentList({
+    params: {
+      userId: authState.userData.id,
+    },
     queryConfig: {
       retry: false,
     },
@@ -109,14 +113,16 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
               </Link>
             ))
           )}
-          <Button
-            variant="ghost"
-            className="justify-start gap-x-2.5 px-2 text-base font-normal"
-            onClick={handleCreateDepartment}
-          >
-            <Plus size={20} className="text-brand" />
-            <p className="text-brand">Create New</p>
-          </Button>
+          {checkFeatureAvailability(FEATURES.ACADEMIC_YEAR_SETTING) && (
+            <Button
+              variant="ghost"
+              className="justify-start gap-x-2.5 px-2 text-base font-normal"
+              onClick={handleCreateDepartment}
+            >
+              <Plus size={20} className="text-brand" />
+              <p className="text-brand">Create New</p>
+            </Button>
+          )}
         </div>
         <div className="flex flex-col gap-y-1 p-2">
           {SIDEBAR_ITEMS[0].map((item) => (
