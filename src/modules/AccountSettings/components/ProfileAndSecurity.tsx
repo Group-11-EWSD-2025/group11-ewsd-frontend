@@ -14,6 +14,7 @@ const userInfoSchema = z.object({
   role: z.string().min(1, { message: "Role is required" }),
   phone: z.string().min(3, { message: "Phone number is required" }),
   profile: z.instanceof(File).nullable(),
+  profilePreview: z.string().nullable(),
 });
 
 export type UserDetailFormInputs = z.infer<typeof userInfoSchema>;
@@ -43,6 +44,7 @@ const ProfileAndSecurity = ({
       role: userInfo?.role || "",
       phone: userInfo?.phone || "",
       profile: null,
+      profilePreview: userInfo?.profile || null,
     },
   });
 
@@ -55,6 +57,7 @@ const ProfileAndSecurity = ({
         role: userInfo.role,
         phone: userInfo.phone,
         profile: null,
+        profilePreview: userInfo.profile,
       });
     }
   }, [userInfo]);
@@ -65,6 +68,8 @@ const ProfileAndSecurity = ({
       const reader = new FileReader();
       reader.onloadend = () => {
         userDetailForm.setValue("profile", file);
+        const imageUrl = reader.result as string;
+        userDetailForm.setValue("profilePreview", imageUrl);
       };
       reader.readAsDataURL(file);
     }
@@ -81,7 +86,14 @@ const ProfileAndSecurity = ({
         <div className="space-y-6">
           <div className="flex items-center gap-4">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={userInfo?.profile || ""} alt={userInfo?.name} />
+              <AvatarImage
+                src={
+                  userDetailForm.watch("profilePreview") ||
+                  userInfo?.profile ||
+                  ""
+                }
+                alt={userInfo?.name}
+              />
               <AvatarFallback className="bg-muted">
                 {userInfo?.name?.charAt(0) || "U"}
               </AvatarFallback>
@@ -155,8 +167,6 @@ const ProfileAndSecurity = ({
                   type: "tel",
                   placeholder: "Enter your phone number",
                   required: true,
-                  disabled: true,
-                  className: "opacity-70",
                 }}
               />
             </div>
@@ -164,7 +174,10 @@ const ProfileAndSecurity = ({
             <CustomForm.Button
               type="submit"
               className="mt-4"
-              disabled={!userDetailForm.formState.isDirty}
+              disabled={
+                !userDetailForm.formState.isDirty &&
+                !userDetailForm.watch("profile")
+              }
             >
               Save Changes
             </CustomForm.Button>
