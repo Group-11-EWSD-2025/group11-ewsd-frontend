@@ -35,14 +35,7 @@ export function useDepartmentRedirect() {
         navigate(PrivatePageEndPoints.departments.notFound.path);
       } else {
         setTimeout(() => {
-          if (!!departmentId && isDepartmentIdValid(departmentId)) {
-            navigate(
-              `${PrivatePageEndPoints.departments.details.root.path.replace(
-                ":id",
-                departmentId,
-              )}`,
-            );
-          } else {
+          if (!departmentId || !isDepartmentIdValid(departmentId)) {
             navigate(
               `${PrivatePageEndPoints.departments.details.root.path.replace(
                 ":id",

@@ -19,7 +19,7 @@ import { useDepartmentRedirect } from "@/modules/Departments/hooks/useDepartment
 import { format, parseISO } from "date-fns";
 import { Bell, Download, Loader2 } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 const tabs = [
   {
@@ -51,9 +51,10 @@ const DepartmentDetails = () => {
   const { checkFeatureAvailability } = useAuthorize();
   const { isDepartmentListLoading, redirectDepartment } =
     useDepartmentRedirect();
-  const [, setTab] = useQueryState("tab", {
-    defaultValue: "latest",
-  });
+  const [tab, setTab] = useQueryState(
+    "tab",
+    parseAsString.withDefault("latest"),
+  );
   const [startDate, setStartDate] = useQueryState(
     "startDate",
     parseAsString.withDefault(format(new Date(), "yyyy-MM-dd")),
@@ -62,9 +63,20 @@ const DepartmentDetails = () => {
     "endDate",
     parseAsString.withDefault(format(new Date(), "yyyy-MM-dd")),
   );
-  const [, setCategoryId] = useQueryState("categoryId", {
-    defaultValue: "",
-  });
+  const [categoryId, setCategoryId] = useQueryState(
+    "categoryId",
+    parseAsString.withDefault(""),
+  );
+
+  const isUsingParams = useMemo(() => {
+    return (
+      !!categoryId ||
+      !!startDate ||
+      startDate !== format(new Date(), "yyyy-MM-dd") ||
+      !!endDate ||
+      endDate !== format(new Date(), "yyyy-MM-dd")
+    );
+  }, [categoryId, startDate, endDate]);
 
   useEffect(() => {
     redirectDepartment();
@@ -101,6 +113,12 @@ const DepartmentDetails = () => {
     });
   }
 
+  function handleResetFilters() {
+    setStartDate("");
+    setEndDate("");
+    setCategoryId("");
+  }
+
   if (isDepartmentListLoading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -111,7 +129,7 @@ const DepartmentDetails = () => {
 
   return (
     <div>
-      <Tabs defaultValue="latest" className="w-full space-y-2">
+      <Tabs defaultValue={tab} className="w-full space-y-2">
         <div className="border-border-weak fixed top-[var(--topbar-height)] z-10 flex h-[var(--topbar-height)] w-[calc(100%-var(--sidebar-width))] justify-between gap-2 border-y border-b-0 bg-[#FEFEFE] px-4 md:items-center">
           <TabsList className="bg-background flex">
             {tabs.map((tabItem) => (
@@ -146,6 +164,7 @@ const DepartmentDetails = () => {
               <Skeleton className="h-10 w-24" />
             ) : (
               <Select
+                value={categoryId}
                 onValueChange={(value) => {
                   setCategoryId(value);
                 }}
@@ -155,12 +174,24 @@ const DepartmentDetails = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {categoriesResponse?.body.data.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
+                    <SelectItem
+                      key={category.id.toString()}
+                      value={category.id.toString()}
+                    >
                       {category.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+            )}
+            {isUsingParams && (
+              <Button
+                variant="outline"
+                type="button"
+                onClick={handleResetFilters}
+              >
+                Reset Filters
+              </Button>
             )}
             {checkFeatureAvailability(FEATURES.CREATE_IDEA) && (
               <Button type="button" onClick={handleCreateNewIdea}>

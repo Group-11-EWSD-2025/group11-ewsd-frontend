@@ -9,13 +9,14 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { showDialog } from "@/lib/utils";
 import IdeaForm from "@/modules/Departments/details/components/IdeaForm";
+import { TIdea } from "@/types/idea";
 import { Pencil } from "lucide-react";
 
-function IdeaCardPopover() {
+function IdeaCardPopover({ idea }: { idea: TIdea }) {
   function handleEditIdea() {
     showDialog({
       title: "Edit Idea",
-      children: <IdeaForm />,
+      children: <IdeaForm idea={idea} />,
     });
   }
 

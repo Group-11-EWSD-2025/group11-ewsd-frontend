@@ -4,6 +4,7 @@ import IdeaImgCard from "@/components/common/IdeaImgCard";
 import ReportButton from "@/components/common/ReportButton";
 import Tag from "@/components/common/Tag";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { getInitials } from "@/lib/utils";
 import { TIdea } from "@/types/idea";
@@ -15,15 +16,25 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Skeleton } from "../ui/skeleton";
 
-const sampleImages = [
-  "https://images.unsplash.com/photo-1597684018919-b68344127b5f?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDF8fHxlbnwwfHx8fHw%3D",
+const imgTypesExtensions = ["jpg", "jpeg", "png", "gif", "svg", "webp"];
+const attachmentTypesExtensions = [
+  "pdf",
+  "doc",
+  "docx",
+  "xls",
+  "xlsx",
+  "ppt",
+  "pptx",
 ];
 
-const sampleAttachments = ["file-1.pdf", "file-2.pdf"];
-
 export const IdeaCard = ({ idea }: { idea: TIdea }) => {
+  function isImage(file: string) {
+    return imgTypesExtensions.includes(file.split(".").pop() || "");
+  }
+  function isAttachment(file: string) {
+    return attachmentTypesExtensions.includes(file.split(".").pop() || "");
+  }
   return (
     <div className="border-border-weak space-y-8 rounded-xl border bg-white p-4 lg:p-5">
       <div className="space-y-4">
@@ -31,9 +42,9 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
           <div className="flex items-center gap-x-2">
             <Tag content={`#${idea.category?.name}`} />
           </div>
-          <div className="flex items-center gap-x-2">
+          <div className="flex items-center gap-x-4">
             <ReportButton />
-            <IdeaCardPopover />
+            <IdeaCardPopover idea={idea} />
           </div>
         </div>
         <Link
@@ -48,14 +59,18 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
           <div className="space-y-2">
             <p className="text-brand text-sm">Attached with</p>
             <div className="grid grid-cols-4 items-center gap-x-2">
-              {sampleImages.map((image, index) => (
-                <IdeaImgCard key={`img-${index}`} image={image} />
-              ))}
-              {sampleAttachments.map((attachment, index) => (
-                <IdeaAttachmentCard
-                  key={`attachment-${index}`}
-                  attachment={attachment}
-                />
+              {idea.files.map((file, index) => (
+                <div key={`file-${index}`}>
+                  {isImage(file.file) && (
+                    <IdeaImgCard key={`img-${index}`} image={file.file} />
+                  )}
+                  {isAttachment(file.file) && (
+                    <IdeaAttachmentCard
+                      key={`attachment-${index}`}
+                      attachment={file.file}
+                    />
+                  )}
+                </div>
               ))}
             </div>
           </div>
@@ -67,7 +82,11 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
             <AvatarImage
               src={idea.privacy === "anonymous" ? "" : idea.user.profile}
             />
-            <AvatarFallback>{getInitials(idea.user.name)}</AvatarFallback>
+            <AvatarFallback>
+              {idea.privacy === "anonymous"
+                ? "AN"
+                : getInitials(idea.user.name)}
+            </AvatarFallback>
           </Avatar>
           <p className="text-text-strong text-sm font-medium">
             {idea.privacy === "anonymous" ? "Anonymous" : idea.user.name}

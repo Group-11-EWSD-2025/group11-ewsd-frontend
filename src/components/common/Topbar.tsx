@@ -1,10 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/context/AuthContext";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
+import { FEATURES, useAuthorize } from "@/hooks/useAuthorize";
+import { getInitials } from "@/lib/utils";
 import { useGetDepartmentDetails } from "@/modules/Departments/api/queryGetDepartmentDetails";
-import { Bell, ChevronLeft, Menu, Settings } from "lucide-react";
+import { ChevronLeft, Menu, Settings } from "lucide-react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { Button } from "../ui/button";
-import { Skeleton } from "../ui/skeleton";
 
 type Props = {
   setIsSidebarOpen: (isSidebarOpen: boolean) => void;
@@ -14,6 +17,8 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
   const { id, ideaId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { checkFeatureAvailability } = useAuthorize();
+  const { authState } = useAuth();
   const pathname = location.pathname;
 
   const getDepartmentDetails = useGetDepartmentDetails({
@@ -108,21 +113,24 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
           <h1 className="text-xl font-medium">{header()}</h1>
         </div>
         <div className="flex items-center gap-x-7">
-          {isDepartmentDetailsRoute() && (
-            <Link
-              to={`${PrivatePageEndPoints.departments.details.settings.path.replace(
-                ":id",
-                id ?? "",
-              )}`}
-              className="hover:bg-foreground/5 flex cursor-pointer items-center gap-x-2 rounded-md p-2 transition-colors duration-200"
-            >
-              <Settings size={20} />
-              <p>Department Settings</p>
-            </Link>
-          )}
+          {isDepartmentDetailsRoute() &&
+            checkFeatureAvailability(FEATURES.DEPARTMENT_SETTING) && (
+              <Link
+                to={`${PrivatePageEndPoints.departments.details.settings.path.replace(
+                  ":id",
+                  id ?? "",
+                )}`}
+                className="hover:bg-foreground/5 flex cursor-pointer items-center gap-x-2 rounded-md p-2 transition-colors duration-200"
+              >
+                <Settings size={20} />
+                <p>Department Settings</p>
+              </Link>
+            )}
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarImage src={authState?.userData.profile ?? ""} />
+            <AvatarFallback>
+              {getInitials(authState?.userData.name)}
+            </AvatarFallback>
           </Avatar>
         </div>
       </div>
@@ -139,19 +147,23 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
             onClick={() => setIsSidebarOpen(true)}
           />
           <div className="flex items-center gap-x-4">
-            <Link
-              to={`${PrivatePageEndPoints.departments.details.settings.path.replace(
-                ":id",
-                id ?? "",
-              )}`}
-              className="hover:bg-foreground/5 flex cursor-pointer items-center gap-x-2 rounded-md p-2 transition-colors duration-200"
-            >
-              <Settings size={20} />
-            </Link>
-            <Bell size={20} />
+            {isDepartmentDetailsRoute() &&
+              checkFeatureAvailability(FEATURES.DEPARTMENT_SETTING) && (
+                <Link
+                  to={`${PrivatePageEndPoints.departments.details.settings.path.replace(
+                    ":id",
+                    id ?? "",
+                  )}`}
+                  className="hover:bg-foreground/5 flex cursor-pointer items-center gap-x-2 rounded-md p-2 transition-colors duration-200"
+                >
+                  <Settings size={20} />
+                </Link>
+              )}
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={authState?.userData.profile ?? ""} />
+              <AvatarFallback>
+                {getInitials(authState?.userData.name)}
+              </AvatarFallback>
             </Avatar>
           </div>
         </div>

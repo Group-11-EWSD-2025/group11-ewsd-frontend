@@ -116,7 +116,8 @@ export const Pagination: React.FC<PaginationProps> = ({
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            Previous
+            <ChevronLeft size={16} />
+            <p className="text-sm">Previous</p>
           </Button>
           <Button
             variant="outline"
@@ -124,7 +125,8 @@ export const Pagination: React.FC<PaginationProps> = ({
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages || totalPages === 0}
           >
-            Next
+            <p className="text-sm">Next</p>
+            <ChevronRight size={16} />
           </Button>
         </div>
       </div>

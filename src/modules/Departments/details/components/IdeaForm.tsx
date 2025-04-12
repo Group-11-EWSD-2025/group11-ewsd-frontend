@@ -5,6 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { hideDialog } from "@/lib/utils";
 import { useGetCategoryList } from "@/modules/Categories/api/queryGetCategoryList";
+import { TIdea } from "@/types/idea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { PaperclipIcon } from "lucide-react";
@@ -21,18 +22,22 @@ const ideaSchema = z.object({
 });
 export type IdeaFormInputs = z.infer<typeof ideaSchema>;
 
-export default function IdeaForm() {
+export default function IdeaForm({ idea }: { idea?: TIdea }) {
   const queryClient = useQueryClient();
   const ideaForm = useForm<IdeaFormInputs>({
     resolver: zodResolver(ideaSchema),
     defaultValues: {
-      privacy: "public",
-      content: "",
-      category_id: "",
+      privacy:
+        (idea?.privacy as "public" | "anonymous" | undefined) ?? "public",
+      content: idea?.content ?? "",
+      category_id: idea?.category_id.toString() ?? "",
       "agree-terms-conditions": false,
-      files: [],
+      files: idea?.files.map((file) => new File([file.file], file.file)) ?? [],
     },
   });
+
+  console.log(idea?.files.map((file) => new File([file.file], file.file)));
+  console.log(ideaForm.getValues("files"));
 
   const { data: categoriesResponse } = useGetCategoryList({
     params: {
@@ -63,8 +68,8 @@ export default function IdeaForm() {
     formData.append("content", data.content);
     formData.append("category_id", data.category_id);
     if (data.files) {
-      data.files.forEach((file) => {
-        formData.append("files", file);
+      data.files.forEach((file, index) => {
+        formData.append(`files[${index}]`, file);
       });
     }
     createIdea.mutate(formData);

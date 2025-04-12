@@ -4,6 +4,7 @@ export type TUserData = {
   email: string;
   role: string;
   phone: string;
+  profile: string | null;
 };
 
 export type TLoginState = {

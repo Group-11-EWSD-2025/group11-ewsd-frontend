@@ -8,6 +8,7 @@ export const FEATURES = {
   EXPORT_DATA: "EXPORT_DATA",
   CREATE_DEPARTMENT: "CREATE_DEPARTMENT",
   CREATE_IDEA: "CREATE_IDEA",
+  DEPARTMENT_SETTING: "DEPARTMENT_SETTING",
 } as const;
 
 const MAIN_NAV_ITEMS = {
@@ -53,6 +54,7 @@ export const ROLES: Role[] = [
       FEATURES.ACADEMIC_YEAR_SETTING,
       FEATURES.EXPORT_DATA,
       FEATURES.CREATE_DEPARTMENT,
+      FEATURES.DEPARTMENT_SETTING,
     ],
     authorizedEndpoints: excludedRoutes([
       PrivatePageEndPoints.categories.path,
@@ -63,14 +65,16 @@ export const ROLES: Role[] = [
     label: "QA Manager",
     description: "QA Manager role",
     features: [FEATURES.EXPORT_DATA],
-    authorizedEndpoints: [],
+    authorizedEndpoints: excludedRoutes([]).map((route) => route.path),
   },
   {
     value: "qa-coordinator",
     label: "QA Coordinator",
     description: "QA Coordinator role",
     features: [FEATURES.EXPORT_DATA],
-    authorizedEndpoints: [],
+    authorizedEndpoints: excludedRoutes([
+      PrivatePageEndPoints.departments.details.settings.path,
+    ]).map((route) => route.path),
   },
   {
     value: "staff",
@@ -81,6 +85,7 @@ export const ROLES: Role[] = [
       PrivatePageEndPoints.categories.path,
       PrivatePageEndPoints.insights.path,
       PrivatePageEndPoints.users.path,
+      PrivatePageEndPoints.departments.details.settings.path,
     ]).map((route) => route.path),
   },
 ];

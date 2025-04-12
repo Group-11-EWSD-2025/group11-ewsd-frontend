@@ -14,6 +14,7 @@ export const loginState = atom<TLoginState>({
       email: "",
       role: "",
       phone: "",
+      profile: null,
     },
   },
   effects_UNSTABLE: [persistAtom],
