@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FEATURES, useAuthorize } from "@/hooks/useAuthorize";
 import { cn, showDialog } from "@/lib/utils";
 import { useGetCategoryList } from "@/modules/Categories/api/queryGetCategoryList";
 import ExportDataDialog from "@/modules/Departments/details/components/ExportDataDialog";
@@ -46,6 +47,11 @@ export type Filter = {
 
 const DepartmentDetails = () => {
   const { redirectDepartment } = useDepartmentRedirect();
+  const { checkFeatureAvailability } = useAuthorize();
+
+  const IS_SHOW_EXPORT_DATA_BUTTON =
+    IS_FINAL_CLOSURE_DATE && checkFeatureAvailability(FEATURES.EXPORT_DATA);
+
   const {
     data: categoriesResponse,
     isLoading: isLoadingCategories,
@@ -157,7 +163,7 @@ const DepartmentDetails = () => {
           </div>
         </div>
 
-        {IS_FINAL_CLOSURE_DATE && (
+        {IS_SHOW_EXPORT_DATA_BUTTON && (
           <div className="fixed top-[calc(var(--topbar-height)*2)] z-10 flex w-[calc(100%-var(--sidebar-width))] items-center justify-between gap-2 border-y bg-slate-300 px-4">
             <div className="flex gap-4 py-2">
               <div className="flex items-center">
@@ -176,10 +182,10 @@ const DepartmentDetails = () => {
         )}
         <div
           className={cn(
-            "mx-auto space-y-4 p-4 lg:mt-[var(--topbar-height)] lg:max-w-[var(--content-width)] lg:p-6",
+            "mx-auto w-full space-y-4 p-4 lg:mt-[var(--topbar-height)] lg:max-w-[var(--content-width)] lg:p-6",
             {
               "lg:mt-[calc(var(--topbar-height)+var(--notification-height))]":
-                IS_FINAL_CLOSURE_DATE,
+                IS_SHOW_EXPORT_DATA_BUTTON,
             },
           )}
         >

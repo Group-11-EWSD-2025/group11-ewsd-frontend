@@ -48,6 +48,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAuth } from "@/context/AuthContext";
 import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "@/hooks/use-toast";
 import { getInitials, hideDialog, showDialog } from "@/lib/utils";
@@ -293,54 +294,74 @@ const Users = () => {
     {
       id: "actions",
       enableHiding: false,
-      cell: ({ row }) => (
-        <Popover>
-          <PopoverTrigger>
-            <MoreVertical className="h-4 w-4 cursor-pointer" />
-          </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            className="flex w-[186px] flex-col divide-y divide-gray-200 p-1"
-          >
-            <div>
-              <Button
-                variant="ghost"
-                onClick={() => handleViewLoginActivity(row.original)}
-                className="w-full justify-start rounded-none p-2"
-              >
-                <Laptop className="size-4 text-slate-700" />
-                View Login Activity
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => handleEditUser(row.original)}
-                className="w-full justify-start rounded-none p-2"
-              >
-                <Pencil className="size-4 text-slate-700" />
-                Edit User
-              </Button>
-            </div>
-            <div>
-              <Button
-                variant="ghost"
-                onClick={() => handleDeleteUser(row.original)}
-                className="w-full justify-start rounded-none p-2"
-              >
-                <Trash className="text-destructive size-4" />
-                <p className="text-destructive">Delete User</p>
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => handleDisableUser(row.original)}
-                className="w-full justify-start rounded-none p-2"
-              >
-                <UserX className="size-4 text-slate-700" />
-                Disable User
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-      ),
+      cell: ({ row }) => {
+        const { authState } = useAuth();
+        const isAdmin = authState?.userData?.role === "admin";
+
+        if (!isAdmin) return null;
+
+        return (
+          <Popover>
+            <PopoverTrigger>
+              <MoreVertical className="h-4 w-4 cursor-pointer" />
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              className="flex w-[186px] flex-col divide-y divide-gray-200 p-1"
+            >
+              {!isAdmin ? (
+                <>
+                  <div>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleViewLoginActivity(row.original)}
+                      className="w-full justify-start rounded-none p-2"
+                    >
+                      <Laptop className="size-4 text-slate-700" />
+                      View Login Activity
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleEditUser(row.original)}
+                      className="w-full justify-start rounded-none p-2"
+                    >
+                      <Pencil className="size-4 text-slate-700" />
+                      Edit User
+                    </Button>
+                  </div>
+                  <div>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleDeleteUser(row.original)}
+                      className="w-full justify-start rounded-none p-2"
+                    >
+                      <Trash className="text-destructive size-4" />
+                      <p className="text-destructive">Delete User</p>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleDisableUser(row.original)}
+                      className="w-full justify-start rounded-none p-2"
+                    >
+                      <UserX className="size-4 text-slate-700" />
+                      Disable User
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <Button
+                  variant="ghost"
+                  onClick={() => handleDisableUser(row.original)}
+                  className="w-full justify-start rounded-none p-2"
+                >
+                  <UserX className="size-4 text-slate-700" />
+                  Disable User
+                </Button>
+              )}
+            </PopoverContent>
+          </Popover>
+        );
+      },
     },
   ];
 

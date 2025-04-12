@@ -2,20 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
+import { useAuthorize } from "@/hooks/useAuthorize";
 import { cn, showDialog } from "@/lib/utils";
 import { useGetDepartmentList } from "@/modules/Departments/api/queryGetDepartmentList";
 import DepartmentForm from "@/modules/Departments/components/DepartmentForm";
 import { TDepartment } from "@/types/departments";
-import {
-  Building2,
-  ChartLine,
-  LogOut,
-  PanelLeftClose,
-  Plus,
-  Tags,
-  User,
-  Users,
-} from "lucide-react";
+import { Building2, LogOut, PanelLeftClose, Plus, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 type Props = {
@@ -33,24 +25,10 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
   const currentPath = useLocation().pathname;
   const { logout } = useAuth();
 
+  const { roleNavItems } = useAuthorize();
+
   const SIDEBAR_ITEMS: SidebarItem[][] = [
-    [
-      {
-        icon: <Tags size={20} />,
-        label: "Categories",
-        href: PrivatePageEndPoints.categories.path,
-      },
-      {
-        icon: <ChartLine size={20} />,
-        label: "Insights",
-        href: PrivatePageEndPoints.insights.path,
-      },
-      {
-        icon: <Users size={20} />,
-        label: "Users Management",
-        href: PrivatePageEndPoints.users.path,
-      },
-    ],
+    [...(roleNavItems || [])],
     [
       {
         icon: <User size={20} />,
