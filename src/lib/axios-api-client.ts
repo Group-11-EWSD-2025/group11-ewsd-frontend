@@ -7,6 +7,7 @@ function requestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
     config.headers.Accept = "application/json";
   }
+
   const token = getLoginState().token;
 
   if (!!token) {

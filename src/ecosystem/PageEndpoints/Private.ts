@@ -3,6 +3,7 @@ import { lazy } from "react";
 
 export type PageEndpoint = {
   path: string;
+  pattern: string;
   label: string;
   component: any;
 };
@@ -19,18 +20,21 @@ type RouteStructure = {
 export const PrivatePageEndPoints = {
   root: {
     path: "/",
+    pattern: "^/$",
     label: "Home",
     component: Loadable(lazy(() => import("@/modules/Home"))),
   },
   departments: {
     notFound: {
       path: "/departments/not-found",
+      pattern: "^/departments/not-found$",
       label: "No Departments",
       component: Loadable(lazy(() => import("@/modules/Departments/NotFound"))),
     },
     details: {
       root: {
         path: "/departments/:id",
+        pattern: "^/departments/\\d+$",
         label: "Department Details",
         component: Loadable(
           lazy(() => import("@/modules/Departments/details")),
@@ -38,6 +42,7 @@ export const PrivatePageEndPoints = {
       },
       settings: {
         path: "/departments/:id/settings",
+        pattern: "^/departments/\\d+/settings$",
         label: "Department Settings",
         component: Loadable(
           lazy(() => import("@/modules/Departments/details/Settings")),
@@ -45,6 +50,7 @@ export const PrivatePageEndPoints = {
       },
       ideaDetails: {
         path: "/departments/:id/ideas/:ideaId",
+        pattern: "^/departments/\\d+/ideas/\\d+$",
         label: "Idea Details",
         component: Loadable(lazy(() => import("@/modules/Ideas/details"))),
       },
@@ -52,21 +58,25 @@ export const PrivatePageEndPoints = {
   },
   categories: {
     path: "/categories",
+    pattern: "^/categories$",
     label: "Categories",
     component: Loadable(lazy(() => import("@/modules/Categories"))),
   },
   insights: {
     path: "/insights",
+    pattern: "/insights",
     label: "Insights",
     component: Loadable(lazy(() => import("@/modules/Insights"))),
   },
   users: {
     path: "/users",
+    pattern: "/users",
     label: "Users",
     component: Loadable(lazy(() => import("@/modules/Users"))),
   },
   accountSettings: {
     path: "/account-settings",
+    pattern: "/account-settings",
     label: "Account Settings",
     component: Loadable(lazy(() => import("@/modules/AccountSettings"))),
   },

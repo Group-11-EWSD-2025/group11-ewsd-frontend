@@ -16,8 +16,10 @@ import ExportDataDialog from "@/modules/Departments/details/components/ExportDat
 import IdeaForm from "@/modules/Departments/details/components/IdeaForm";
 import IdeaListView from "@/modules/Departments/details/components/IdeaListView";
 import { useDepartmentRedirect } from "@/modules/Departments/hooks/useDepartmentRedirect";
+import { format, parseISO } from "date-fns";
 import { Bell, Download } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useQueryState } from "nuqs";
+import { useEffect } from "react";
 
 const tabs = [
   {
@@ -48,33 +50,33 @@ export type Filter = {
 const DepartmentDetails = () => {
   const { redirectDepartment } = useDepartmentRedirect();
   const { checkFeatureAvailability } = useAuthorize();
+  const [, setTab] = useQueryState("tab", {
+    defaultValue: "latest",
+  });
+  const [startDate, setStartDate] = useQueryState("startDate", {
+    defaultValue: format(new Date(), "yyyy-MM-dd"),
+  });
+  const [endDate, setEndDate] = useQueryState("endDate", {
+    defaultValue: format(new Date(), "yyyy-MM-dd"),
+  });
+  const [, setCategoryId] = useQueryState("categoryId", {
+    defaultValue: "",
+  });
 
   const IS_SHOW_EXPORT_DATA_BUTTON =
     IS_FINAL_CLOSURE_DATE && checkFeatureAvailability(FEATURES.EXPORT_DATA);
 
-  const {
-    data: categoriesResponse,
-    isLoading: isLoadingCategories,
-    refetch,
-  } = useGetCategoryList({
-    params: {
-      page: 1,
-      perPage: 1000,
-    },
-    queryConfig: {
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
-    },
-  });
-
-  const [filter, setFilter] = useState<Filter>({
-    tab: "latest",
-    dateRange: {
-      from: new Date(),
-      to: new Date(),
-    },
-    categoryId: "",
-  });
+  const { data: categoriesResponse, isLoading: isLoadingCategories } =
+    useGetCategoryList({
+      params: {
+        page: 1,
+        perPage: 1000,
+      },
+      queryConfig: {
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
+      },
+    });
 
   useEffect(() => {
     redirectDepartment();
@@ -101,19 +103,16 @@ const DepartmentDetails = () => {
       <Tabs defaultValue="latest" className="w-full space-y-2">
         <div className="border-border-weak fixed top-[var(--topbar-height)] z-10 flex h-[var(--topbar-height)] w-[calc(100%-var(--sidebar-width))] justify-between gap-2 border-y border-b-0 bg-[#FEFEFE] px-4 md:items-center">
           <TabsList className="bg-background flex">
-            {tabs.map((tab) => (
+            {tabs.map((tabItem) => (
               <TabsTrigger
-                key={tab.value}
-                value={tab.value}
+                key={tabItem.value}
+                value={tabItem.value}
                 className="data-[state=active]:bg-slate-100"
                 onClick={() => {
-                  setFilter({
-                    ...filter,
-                    tab: tab.value,
-                  });
+                  setTab(tabItem.value);
                 }}
               >
-                {tab.label}
+                {tabItem.label}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -121,15 +120,13 @@ const DepartmentDetails = () => {
           <div className="flex items-center gap-2">
             <div className="h-10">
               <DateRangePicker
-                value={filter.dateRange}
+                value={{
+                  from: parseISO(startDate),
+                  to: parseISO(endDate),
+                }}
                 onChange={(value) => {
-                  setFilter({
-                    ...filter,
-                    dateRange: {
-                      from: value.from ?? new Date(),
-                      to: value.to ?? new Date(),
-                    },
-                  });
+                  setStartDate(format(value.from ?? new Date(), "yyyy-MM-dd"));
+                  setEndDate(format(value.to ?? new Date(), "yyyy-MM-dd"));
                 }}
               />
             </div>
@@ -139,10 +136,7 @@ const DepartmentDetails = () => {
             ) : (
               <Select
                 onValueChange={(value) => {
-                  setFilter({
-                    ...filter,
-                    categoryId: value,
-                  });
+                  setCategoryId(value);
                 }}
               >
                 <SelectTrigger className="bg-background h-10 min-w-[180px] shadow-none">
@@ -191,7 +185,7 @@ const DepartmentDetails = () => {
         >
           {tabs.map((tab) => (
             <TabsContent key={tab.value} value={tab.value}>
-              <IdeaListView filter={filter} />
+              <IdeaListView />
             </TabsContent>
           ))}
         </div>

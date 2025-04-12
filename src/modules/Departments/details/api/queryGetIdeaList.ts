@@ -7,11 +7,13 @@ export const getIdeaList = ({
   categoryId,
   startDate,
   endDate,
+  orderBy,
 }: {
   departmentId?: string;
   categoryId?: string;
   startDate?: string;
   endDate?: string;
+  orderBy?: string;
 }) => {
   const params = new URLSearchParams();
 
@@ -19,11 +21,15 @@ export const getIdeaList = ({
   if (categoryId) params.append("category_id", categoryId);
   if (startDate) params.append("start_date", startDate);
   if (endDate) params.append("end_date", endDate);
+  if (orderBy) params.append("order_by", orderBy);
 
   const queryString = params.toString();
 
   return queryOptions({
-    queryKey: ["getIdeaList", { departmentId, categoryId, startDate, endDate }],
+    queryKey: [
+      "getIdeaList",
+      { departmentId, categoryId, startDate, endDate, orderBy },
+    ],
     queryFn: () => AXIOS_CLIENT.get(`ideas?${queryString}`),
     select: (data) => data?.data,
   });
@@ -35,6 +41,7 @@ type UseGetIdeaListOptions = {
     categoryId?: string;
     startDate?: string;
     endDate?: string;
+    orderBy?: string;
   };
   queryConfig?: QueryConfig<typeof getIdeaList>;
 };

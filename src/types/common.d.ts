@@ -20,3 +20,13 @@ export type Dialog<T = any> = {
   };
   onClose?: () => void;
 };
+
+export type Route = {
+  pattern: string;
+  path: string;
+  component: React.ComponentType;
+};
+
+export type Endpoints = {
+  [key: string]: Route | Endpoints;
+};

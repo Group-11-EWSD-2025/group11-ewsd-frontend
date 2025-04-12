@@ -22,6 +22,7 @@ const sampleImages = [
 const sampleAttachments = ["file-1.pdf", "file-2.pdf"];
 
 export const IdeaCard = ({ idea }: { idea: TIdea }) => {
+  console.log(idea);
   return (
     <div className="border-border-weak space-y-8 rounded-xl border bg-white p-4 lg:p-5">
       <div className="space-y-4">
