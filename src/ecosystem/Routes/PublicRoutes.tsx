@@ -1,5 +1,5 @@
 import { PublicPageEndPoints } from "@/ecosystem/PageEndpoints/Public";
-import { flattenRoutes } from "@/ecosystem/router";
+import { flattenRoutes } from "@/lib/utils";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 const PublicRoutes = () => {

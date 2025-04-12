@@ -1,6 +1,12 @@
 import { useAuth } from "@/context/AuthContext";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
+import { flattenRoutes } from "@/lib/utils";
 import { ChartLine, Tags, Users } from "lucide-react";
+
+export const FEATURES = {
+  ACADEMIC_YEAR_SETTING: "ACADEMIC_YEAR_SETTING",
+  EXPORT_DATA: "EXPORT_DATA",
+} as const;
 
 const MAIN_NAV_ITEMS = {
   CATEGORIES: {
@@ -20,64 +26,113 @@ const MAIN_NAV_ITEMS = {
   },
 } as const;
 
-export const FEATURES = {
-  ACADEMIC_YEAR_SETTING: "ACADEMIC_YEAR_SETTING",
-  EXPORT_DATA: "EXPORT_DATA",
-} as const;
-
-type NavItem = (typeof MAIN_NAV_ITEMS)[keyof typeof MAIN_NAV_ITEMS];
 type Feature = (typeof FEATURES)[keyof typeof FEATURES];
-export const ROLES = [
+
+interface Role {
+  value: string;
+  label: string;
+  description: string;
+  features: Feature[];
+  authorizedEndpoints: string[];
+}
+
+const excludedRoutes = (excludePaths: string[]) => {
+  return flattenRoutes(PrivatePageEndPoints).filter(
+    (route) => !excludePaths.some((path) => route.path.includes(path)),
+  );
+};
+
+export const ROLES: Role[] = [
   {
     value: "admin",
     label: "Admin",
     description: "Admin role",
-    navItems: [MAIN_NAV_ITEMS.INSIGHTS, MAIN_NAV_ITEMS.USERS],
-    features: [
-      FEATURES.ACADEMIC_YEAR_SETTING,
-      FEATURES.EXPORT_DATA,
-    ] as Feature[],
+    features: [FEATURES.ACADEMIC_YEAR_SETTING, FEATURES.EXPORT_DATA],
+    authorizedEndpoints: excludedRoutes([
+      PrivatePageEndPoints.categories.path,
+    ]).map((route) => route.path),
   },
   {
     value: "qa-manager",
     label: "QA Manager",
     description: "QA Manager role",
-    navItems: [
-      MAIN_NAV_ITEMS.CATEGORIES,
-      MAIN_NAV_ITEMS.INSIGHTS,
-      MAIN_NAV_ITEMS.USERS,
-    ],
-    features: [FEATURES.EXPORT_DATA] as Feature[],
+    features: [FEATURES.EXPORT_DATA],
+    authorizedEndpoints: [],
   },
   {
     value: "qa-coordinator",
     label: "QA Coordinator",
     description: "QA Coordinator role",
-    navItems: [MAIN_NAV_ITEMS.INSIGHTS] as NavItem[],
-    features: [FEATURES.EXPORT_DATA] as Feature[],
+    features: [FEATURES.EXPORT_DATA],
+    authorizedEndpoints: [],
   },
   {
     value: "staff",
     label: "Staff",
     description: "Staff role",
-    navItems: [MAIN_NAV_ITEMS.INSIGHTS] as NavItem[],
-    features: [] as Feature[],
+    features: [],
+    authorizedEndpoints: [],
   },
 ];
+
+const getAllRoutePatterns = (endpoints: ReturnType<typeof flattenRoutes>) => {
+  const patterns: Array<{ path: string; pattern: string }> = [];
+
+  endpoints.forEach((route) => {
+    if (route.path && route.pattern) {
+      patterns.push({
+        path: route.path,
+        pattern: route.pattern,
+      });
+    }
+  });
+
+  return patterns;
+};
 
 export const useAuthorize = () => {
   const { authState } = useAuth();
   const role = authState?.userData?.role;
+  const currentRole = ROLES.find((r) => r.value === role);
 
-  const roleNavItems = ROLES.find((r) => r.value === role)?.navItems;
+  const checkEndpointAvailability = (pathname: string): boolean => {
+    const authorizedEndpoints = currentRole?.authorizedEndpoints;
+    if (!authorizedEndpoints?.length) return false;
 
-  const checkFeatureAvailability = (feature: Feature) => {
-    const userRole = ROLES.find((r) => r.value === role);
-    return userRole?.features?.includes(feature);
+    const flattenedRoutes = flattenRoutes(PrivatePageEndPoints);
+    const allPatterns = getAllRoutePatterns(flattenedRoutes);
+
+    return authorizedEndpoints.some((authorizedPath) => {
+      if (authorizedPath === pathname) return true;
+
+      const routeConfig = allPatterns.find((route) => {
+        if (route.path !== authorizedPath) return false;
+
+        try {
+          return new RegExp(route.pattern).test(pathname);
+        } catch (error) {
+          console.error(`Invalid pattern for path ${authorizedPath}:`, error);
+          return false;
+        }
+      });
+
+      return !!routeConfig;
+    });
+  };
+
+  const checkFeatureAvailability = (feature: Feature): boolean => {
+    return Boolean(currentRole?.features?.includes(feature));
+  };
+
+  const roleNavItems = () => {
+    return Object.values(MAIN_NAV_ITEMS).filter((route) =>
+      checkEndpointAvailability(route.href),
+    );
   };
 
   return {
-    roleNavItems,
+    roleNavItems: roleNavItems(),
+    checkEndpointAvailability,
     checkFeatureAvailability,
   };
 };

@@ -1,24 +1,41 @@
 import { IdeaCard, IdeaCardSkeleton } from "@/components/common/IdeaCard";
 import { Button } from "@/components/ui/button";
 import { showDialog } from "@/lib/utils";
-import { Filter } from "@/modules/Departments/details";
 import { useGetIdeaList } from "@/modules/Departments/details/api/queryGetIdeaList";
 import IdeaForm from "@/modules/Departments/details/components/IdeaForm";
 import { TIdea } from "@/types/idea";
+import { format } from "date-fns";
 import { File, Plus } from "lucide-react";
+import { useQueryState } from "nuqs";
 import { useParams } from "react-router-dom";
 
-type IdeaViewProps = {
-  filter: Filter;
-};
-const IdeaListView = ({ filter }: IdeaViewProps) => {
+const IdeaListView = () => {
   const { id: departmentId } = useParams();
+  const [tab] = useQueryState("tab", {
+    defaultValue: "latest",
+  });
+  const [startDate] = useQueryState("startDate", {
+    defaultValue: format(new Date(), "yyyy-MM-dd"),
+  });
+  const [endDate] = useQueryState("endDate", {
+    defaultValue: format(new Date(), "yyyy-MM-dd"),
+  });
+  const [categoryId] = useQueryState("categoryId", {
+    defaultValue: "",
+  });
+
+  const startOfDay = new Date(startDate);
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date(endDate);
+  endOfDay.setHours(23, 59, 59, 999);
+
   const { data: getIdeas, isLoading: isLoadingIdeas } = useGetIdeaList({
     params: {
-      orderBy: filter.tab === "latest" ? "created_at" : "views",
-      categoryId: filter.categoryId,
-      startDate: filter.dateRange.from.toISOString(),
-      endDate: filter.dateRange.to.toISOString(),
+      orderBy: tab === "latest" ? "created_at" : "views",
+      categoryId: categoryId,
+      startDate: startOfDay.toISOString(),
+      endDate: endOfDay.toISOString(),
       departmentId,
     },
     queryConfig: {

@@ -4,6 +4,7 @@ import { lazy } from "react";
 export const PublicPageEndPoints = {
   login: {
     path: "/login",
+    pattern: "^/login$",
     label: "Login",
     component: Loadable(lazy(() => import("@/modules/Auth/Login"))),
   },
