@@ -47,6 +47,9 @@ const AccountSettings = () => {
         toast({
           title: "Profile updated successfully",
         });
+        queryClient.invalidateQueries({
+          queryKey: ["getUserDetail", authState.userData.id],
+        });
       },
       onError: (error) => {
         toast({
