@@ -25,11 +25,12 @@ const userSchema = z.object({
     .min(3, { message: "Phone number is required" })
     .regex(/^[0-9+\-\s()]*$/, { message: "Invalid phone number format" }),
   role: z.string().min(1, { message: "Role is required" }),
-  department_id: z
-    .array(z.union([z.string(), z.number()]).transform((val) => String(val)))
-    .min(1, {
-      message: "At least one department must be selected",
-    }),
+  department_id: z.union([
+    z.string().min(1, { message: "Department is required" }),
+    z
+      .array(z.union([z.string(), z.number()]).transform((val) => String(val)))
+      .min(1, { message: "At least one department must be selected" }),
+  ]),
   password: z
     .string()
     .min(6, { message: "Password must be at least 6 characters" }),
@@ -125,7 +126,6 @@ function UserForm({ user, rolesData }: UserFormProps) {
     });
   };
 
-  console.log("form", UserForm.formState.errors);
   return (
     <CustomForm
       formMethods={UserForm}
@@ -171,16 +171,32 @@ function UserForm({ user, rolesData }: UserFormProps) {
             required: true,
           }}
         />
-        <CustomForm.MultiSelectField
-          field={{
-            label: "Assigned Department",
-            name: "department_id",
-            required: true,
-            options: departmentsOptions || [],
-            placeholder: "Select departments",
-            onValueChange: (value) => UserForm.setValue("department_id", value),
-          }}
-        />
+        {UserForm.watch("role") === "staff" ? (
+          <CustomForm.SelectField
+            field={{
+              name: "department_id",
+              label: "Assigned Department",
+              placeholder: "Select departments",
+              options: departmentsOptions,
+              required: true,
+              onChange: (e) =>
+                UserForm.setValue("department_id", e.target.value),
+            }}
+          />
+        ) : (
+          <CustomForm.MultiSelectField
+            field={{
+              label: "Assigned Department",
+              name: "department_id",
+              required: true,
+              options: departmentsOptions || [],
+              placeholder: "Select departments",
+              onValueChange: (value) =>
+                UserForm.setValue("department_id", value),
+            }}
+          />
+        )}
+
         <CustomForm.PasswordField
           field={{
             label: "Set User Password to Login",

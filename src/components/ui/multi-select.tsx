@@ -270,7 +270,7 @@ export const MultiSelect = React.forwardRef<
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="z-[1001] w-auto p-0"
+          className="z-[1000] w-auto p-0"
           align="start"
           onEscapeKeyDown={() => setIsPopoverOpen(false)}
         >
