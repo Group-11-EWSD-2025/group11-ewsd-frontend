@@ -1,23 +1,77 @@
+import CustomForm from "@/components/common/CustomForm";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Upload } from "lucide-react";
-import { useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-const ProfileAndSecurity = () => {
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [originalName] = useState("Lisa Chen");
-  const [currentName, setCurrentName] = useState("Lisa Chen");
+const userInfoSchema = z.object({
+  id: z.number().min(1, { message: "ID is required" }),
+  name: z.string().min(3, { message: "Name must be at least 3 characters" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  role: z.string().min(1, { message: "Role is required" }),
+  phone: z.string().min(3, { message: "Phone number is required" }),
+  profile: z.instanceof(File).nullable(),
+});
+
+export type UserDetailFormInputs = z.infer<typeof userInfoSchema>;
+
+interface ProfileAndSecurityProps {
+  userInfo: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    role: string;
+    profile: string | null;
+  };
+  onUpdateUserDetail: (data: UserDetailFormInputs) => void;
+}
+
+const ProfileAndSecurity = ({
+  userInfo,
+  onUpdateUserDetail,
+}: ProfileAndSecurityProps) => {
+  const userDetailForm = useForm<UserDetailFormInputs>({
+    resolver: zodResolver(userInfoSchema),
+    defaultValues: {
+      id: userInfo?.id || 0,
+      name: userInfo?.name || "",
+      email: userInfo?.email || "",
+      role: userInfo?.role || "",
+      phone: userInfo?.phone || "",
+      profile: null,
+    },
+  });
+
+  useEffect(() => {
+    if (userInfo) {
+      userDetailForm.reset({
+        id: userInfo.id,
+        name: userInfo.name,
+        email: userInfo.email,
+        role: userInfo.role,
+        phone: userInfo.phone,
+        profile: null,
+      });
+    }
+  }, [userInfo]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfileImage(reader.result as string);
+        userDetailForm.setValue("profile", file);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const onSubmit = (data: UserDetailFormInputs) => {
+    onUpdateUserDetail(data);
   };
 
   return (
@@ -27,9 +81,9 @@ const ProfileAndSecurity = () => {
         <div className="space-y-6">
           <div className="flex items-center gap-4">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={profileImage || ""} />
+              <AvatarImage src={userInfo?.profile || ""} alt={userInfo?.name} />
               <AvatarFallback className="bg-muted">
-                {currentName.charAt(0)}
+                {userInfo?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
             <div className="space-x-2">
@@ -43,60 +97,79 @@ const ProfileAndSecurity = () => {
                   onChange={handleImageUpload}
                 />
               </Button>
-              {profileImage && (
-                <Button variant="outline" onClick={() => setProfileImage(null)}>
+              {userDetailForm.watch("profile") && (
+                <Button
+                  variant="outline"
+                  onClick={() => userDetailForm.setValue("profile", null)}
+                >
                   Remove
                 </Button>
               )}
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div>
-              <label className="mb-2 block text-sm font-medium">Name</label>
-              <Input
-                placeholder="Enter your name"
-                value={currentName}
-                onChange={(e) => setCurrentName(e.target.value)}
+          <CustomForm
+            formMethods={userDetailForm}
+            onSubmit={onSubmit}
+            className="space-y-4"
+          >
+            <CustomForm.InputField
+              field={{
+                type: "hidden",
+                name: "id",
+              }}
+            />
+            <CustomForm.InputField
+              field={{
+                type: "hidden",
+                name: "role",
+                value: userInfo.role,
+              }}
+            />
+            <CustomForm.InputField
+              field={{
+                label: "Name",
+                name: "name",
+                type: "text",
+                placeholder: "Enter your name",
+                required: true,
+              }}
+            />
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <CustomForm.InputField
+                field={{
+                  label: "Email",
+                  name: "email",
+                  type: "email",
+                  placeholder: "Enter your email",
+                  required: true,
+                  disabled: true,
+                  className: "opacity-70",
+                }}
+              />
+              <CustomForm.InputField
+                field={{
+                  label: "Phone",
+                  name: "phone",
+                  type: "tel",
+                  placeholder: "Enter your phone number",
+                  required: true,
+                  disabled: true,
+                  className: "opacity-70",
+                }}
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-medium">Email</label>
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  defaultValue="john@gmail.com"
-                  disabled
-                  className="opacity-70"
-                />
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-medium">Phone</label>
-                <Input
-                  type="tel"
-                  placeholder="Enter your phone number"
-                  defaultValue="0062342332"
-                  disabled
-                  className="opacity-70"
-                />
-              </div>
-            </div>
-          </div>
-
-          <Button disabled={currentName === originalName}>Save Changes</Button>
+            <CustomForm.Button
+              type="submit"
+              className="mt-4"
+              disabled={!userDetailForm.formState.isDirty}
+            >
+              Save Changes
+            </CustomForm.Button>
+          </CustomForm>
         </div>
-      </div>
-
-      <div className="bg-card rounded-lg border p-6 shadow-sm">
-        <h2 className="mb-4 text-xl font-semibold">Password</h2>
-        <p className="text-muted-foreground mb-4">
-          For security reasons, only administrators can reset passwords. If
-          you&apos;ve forgotten your password, please contact your system
-          administrator to request a reset.
-        </p>
-        <Button variant="outline">Request Password Reset</Button>
       </div>
     </div>
   );

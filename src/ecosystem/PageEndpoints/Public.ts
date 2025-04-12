@@ -7,4 +7,9 @@ export const PublicPageEndPoints = {
     label: "Login",
     component: Loadable(lazy(() => import("@/modules/Auth/Login"))),
   },
+  resetPassword: {
+    path: "/reset-password",
+    label: "Reset Password",
+    component: Loadable(lazy(() => import("@/modules/Auth/ResetPassword"))),
+  },
 };

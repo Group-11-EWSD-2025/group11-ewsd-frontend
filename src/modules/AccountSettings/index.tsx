@@ -1,22 +1,163 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "@/hooks/use-toast";
 import { FEATURES, useAuthorize } from "@/hooks/useAuthorize";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCreateAcademicYear } from "./api/mutateCreateAcademicYear";
+import { useDeleteAcademicYear } from "./api/mutateDeleteAcademicYear";
+import { useUpdateAcademicYear } from "./api/mutateUpdateAcademicYear";
+import { useUpdateUserDetail } from "./api/mutateUpdateUserDetail";
+import { useGetAcademicYearList } from "./api/queryGetAcademicYearList";
+import { useGetUserDetail } from "./api/queryGetUserDetail";
 import Academic from "./components/Academic";
 import ProfileAndSecurity from "./components/ProfileAndSecurity";
 
+import {
+  AcademicCreateFormInputs,
+  AcademicEditFormInputs,
+} from "./components/Academic";
+import { UserDetailFormInputs } from "./components/ProfileAndSecurity";
+
 const AccountSettings = () => {
-  // Initialize dates
+  const { authState } = useAuth();
+  const queryClient = useQueryClient();
   const { checkFeatureAvailability } = useAuthorize();
+
+  const getUserDetail = useGetUserDetail({
+    id: authState.userData.id,
+    queryConfig: {
+      enabled: !!authState.userData.id,
+    },
+  });
+
+  const getAcademicYearList = useGetAcademicYearList({});
+
+  const userInfo = {
+    id: getUserDetail.data?.data.body.id || "",
+    name: getUserDetail.data?.data.body.name || "",
+    email: getUserDetail.data?.data.body.email || "",
+    phone: getUserDetail.data?.data.body.phone || "",
+    profile: getUserDetail.data?.data.body.profile || "",
+    role: getUserDetail.data?.data.body.role || "",
+  };
+
+  const updateUserDetailMutation = useUpdateUserDetail({
+    mutationConfig: {
+      onSuccess: () => {
+        toast({
+          title: "Profile updated successfully",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Failed to update profile",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  const createAcademicYearMutation = useCreateAcademicYear({
+    mutationConfig: {
+      onSuccess: () => {
+        toast({
+          title: "Academic year is created successfully",
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["academic-year-list"],
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Failed to create academic year dates",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  const updateAcademicYearMutation = useUpdateAcademicYear({
+    mutationConfig: {
+      onSuccess: () => {
+        toast({
+          title: "Academic year dates updated successfully",
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["academic-year-list"],
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Failed to update academic year dates",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  const deleteAcademicYearMutation = useDeleteAcademicYear({
+    mutationConfig: {
+      onSuccess: () => {
+        toast({
+          title: "Academic year dates is deleted successfully",
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["academic-year-list"],
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Failed to delete academic year.",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  const handleUpdateUserDetail = (data: UserDetailFormInputs) => {
+    updateUserDetailMutation.mutate(data);
+  };
+
+  const handleAcademicYearDelete = (id: number) => {
+    deleteAcademicYearMutation.mutate(id);
+  };
+
+  const handleUpdateAcademicYearUpdate = (data: AcademicEditFormInputs) => {
+    updateAcademicYearMutation.mutate(data);
+  };
+
+  const handleAcademicYearCreate = (data: AcademicCreateFormInputs) => {
+    createAcademicYearMutation.mutate(data);
+  };
+
+  const academicYears = getAcademicYearList.data?.data.body || [];
 
   const tabs = [
     {
       label: "Profile & Security",
       value: "profile",
-      content: <ProfileAndSecurity />,
+      content: (
+        <ProfileAndSecurity
+          userInfo={userInfo}
+          onUpdateUserDetail={handleUpdateUserDetail}
+        />
+      ),
     },
     {
       label: "Academic Year",
       value: "academic",
-      content: <Academic />,
+      content: (
+        <Academic
+          academicYears={academicYears}
+          onCreateAcademicYear={handleAcademicYearCreate}
+          onDeleteAcademicYear={handleAcademicYearDelete}
+          onUpdateAcademicYear={handleUpdateAcademicYearUpdate}
+        />
+      ),
     },
   ];
 
@@ -44,7 +185,10 @@ const AccountSettings = () => {
           ))}
         </Tabs>
       ) : (
-        <ProfileAndSecurity />
+        <ProfileAndSecurity
+          userInfo={userInfo}
+          onUpdateUserDetail={handleUpdateUserDetail}
+        />
       )}
     </div>
   );

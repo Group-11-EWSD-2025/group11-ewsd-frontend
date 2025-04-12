@@ -1,11 +1,13 @@
 import CustomForm from "@/components/common/CustomForm";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { PublicPageEndPoints } from "@/ecosystem/PageEndpoints/Public";
 import { useLogin } from "@/modules/Auth/api/mutateLogin";
 import { useGetProfile } from "@/modules/Auth/api/queryGetProfile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -22,6 +24,7 @@ export type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const { setAuthState } = useAuth();
+  const navigate = useNavigate();
   const loginForm = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -49,6 +52,7 @@ const Login = () => {
             setAuthState((prev) => ({
               ...prev,
               userData: {
+                id: res.data?.data.body.id,
                 email: res.data?.data.body.email,
                 name: res.data?.data.body.name,
                 role: res.data?.data.body.role,
@@ -116,7 +120,7 @@ const Login = () => {
             type="button"
             variant="link"
             className="w-full"
-            onClick={handleRequestPasswordReset}
+            onClick={() => navigate(PublicPageEndPoints.resetPassword.path)}
           >
             Request Password Reset
           </Button>

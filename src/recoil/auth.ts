@@ -9,6 +9,7 @@ export const loginState = atom<TLoginState>({
   default: {
     token: "",
     userData: {
+      id: "",
       name: "",
       email: "",
       role: "",
