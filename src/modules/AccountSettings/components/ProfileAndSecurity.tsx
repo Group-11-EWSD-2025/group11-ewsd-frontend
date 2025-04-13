@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, Upload } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -47,7 +47,7 @@ const ProfileAndSecurity = ({
 }: ProfileAndSecurityProps) => {
   // State
   const [currentImagePreview, setCurrentImagePreview] = useState<string | null>(
-    null,
+    userInfo?.profile || null,
   );
   const queryClient = useQueryClient();
   const { authState, setAuthState } = useAuth();
@@ -56,6 +56,15 @@ const ProfileAndSecurity = ({
   const userDetailForm = useForm<UserDetailFormInputs>({
     resolver: zodResolver(userInfoSchema),
     defaultValues: {
+      id: userInfo?.id || 0,
+      name: userInfo?.name || "",
+      email: userInfo?.email || "",
+      role: userInfo?.role || "",
+      phone: userInfo?.phone || "",
+      profile: null,
+      profilePreview: userInfo?.profile || null,
+    },
+    values: {
       id: userInfo?.id || 0,
       name: userInfo?.name || "",
       email: userInfo?.email || "",
@@ -124,21 +133,6 @@ const ProfileAndSecurity = ({
   const onSubmit = (data: UserDetailFormInputs) => {
     updateUserDetailMutation.mutate(data);
   };
-
-  useEffect(() => {
-    if (userInfo && !updateUserDetailMutation.isPending) {
-      setCurrentImagePreview(userInfo.profile);
-      userDetailForm.reset({
-        id: userInfo.id,
-        name: userInfo.name,
-        email: userInfo.email,
-        role: userInfo.role,
-        phone: userInfo.phone,
-        profile: null,
-        profilePreview: userInfo.profile,
-      });
-    }
-  }, [userInfo, updateUserDetailMutation.isPending]);
 
   // Derived values
   const isUpdating = updateUserDetailMutation.isPending || isUserDetailLoading;

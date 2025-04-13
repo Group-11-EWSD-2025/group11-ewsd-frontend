@@ -3,7 +3,9 @@ import { MutationConfig } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { IdeaFormInputs } from "../components/IdeaForm";
 
-export const updateIdea = (data: IdeaFormInputs) => {
+type UpdateIdeaData = IdeaFormInputs & { id: string };
+
+export const updateIdea = (data: UpdateIdeaData) => {
   return AXIOS_CLIENT.post(`idea/update`, data, {
     headers: { "Content-Type": "multipart/form-data" },
   });
