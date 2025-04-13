@@ -52,6 +52,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "@/hooks/use-toast";
+import { FEATURES, useAuthorize } from "@/hooks/useAuthorize";
 import { getInitials, hideDialog, showDialog } from "@/lib/utils";
 import LoginActivity from "@/modules/Users/components/LoginActivity";
 import UserForm from "@/modules/Users/components/UserForm";
@@ -65,6 +66,7 @@ import { useGetUsers } from "./api/queryGetUsers";
 const Users = () => {
   // URL search params
   const queryClient = useQueryClient();
+  const { checkFeatureAvailability } = useAuthorize();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [tableState, setTableState] = React.useState({
@@ -232,7 +234,7 @@ const Users = () => {
       },
       cell: ({ row }) => {
         const departmentsArray = row.original.departments;
-        if (!departmentsArray?.length) return <div>N/A</div>;
+        if (!departmentsArray?.length) return <div>All Departments</div>;
 
         if (departmentsArray.length === 1) {
           return <div>{departmentsArray[0]?.name ?? "N/A"}</div>;
@@ -297,9 +299,10 @@ const Users = () => {
       enableHiding: false,
       cell: ({ row }) => {
         const { authState } = useAuth();
-        const isAdmin = authState?.userData?.role === "admin";
+        const role = authState?.userData?.role;
+        const canSeeActions = role === "admin" || role === "qa-manager";
 
-        if (!isAdmin) return null;
+        if (!canSeeActions) return null;
 
         return (
           <Popover>
@@ -307,7 +310,7 @@ const Users = () => {
               <MoreVertical className="h-4 w-4 cursor-pointer" />
             </PopoverTrigger>
             <PopoverContent align="end" className="flex w-[186px] flex-col p-1">
-              {isAdmin ? (
+              {checkFeatureAvailability(FEATURES.USER_CRUD) ? (
                 <>
                   <Button
                     variant="ghost"
@@ -560,13 +563,15 @@ const Users = () => {
               ))}
             </SelectContent>
           </Select>
-          <Button
-            className="flex items-center gap-1"
-            onClick={handleCreateUser}
-          >
-            <Plus className="h-4 w-4" />
-            Create User
-          </Button>
+          {checkFeatureAvailability(FEATURES.USER_CRUD) && (
+            <Button
+              className="flex items-center gap-1"
+              onClick={handleCreateUser}
+            >
+              <Plus className="h-4 w-4" />
+              Create User
+            </Button>
+          )}
         </div>
       </div>
 

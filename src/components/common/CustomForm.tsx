@@ -80,9 +80,11 @@ CustomForm.InputField = function InputField({ field }: { field: InputProps }) {
 CustomForm.SelectField = function SelectField({
   field,
   className,
+  description,
 }: {
   field: SelectProps;
   className?: string;
+  description?: string;
 }) {
   const formMethods = useContext(FormMethodsContext);
   if (!formMethods) {
@@ -93,6 +95,7 @@ CustomForm.SelectField = function SelectField({
       hookedForm={formMethods}
       field={field}
       className={className}
+      description={description}
     />
   );
 };

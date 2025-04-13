@@ -54,7 +54,21 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
       )]: "Department Settings",
       [PrivatePageEndPoints.departments.details.ideaDetails.path
         .replace(":id", id ?? "")
-        .replace(":ideaId", ideaId ?? "")]: "Replying on Idea",
+        .replace(":ideaId", ideaId ?? "")]: (
+        <div className="flex items-center gap-x-2">
+          <Button variant="ghost" size="icon">
+            <Link
+              to={`${PrivatePageEndPoints.departments.details.root.path.replace(
+                ":id",
+                id ?? "",
+              )}`}
+            >
+              <ChevronLeft size={20} />
+            </Link>
+          </Button>
+          <p>Replying on Idea</p>
+        </div>
+      ),
       DEFAULT: getAllDirectEndpoints.find(
         (endpoint) => endpoint.path === pathname,
       )?.label,
@@ -126,12 +140,15 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
                 <p>Department Settings</p>
               </Link>
             )}
-          <Avatar>
-            <AvatarImage src={authState?.userData.profile ?? ""} />
-            <AvatarFallback>
-              {getInitials(authState?.userData.name)}
-            </AvatarFallback>
-          </Avatar>
+          <div className="flex items-center gap-x-2">
+            <Avatar className="size-10 border border-gray-200">
+              <AvatarImage src={authState?.userData.profile ?? ""} />
+              <AvatarFallback>
+                {getInitials(authState?.userData.name)}
+              </AvatarFallback>
+            </Avatar>
+            <p>{authState?.userData.name}</p>
+          </div>
         </div>
       </div>
       <div

@@ -10,20 +10,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  MoreVertical,
-  Pencil,
-  Plus,
-  SearchIcon,
-  Tag,
-  Trash,
-  X,
-} from "lucide-react";
+import { MoreVertical, Pencil, Plus, SearchIcon, Trash, X } from "lucide-react";
 import * as React from "react";
 import { useSearchParams } from "react-router-dom";
 
 import Pagination from "@/components/common/Pagination";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -165,22 +156,12 @@ const Categories = () => {
       ),
     },
     {
-      accessorKey: "ideas",
+      accessorKey: "ideas_count",
       header: () => <div className="text-gray-500">Tagged With</div>,
       cell: ({ row }) => {
-        const ideas = row.getValue("ideas") as string[] | undefined;
         return (
-          <div className="flex flex-wrap gap-1">
-            {ideas && ideas.length > 0 ? (
-              ideas.map((tag, index) => (
-                <Badge key={index} variant="outline" className="bg-blue-50">
-                  <Tag className="mr-1 h-3 w-3" />
-                  {tag}
-                </Badge>
-              ))
-            ) : (
-              <span className="text-gray-400">—</span>
-            )}
+          <div className="text-gray-600">
+            {row.getValue("ideas_count")} Idea(s)
           </div>
         );
       },

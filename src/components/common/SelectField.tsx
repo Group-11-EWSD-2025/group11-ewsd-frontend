@@ -1,5 +1,6 @@
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -30,12 +31,14 @@ export type SelectFieldProps = {
   hookedForm: UseFormReturn<any>;
   field: SelectProps;
   className?: string;
+  description?: string;
 };
 
 export const SelectField = ({
   hookedForm,
   field,
   className,
+  description,
 }: SelectFieldProps) => {
   // Get current value
   const currentValue = hookedForm.watch(field.name);
@@ -88,7 +91,10 @@ export const SelectField = ({
               </SelectContent>
             </Select>
           </FormControl>
-          <FormMessage />
+          {description && (
+            <FormDescription className="mt-2">{description}</FormDescription>
+          )}
+          <FormMessage className="mt-2" />
         </FormItem>
       )}
     />

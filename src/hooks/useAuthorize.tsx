@@ -9,6 +9,8 @@ export const FEATURES = {
   CREATE_DEPARTMENT: "CREATE_DEPARTMENT",
   CREATE_IDEA: "CREATE_IDEA",
   DEPARTMENT_SETTING: "DEPARTMENT_SETTING",
+  USER_CRUD: "USER_CRUD",
+  REACT_COMMENT_IDEA: "REACT_COMMENT_IDEA",
 } as const;
 
 const MAIN_NAV_ITEMS = {
@@ -55,6 +57,7 @@ export const ROLES: Role[] = [
       FEATURES.EXPORT_DATA,
       FEATURES.CREATE_DEPARTMENT,
       FEATURES.DEPARTMENT_SETTING,
+      FEATURES.USER_CRUD,
     ],
     authorizedEndpoints: excludedRoutes([
       PrivatePageEndPoints.categories.path,
@@ -80,7 +83,7 @@ export const ROLES: Role[] = [
     value: "staff",
     label: "Staff",
     description: "Staff role",
-    features: [FEATURES.CREATE_IDEA],
+    features: [FEATURES.CREATE_IDEA, FEATURES.REACT_COMMENT_IDEA],
     authorizedEndpoints: excludedRoutes([
       PrivatePageEndPoints.categories.path,
       PrivatePageEndPoints.insights.path,

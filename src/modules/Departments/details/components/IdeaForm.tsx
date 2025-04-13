@@ -11,7 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { PaperclipIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useCreateIdea } from "../api/mutateIdea";
+import { useCreateIdea } from "../api/mutateCreateIdea";
 
 const ideaSchema = z.object({
   privacy: z.enum(["public", "anonymous"]),

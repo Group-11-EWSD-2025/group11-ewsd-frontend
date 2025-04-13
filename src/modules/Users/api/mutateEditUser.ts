@@ -17,7 +17,8 @@ export const editUser = (data: EditUserFormInputs) => {
       phone: data.phone,
       role: data.role,
       password: data.password,
-      department_id: data.department_id,
+      department_id:
+        data.role === "staff" ? data.staff_department : data.others_department,
     },
     {
       headers: { "Content-Type": "application/json" },

@@ -72,9 +72,9 @@ const DepartmentDetails = () => {
     return (
       !!categoryId ||
       !!startDate ||
-      startDate !== format(new Date(), "yyyy-MM-dd") ||
+      startDate !== "" ||
       !!endDate ||
-      endDate !== format(new Date(), "yyyy-MM-dd")
+      endDate !== ""
     );
   }, [categoryId, startDate, endDate]);
 

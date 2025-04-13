@@ -5,9 +5,13 @@ import ReportButton from "@/components/common/ReportButton";
 import Tag from "@/components/common/Tag";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/context/AuthContext";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
-import { getInitials } from "@/lib/utils";
+import { FEATURES, useAuthorize } from "@/hooks/useAuthorize";
+import { cn, getInitials } from "@/lib/utils";
+import { useReactIdea } from "@/modules/Ideas/api/mutateReactIdea";
 import { TIdea } from "@/types/idea";
+import { useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import {
   ChevronRight,
@@ -16,8 +20,9 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Button } from "../ui/button";
 
-const imgTypesExtensions = ["jpg", "jpeg", "png", "gif", "svg", "webp"];
+const imgTypesExtensions = ["jpg", "jpeg", "png", "gif", "svg", "webp", "avif"];
 const attachmentTypesExtensions = [
   "pdf",
   "doc",
@@ -27,14 +32,72 @@ const attachmentTypesExtensions = [
   "ppt",
   "pptx",
 ];
+export function isImage(file: string) {
+  return imgTypesExtensions.includes(file.split(".").pop() || "");
+}
+export function isAttachment(file: string) {
+  return attachmentTypesExtensions.includes(file.split(".").pop() || "");
+}
 
 export const IdeaCard = ({ idea }: { idea: TIdea }) => {
-  function isImage(file: string) {
-    return imgTypesExtensions.includes(file.split(".").pop() || "");
-  }
-  function isAttachment(file: string) {
-    return attachmentTypesExtensions.includes(file.split(".").pop() || "");
-  }
+  const { authState } = useAuth();
+  const queryClient = useQueryClient();
+  const { checkFeatureAvailability } = useAuthorize();
+
+  const likeIdea = useReactIdea({
+    mutationConfig: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["getIdeaDetails", idea.id],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["getIdeaList"],
+        });
+      },
+    },
+  });
+
+  const unlikeIdea = useReactIdea({
+    mutationConfig: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["getIdeaDetails", idea.id],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["getIdeaList"],
+        });
+      },
+    },
+  });
+
+  const handleLikeButtonClick = () => {
+    if (!idea.is_liked) {
+      likeIdea.mutate({
+        id: idea.id,
+        type: "like",
+      });
+    } else {
+      likeIdea.mutate({
+        id: idea.id,
+        type: "remove-like",
+      });
+    }
+  };
+
+  const handleUnlikeButtonClick = () => {
+    if (!idea.is_unliked) {
+      unlikeIdea.mutate({
+        id: idea.id,
+        type: "unlike",
+      });
+    } else {
+      unlikeIdea.mutate({
+        id: idea.id,
+        type: "remove-unlike",
+      });
+    }
+  };
+
   return (
     <div className="border-border-weak space-y-8 rounded-xl border bg-white p-4 lg:p-5">
       <div className="space-y-4">
@@ -43,8 +106,10 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
             <Tag content={`#${idea.category?.name}`} />
           </div>
           <div className="flex items-center gap-x-4">
-            <ReportButton />
-            <IdeaCardPopover idea={idea} />
+            {authState?.userData?.id !== idea.user_id && <ReportButton />}
+            {authState?.userData?.id === idea.user_id && (
+              <IdeaCardPopover idea={idea} />
+            )}
           </div>
         </div>
         <Link
@@ -80,16 +145,18 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
         <div className="flex items-center gap-x-3">
           <Avatar className="border-border-weak border">
             <AvatarImage
-              src={idea.privacy === "anonymous" ? "" : idea.user.profile}
+              src={idea.privacy === "anonymous" ? "" : idea.user?.profile}
             />
             <AvatarFallback>
               {idea.privacy === "anonymous"
                 ? "AN"
-                : getInitials(idea.user.name)}
+                : getInitials(idea.user?.name ?? "")}
             </AvatarFallback>
           </Avatar>
           <p className="text-text-strong text-sm font-medium">
-            {idea.privacy === "anonymous" ? "Anonymous" : idea.user.name}
+            {idea.privacy === "anonymous"
+              ? "Anonymous"
+              : (idea.user?.name ?? "")}
             <span className="text-brand">
               {" "}
               ∙{" "}
@@ -99,25 +166,51 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
             </span>
           </p>
         </div>
-        <div className="flex items-center gap-x-6">
-          <div className="flex cursor-pointer items-center gap-x-2">
-            <ThumbsUp size={20} />
-            <p className="text-brand">1</p>
-          </div>
-          <div className="flex cursor-pointer items-center gap-x-2">
-            <ThumbsDown size={20} />
-            <p className="text-brand">1</p>
-          </div>
-          <Link
-            to={`${PrivatePageEndPoints.departments.details.ideaDetails.path
-              .replace(":id", idea.department_id)
-              .replace(":ideaId", idea.id)}`}
-            className="flex cursor-pointer items-center gap-x-2"
+        <div className="flex items-center">
+          <Button
+            variant="ghost"
+            onClick={handleLikeButtonClick}
+            disabled={
+              likeIdea.isPending ||
+              !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA)
+            }
           >
-            <MessageCircle size={20} />
-            <p className="text-brand">22 Comments</p>
-            <ChevronRight size={20} className="text-brand" />
-          </Link>
+            <ThumbsUp
+              size={20}
+              className={cn({ "text-purple-600": idea?.is_liked })}
+            />
+            <p className={cn({ "text-purple-600": idea?.is_liked })}>
+              {idea?.likes_count}
+            </p>
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={handleUnlikeButtonClick}
+            disabled={
+              unlikeIdea.isPending ||
+              !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA)
+            }
+          >
+            <ThumbsDown
+              size={20}
+              className={cn({ "text-purple-600": idea?.is_unliked })}
+            />
+            <p className={cn({ "text-purple-600": idea?.is_unliked })}>
+              {idea?.un_likes_count}
+            </p>
+          </Button>
+          <Button variant="ghost">
+            <Link
+              to={`${PrivatePageEndPoints.departments.details.ideaDetails.path
+                .replace(":id", idea.department_id)
+                .replace(":ideaId", idea.id)}`}
+              className="flex cursor-pointer items-center gap-x-2"
+            >
+              <MessageCircle size={20} />
+              <p className="text-brand">{idea.comments_count} Comments</p>
+              <ChevronRight size={20} className="text-brand" />
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

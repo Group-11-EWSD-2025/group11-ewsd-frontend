@@ -7,12 +7,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { showDialog } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
+import { hideDialog, showDialog } from "@/lib/utils";
 import IdeaForm from "@/modules/Departments/details/components/IdeaForm";
+import { useDeleteIdea } from "@/modules/Ideas/api/mutateDeleteIdea";
 import { TIdea } from "@/types/idea";
+import { useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 
 function IdeaCardPopover({ idea }: { idea: TIdea }) {
+  const queryClient = useQueryClient();
   function handleEditIdea() {
     showDialog({
       title: "Edit Idea",
@@ -20,8 +24,38 @@ function IdeaCardPopover({ idea }: { idea: TIdea }) {
     });
   }
 
+  const deleteIdea = useDeleteIdea({
+    mutationConfig: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["getIdeaList"],
+        });
+        toast({ title: "Idea deleted successfully." });
+      },
+    },
+  });
+
   function handleDeleteIdea() {
-    console.log("Delete Idea");
+    showDialog({
+      isAlert: true,
+      title: "Delete Idea",
+      description: "Are you sure you want to delete this idea?",
+      cancel: {
+        label: "Cancel",
+        variant: "outline",
+        onClick: () => {
+          hideDialog();
+        },
+      },
+      action: {
+        label: "Delete",
+        variant: "destructive",
+        state: deleteIdea.isPending ? "loading" : "default",
+        onClick: () => {
+          deleteIdea.mutate(idea.id);
+        },
+      },
+    });
   }
   return (
     <Popover>

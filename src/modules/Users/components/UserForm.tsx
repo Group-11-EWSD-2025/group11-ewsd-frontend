@@ -12,40 +12,78 @@ import { Button } from "../../../components/ui/button";
 import { useCreateUser } from "../api/mutateCreateUser";
 import { useEditUser } from "../api/mutateEditUser";
 
-const userSchema = z.object({
-  name: z
-    .string()
-    .min(3, { message: "User name must be at least 3 characters" }),
-  email: z
-    .string()
-    .email({ message: "Invalid email address" })
-    .min(3, { message: "Email must be at least 3 characters" }),
-  phone: z
-    .string()
-    .min(3, { message: "Phone number is required" })
-    .regex(/^[0-9+\-\s()]*$/, { message: "Invalid phone number format" }),
-  role: z.string().min(1, { message: "Role is required" }),
-  department_id: z.union([
-    z.string().min(1, { message: "Department is required" }),
-    z
-      .array(z.union([z.string(), z.number()]).transform((val) => String(val)))
-      .min(1, { message: "At least one department must be selected" }),
-  ]),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters" }),
-});
-
-export type UserFormInputs = z.infer<typeof userSchema>;
-
 interface UserFormProps {
   user?: TUser;
   rolesData: TRole[];
 }
 
+// Define schema with isEditMode parameter
+const createUserSchema = (isEditMode: boolean) =>
+  z
+    .object({
+      name: z
+        .string()
+        .min(3, { message: "User name must be at least 3 characters" }),
+      email: z
+        .string()
+        .email({ message: "Invalid email address" })
+        .min(3, { message: "Email must be at least 3 characters" }),
+      phone: z
+        .string()
+        .min(3, { message: "Phone number is required" })
+        .regex(/^[0-9+\-\s()]*$/, { message: "Invalid phone number format" }),
+      role: z.enum(["qa-manager", "qa-coordinator", "staff"], {
+        required_error: "Role is required",
+        invalid_type_error:
+          "Role must be one of: qa-manager, qa-coordinator, or staff",
+      }),
+      staff_department: z.string().optional(),
+      others_department: z
+        .array(
+          z.union([z.string(), z.number()]).transform((val) => String(val)),
+        )
+        .optional(),
+      password: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      // Staff department validation
+      if (data.role === "staff" && !data.staff_department) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Staff department is required when role is staff",
+          path: ["staff_department"],
+        });
+      }
+
+      // Others department validation
+      if (
+        data.role !== "staff" &&
+        (!data.others_department || data.others_department.length === 0)
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Other departments are required for non-staff roles",
+          path: ["others_department"],
+        });
+      }
+
+      // Password validation only for new users
+      if (!isEditMode && (!data.password || data.password.length < 6)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Password must be at least 6 characters",
+          path: ["password"],
+        });
+      }
+    });
+
+// Then infer the type
+export type UserFormInputs = z.infer<ReturnType<typeof createUserSchema>>;
+
 function UserForm({ user, rolesData }: UserFormProps) {
   const queryClient = useQueryClient();
   const isEditMode = !!user;
+  const userSchema = createUserSchema(isEditMode);
 
   const UserForm = useForm<UserFormInputs>({
     resolver: zodResolver(userSchema),
@@ -53,8 +91,14 @@ function UserForm({ user, rolesData }: UserFormProps) {
       name: user?.name || "",
       email: user?.email || "",
       phone: user?.phone || "",
-      role: user?.role || "",
-      department_id: user?.departments?.map((dept) => dept.id) || [],
+      role:
+        (user?.role as "qa-manager" | "qa-coordinator" | "staff") || "staff",
+      staff_department:
+        user?.role === "staff" ? user?.departments?.[0]?.id || "" : "",
+      others_department:
+        user?.role !== "staff"
+          ? user?.departments?.map((dept) => dept.id) || []
+          : [],
       password: "",
     },
   });
@@ -88,6 +132,9 @@ function UserForm({ user, rolesData }: UserFormProps) {
     mutationConfig: {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["getUsers"] });
+        queryClient.invalidateQueries({
+          queryKey: ["getDepartmentList", { userId: user?.id }],
+        });
         toast({ title: "User updated successfully" });
         hideDialog();
       },
@@ -167,44 +214,52 @@ function UserForm({ user, rolesData }: UserFormProps) {
             name: "role",
             label: "Role",
             placeholder: "Select",
-            options: rolesData,
+            options: rolesData.filter((role) => role.value !== "admin"),
             required: true,
           }}
+          description={
+            UserForm.watch("role") === "qa-manager"
+              ? "This user will be able to view all departments."
+              : undefined
+          }
         />
-        {UserForm.watch("role") === "staff" ? (
-          <CustomForm.SelectField
-            field={{
-              name: "department_id",
-              label: "Assigned Department",
-              placeholder: "Select departments",
-              options: departmentsOptions,
-              required: true,
-              onChange: (e) =>
-                UserForm.setValue("department_id", e.target.value),
-            }}
-          />
-        ) : (
+        {UserForm.watch("role") === "qa-coordinator" && (
           <CustomForm.MultiSelectField
             field={{
               label: "Assigned Department",
-              name: "department_id",
+              name: "others_department",
               required: true,
               options: departmentsOptions || [],
               placeholder: "Select departments",
               onValueChange: (value) =>
-                UserForm.setValue("department_id", value),
+                UserForm.setValue("others_department", value),
+            }}
+          />
+        )}
+        {UserForm.watch("role") === "staff" && (
+          <CustomForm.SelectField
+            field={{
+              name: "staff_department",
+              label: "Assigned Department",
+              placeholder: "Select departments",
+              options: departmentsOptions || [],
+              required: true,
+              onChange: (e) =>
+                UserForm.setValue("staff_department", e.target.value),
             }}
           />
         )}
 
-        <CustomForm.PasswordField
-          field={{
-            label: "Set User Password to Login",
-            name: "password",
-            placeholder: "Enter password",
-            required: true,
-          }}
-        />
+        {!isEditMode && (
+          <CustomForm.PasswordField
+            field={{
+              label: "Set User Password to Login",
+              name: "password",
+              placeholder: "Enter password",
+              required: true,
+            }}
+          />
+        )}
         <div className="flex justify-between">
           {isEditMode && (
             <Button variant="destructive" onClick={handleDeleteUser}>

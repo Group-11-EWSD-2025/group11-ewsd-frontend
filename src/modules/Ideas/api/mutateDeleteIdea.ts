@@ -1,19 +1,12 @@
 import { AXIOS_CLIENT } from "@/lib/axios-api-client";
 import { MutationConfig } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { UserFormInputs } from "../components/UserForm";
 
-export const createUser = (data: UserFormInputs) => {
+export const deleteIdea = (id: string) => {
   return AXIOS_CLIENT.post(
-    `user/store`,
+    `idea/delete`,
     {
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      role: data.role,
-      password: data.password,
-      department_id:
-        data.role === "staff" ? data.staff_department : data.others_department,
+      id,
     },
     {
       headers: { "Content-Type": "application/json" },
@@ -21,10 +14,10 @@ export const createUser = (data: UserFormInputs) => {
   );
 };
 
-export const useCreateUser = ({
+export const useDeleteIdea = ({
   mutationConfig,
 }: {
-  mutationConfig?: MutationConfig<typeof createUser>;
+  mutationConfig?: MutationConfig<typeof deleteIdea>;
 }) => {
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
@@ -33,6 +26,6 @@ export const useCreateUser = ({
       onSuccess?.(...args);
     },
     ...restConfig,
-    mutationFn: createUser,
+    mutationFn: deleteIdea,
   });
 };

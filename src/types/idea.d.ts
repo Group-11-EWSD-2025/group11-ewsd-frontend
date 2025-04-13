@@ -1,3 +1,14 @@
+export type TComment = {
+  id: number;
+  idea_id: number;
+  user_id: number;
+  content: string;
+  privacy: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type TIdea = {
   id: string;
   category_id: string;
@@ -49,4 +60,10 @@ export type TIdea = {
     created_at: string;
     updated_at: string;
   }[];
+  comments: TComment[];
+  comments_count: number;
+  is_liked: boolean;
+  is_unliked: boolean;
+  likes_count: number;
+  un_likes_count: number;
 };
