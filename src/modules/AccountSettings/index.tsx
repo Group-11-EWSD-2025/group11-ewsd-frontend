@@ -6,7 +6,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCreateAcademicYear } from "./api/mutateCreateAcademicYear";
 import { useDeleteAcademicYear } from "./api/mutateDeleteAcademicYear";
 import { useUpdateAcademicYear } from "./api/mutateUpdateAcademicYear";
-import { useUpdateUserDetail } from "./api/mutateUpdateUserDetail";
 import { useGetAcademicYearList } from "./api/queryGetAcademicYearList";
 import { useGetUserDetail } from "./api/queryGetUserDetail";
 import Academic from "./components/Academic";
@@ -16,10 +15,9 @@ import {
   AcademicCreateFormInputs,
   AcademicEditFormInputs,
 } from "./components/Academic";
-import { UserDetailFormInputs } from "./components/ProfileAndSecurity";
 
 const AccountSettings = () => {
-  const { authState, setAuthState } = useAuth();
+  const { authState } = useAuth();
   const queryClient = useQueryClient();
   const { checkFeatureAvailability } = useAuthorize();
 
@@ -40,40 +38,6 @@ const AccountSettings = () => {
     profile: getUserDetail.data?.data.body.profile || "",
     role: getUserDetail.data?.data.body.role || "",
   };
-
-  const updateUserDetailMutation = useUpdateUserDetail({
-    mutationConfig: {
-      onSuccess: (res) => {
-        toast({
-          title: "Profile updated successfully",
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["getUserDetail", authState.userData.id],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["me"],
-        });
-        setAuthState((prev) => ({
-          ...prev,
-          userData: {
-            id: res.data.body.id,
-            email: res.data.body.email,
-            name: res.data.body.name,
-            role: res.data.body.role,
-            phone: res.data.body.phone,
-            profile: res.data.body.profile,
-          },
-        }));
-      },
-      onError: (error) => {
-        toast({
-          title: "Failed to update profile",
-          description: error.message,
-          variant: "destructive",
-        });
-      },
-    },
-  });
 
   const createAcademicYearMutation = useCreateAcademicYear({
     mutationConfig: {
@@ -135,10 +99,6 @@ const AccountSettings = () => {
     },
   });
 
-  const handleUpdateUserDetail = (data: UserDetailFormInputs) => {
-    updateUserDetailMutation.mutate(data);
-  };
-
   const handleAcademicYearDelete = (id: number) => {
     deleteAcademicYearMutation.mutate(id);
   };
@@ -160,10 +120,7 @@ const AccountSettings = () => {
       content: (
         <ProfileAndSecurity
           userInfo={userInfo}
-          onUpdateUserDetail={handleUpdateUserDetail}
-          isLoading={
-            updateUserDetailMutation.isPending || getUserDetail.isLoading
-          }
+          isUserDetailLoading={getUserDetail.isLoading}
         />
       ),
     },
@@ -207,10 +164,7 @@ const AccountSettings = () => {
       ) : (
         <ProfileAndSecurity
           userInfo={userInfo}
-          onUpdateUserDetail={handleUpdateUserDetail}
-          isLoading={
-            updateUserDetailMutation.isPending || getUserDetail.isLoading
-          }
+          isUserDetailLoading={getUserDetail.isLoading}
         />
       )}
     </div>
