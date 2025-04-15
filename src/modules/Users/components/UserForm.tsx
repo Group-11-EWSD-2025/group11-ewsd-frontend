@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../../../components/ui/button";
 import { useCreateUser } from "../api/mutateCreateUser";
+import { deleteUser } from "../api/mutateDeleteUser";
 import { useEditUser } from "../api/mutateEditUser";
 
 interface UserFormProps {
@@ -167,7 +168,7 @@ function UserForm({ user, rolesData }: UserFormProps) {
         label: "Yes, Delete",
         variant: "destructive",
         onClick: () => {
-          console.log("Delete user", user?.id);
+          deleteUser({ id: user?.id || 0 });
         },
       },
     });
