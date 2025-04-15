@@ -69,10 +69,8 @@ const IdeaListView = () => {
   const isUsingParams = useMemo(() => {
     return (
       !!categoryId ||
-      !!startDate ||
-      startDate !== format(new Date(), "yyyy-MM-dd") ||
-      !!endDate ||
-      endDate !== format(new Date(), "yyyy-MM-dd")
+      (!!startDate && startDate !== format(new Date(), "yyyy-MM-dd")) ||
+      (!!endDate && endDate !== format(new Date(), "yyyy-MM-dd"))
     );
   }, [categoryId, startDate, endDate]);
 

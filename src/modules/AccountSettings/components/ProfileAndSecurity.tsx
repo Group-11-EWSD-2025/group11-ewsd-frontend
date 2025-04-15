@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -159,7 +159,7 @@ const ProfileAndSecurity = ({
                   alt={userInfo?.name}
                   className="object-cover"
                 />
-                <AvatarFallback className="bg-muted">
+                <AvatarFallback className="bg-muted text-xl">
                   {userInfo?.name?.charAt(0) || "U"}
                 </AvatarFallback>
               </Avatar>
@@ -252,7 +252,6 @@ const ProfileAndSecurity = ({
               state={isUpdating ? "loading" : "default"}
               disabled={!isFormDirty}
             >
-              {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save Changes
             </CustomForm.Button>
           </CustomForm>

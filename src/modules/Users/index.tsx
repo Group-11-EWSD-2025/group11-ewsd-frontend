@@ -61,6 +61,7 @@ import { TUser } from "@/types/users";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetRoles } from "../Auth/api/queryGetRoles";
 import { useDeleteUser } from "./api/mutateDeleteUser";
+import { useDisableUser } from "./api/mutateDisableUser";
 import { useGetUsers } from "./api/queryGetUsers";
 
 const Users = () => {
@@ -182,6 +183,21 @@ const Users = () => {
     },
   });
 
+  const { mutate: disableUser, isPending: isDisablingUser } = useDisableUser({
+    mutationConfig: {
+      onSuccess: () => {
+        toast({
+          title: "User disabled successfully",
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["getUsers"],
+          exact: false,
+        });
+        hideDialog();
+      },
+    },
+  });
+
   // Extract users and metadata from the response
   const users = React.useMemo(() => {
     if (!usersData?.body) return [];
@@ -281,8 +297,7 @@ const Users = () => {
       accessorKey: "status",
       header: () => <div className="text-gray-500">Status</div>,
       cell: ({ row }) => {
-        // Default to "active" if status is not provided
-        const status = (row.original.status || "active") as string;
+        const status = row.original.is_disable === 1 ? "disabled" : "active";
         const badgeVariant = getBadgeVariantForStatus(status);
         return (
           <Badge
@@ -300,7 +315,9 @@ const Users = () => {
       cell: ({ row }) => {
         const { authState } = useAuth();
         const role = authState?.userData?.role;
-        const canSeeActions = role === "admin" || role === "qa-manager";
+        const canSeeActions =
+          (role === "admin" || role === "qa-manager") &&
+          row.original.role !== "admin";
 
         if (!canSeeActions) return null;
 
@@ -524,9 +541,9 @@ const Users = () => {
       action: {
         label: "Yes, Disable",
         variant: "destructive",
-        state: isDeletingUser ? "loading" : "default",
+        state: isDisablingUser ? "loading" : "default",
         onClick: () => {
-          deleteUser({ id: user.id });
+          disableUser({ id: user.id });
         },
       },
     });

@@ -7,11 +7,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { toast } from "@/hooks/use-toast";
 import { getInitials, showDialog } from "@/lib/utils";
+import { useGetRoles } from "@/modules/Auth/api/queryGetRoles";
 import { useDeleteDepartment } from "@/modules/Departments/api/mutateDeleteDepartment";
 import { useUpdateDepartment } from "@/modules/Departments/api/mutateUpdateDepartment";
 import { useGetDepartmentDetails } from "@/modules/Departments/api/queryGetDepartmentDetails";
 import { useGetUsers } from "@/modules/Users/api/queryGetUsers";
 import { TDepartment } from "@/types/departments";
+import { TRole } from "@/types/roles";
 import { TUser } from "@/types/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -121,6 +123,14 @@ function DepartmentMembers() {
   });
   const allUsers = getUsers.data?.body.data;
 
+  const { data: rolesData } = useGetRoles({
+    queryConfig: {
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+    },
+  });
+  const roles = rolesData?.body;
+
   return (
     <div className="border-border-weak space-y-4 rounded-xl border bg-white p-4 lg:p-5">
       <div className="space-y-6">
@@ -160,9 +170,14 @@ function DepartmentMembers() {
               className="grid grid-cols-12 gap-4 border-b py-4 last:border-b-0 last:pb-0"
             >
               <div className="col-span-6 flex items-center gap-x-4">
-                <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
+                <Avatar className="border-border-weak border">
+                  <AvatarImage
+                    src={member.profile ?? ""}
+                    className="object-cover"
+                  />
+                  <AvatarFallback>
+                    {member.profile === "" ? "AN" : getInitials(member.name)}
+                  </AvatarFallback>
                 </Avatar>
                 <div>
                   <p>{member.name}</p>
@@ -170,7 +185,12 @@ function DepartmentMembers() {
                 </div>
               </div>
               <div className="col-span-6">
-                <p>{member.role}</p>
+                <p>
+                  {
+                    roles?.find((role: TRole) => role.value === member.role)
+                      ?.label
+                  }
+                </p>
               </div>
             </div>
           ))}
