@@ -8,10 +8,14 @@ import { useGetCategoryList } from "@/modules/Categories/api/queryGetCategoryLis
 import { TIdea } from "@/types/idea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { PaperclipIcon } from "lucide-react";
+import { PaperclipIcon, X } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useCreateIdea } from "../api/mutateCreateIdea";
+import { useUpdateIdea } from "../api/mutateUpdateIdea";
+
+const MAX_TOTAL_FILES = 3;
 
 const ideaSchema = z.object({
   privacy: z.enum(["public", "anonymous"]),
@@ -24,6 +28,11 @@ export type IdeaFormInputs = z.infer<typeof ideaSchema>;
 
 export default function IdeaForm({ idea }: { idea?: TIdea }) {
   const queryClient = useQueryClient();
+  const [removedFileIds, setRemovedFileIds] = useState<string[]>([]);
+  const [filesArray, setFilesArray] = useState<File[]>(
+    idea?.files.map((file) => new File([file.file], file.file)) || [],
+  );
+
   const ideaForm = useForm<IdeaFormInputs>({
     resolver: zodResolver(ideaSchema),
     defaultValues: {
@@ -32,12 +41,9 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
       content: idea?.content ?? "",
       category_id: idea?.category_id.toString() ?? "",
       "agree-terms-conditions": false,
-      files: idea?.files.map((file) => new File([file.file], file.file)) ?? [],
+      files: [],
     },
   });
-
-  console.log(idea?.files.map((file) => new File([file.file], file.file)));
-  console.log(ideaForm.getValues("files"));
 
   const { data: categoriesResponse } = useGetCategoryList({
     params: {
@@ -62,17 +68,52 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
     },
   });
 
-  function onSubmit(data: IdeaFormInputs) {
+  const updateIdea = useUpdateIdea({
+    mutationConfig: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["getIdeaList"],
+        });
+        toast({ title: "Idea updated successfully" });
+        hideDialog();
+      },
+    },
+  });
+  const existingFiles = filesArray?.map((file) => file.name);
+
+  const handleRemoveExistingFile = (fileName: string) => {
+    // Remove from preview
+    setFilesArray((prev) => prev.filter((file) => file.name !== fileName));
+    // Add to removed files list
+    setRemovedFileIds((prev) => [...prev, fileName]);
+  };
+
+  async function onSubmit(data: IdeaFormInputs) {
     const formData = new FormData();
     formData.append("privacy", data.privacy);
     formData.append("content", data.content);
     formData.append("category_id", data.category_id);
+    let fileIndex = 0;
+
     if (data.files) {
-      data.files.forEach((file, index) => {
-        formData.append(`files[${index}]`, file);
+      data.files.forEach((file) => {
+        formData.append(`files[${fileIndex}]`, file);
+        fileIndex++;
       });
     }
-    createIdea.mutate(formData);
+
+    if (idea) {
+      // Update case
+      formData.append("id", idea.id.toString());
+      // Only include files that haven't been removed
+      const remainingExistingFiles =
+        existingFiles?.filter((file) => !removedFileIds.includes(file)) || [];
+      formData.append("existing_files", JSON.stringify(remainingExistingFiles));
+      updateIdea.mutate(formData as any);
+    } else {
+      // Create case
+      createIdea.mutate(formData as any);
+    }
   }
 
   return (
@@ -124,23 +165,48 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
         />
 
         <div>
-          <Label>Attachments (up to 3 items)</Label>
+          <Label>Attachments (up to {MAX_TOTAL_FILES} items)</Label>
           <div className="mt-2">
-            <CustomForm.FileUploadField
-              field={{
-                name: "files",
-                children: (
-                  <FileUploadField.SimpleUpload>
-                    <div className="relative mx-auto flex size-[128px] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 p-4 hover:bg-gray-50">
-                      <PaperclipIcon className="h-6 w-6 text-gray-500" />
-                      <p className="text-gray-500">Choose File</p>
-                    </div>
-                  </FileUploadField.SimpleUpload>
-                ),
-                isMultiple: true,
-                maxFiles: 3,
-              }}
-            />
+            <div className="flex flex-wrap gap-4">
+              {/* Existing files preview */}
+              {filesArray?.map((file) => (
+                <div key={file.name} className="relative">
+                  <div className="h-[120px] w-[120px] overflow-hidden rounded-lg border border-gray-200">
+                    <img
+                      src={file.name}
+                      alt="Attachment preview"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="absolute top-2 right-2 rounded-full bg-white p-1 shadow-md transition-opacity"
+                    onClick={() => handleRemoveExistingFile(file.name)}
+                  >
+                    <X className="h-4 w-4 text-gray-600" />
+                  </button>
+                </div>
+              ))}
+
+              {/* File upload button */}
+              {/* {remainingFileSlots > 0 && ( */}
+              <CustomForm.FileUploadField
+                field={{
+                  name: "files",
+                  children: (
+                    <FileUploadField.SimpleUpload>
+                      <div className="flex h-[120px] w-[120px] cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 hover:bg-gray-50">
+                        <PaperclipIcon className="mb-2 h-6 w-6 text-gray-500" />
+                        <p className="text-sm text-gray-500">Choose File</p>
+                      </div>
+                    </FileUploadField.SimpleUpload>
+                  ),
+                  isMultiple: true,
+                  // maxFiles: remainingFileSlots,
+                }}
+              />
+              {/* )} */}
+            </div>
           </div>
         </div>
       </div>
@@ -155,9 +221,11 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
         <CustomForm.Button
           disabled={!ideaForm.getValues("agree-terms-conditions")}
           type="submit"
-          state={createIdea.isPending ? "loading" : "default"}
+          state={
+            createIdea.isPending || updateIdea.isPending ? "loading" : "default"
+          }
         >
-          Submit
+          {idea ? "Update" : "Submit"}
         </CustomForm.Button>
       </div>
     </CustomForm>
