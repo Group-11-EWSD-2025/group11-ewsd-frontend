@@ -90,6 +90,7 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
 
   async function onSubmit(data: IdeaFormInputs) {
     const formData = new FormData();
+    formData.append("id", idea?.id ?? "");
     formData.append("privacy", data.privacy);
     formData.append("content", data.content);
     formData.append("category_id", data.category_id);

@@ -1,7 +1,10 @@
+import { TUserData } from "@/types";
+
 export type TComment = {
   id: number;
   idea_id: number;
   user_id: number;
+  user: TUserData;
   content: string;
   privacy: string;
   status: string;
@@ -26,17 +29,7 @@ export type TIdea = {
     updated_at: string;
   };
   user_id: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    email_verified_at: string;
-    role: string;
-    created_at: string;
-    updated_at: string;
-    phone: string;
-    profile: string;
-  };
+  user: TUserData;
   content: string;
   status: string;
   privacy: string;

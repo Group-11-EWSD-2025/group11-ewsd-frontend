@@ -10,7 +10,7 @@ export type TUser = {
   profile?: string | null;
   department_id?: string;
   avatar?: string; // URL to the user's avatar image
-  status?: "active" | "pending" | "disabled"; // User account status
+  is_disable?: 1 | 0; // Whether the user is disabled
   departments: {
     id: string;
     name: string;

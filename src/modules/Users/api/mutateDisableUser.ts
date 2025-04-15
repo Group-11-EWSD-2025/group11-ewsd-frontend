@@ -2,16 +2,22 @@ import { AXIOS_CLIENT } from "@/lib/axios-api-client";
 import { MutationConfig } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
 
-export const createIdea = (data: FormData) => {
-  return AXIOS_CLIENT.post(`idea/store`, data, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+export const disableUser = (data: { id: number }) => {
+  return AXIOS_CLIENT.post(
+    `user/disable`,
+    {
+      id: data.id,
+    },
+    {
+      headers: { "Content-Type": "application/json" },
+    },
+  );
 };
 
-export const useCreateIdea = ({
+export const useDisableUser = ({
   mutationConfig,
 }: {
-  mutationConfig?: MutationConfig<typeof createIdea>;
+  mutationConfig?: MutationConfig<typeof disableUser>;
 }) => {
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
@@ -20,6 +26,6 @@ export const useCreateIdea = ({
       onSuccess?.(...args);
     },
     ...restConfig,
-    mutationFn: createIdea,
+    mutationFn: disableUser,
   });
 };

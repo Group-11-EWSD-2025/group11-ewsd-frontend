@@ -145,7 +145,9 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
         <div className="flex items-center gap-x-3">
           <Avatar className="border-border-weak border">
             <AvatarImage
-              src={idea.privacy === "anonymous" ? "" : idea.user?.profile}
+              src={
+                idea.privacy === "anonymous" ? "" : (idea.user?.profile ?? "")
+              }
             />
             <AvatarFallback>
               {idea.privacy === "anonymous"

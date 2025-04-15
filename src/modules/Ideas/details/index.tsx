@@ -280,16 +280,19 @@ function CommentCard({ comment }: { comment: TComment }) {
     <div className="flex gap-x-4">
       <Avatar className="border-border-weak border">
         <AvatarImage
-          //  TODO: get user profile
-          src={comment.privacy === "private" ? "" : ""}
+          src={
+            comment.privacy === "private" ? "" : (comment.user.profile ?? "")
+          }
         />
         <AvatarFallback>
-          {comment.privacy === "private" ? "AN" : getInitials("TODO")}
+          {comment.privacy === "private"
+            ? "AN"
+            : getInitials(comment.user.name)}
         </AvatarFallback>
       </Avatar>
       <div className="flex flex-col gap-y-1">
         <p className="text-text-strong">
-          {comment.privacy === "private" ? "Anonymous" : "TODO"}
+          {comment.privacy === "private" ? "Anonymous" : comment.user.name}
           <span className="text-brand">
             {" "}
             ∙{" "}

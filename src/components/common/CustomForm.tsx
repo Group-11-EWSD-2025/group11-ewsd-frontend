@@ -1,4 +1,8 @@
 import {
+  CalendarProps,
+  CalendarField as CustomCalendarField,
+} from "@/components/common/CalendarField";
+import {
   CheckboxProps,
   CheckboxField as CustomCheckboxField,
 } from "@/components/common/CheckboxField";
@@ -187,6 +191,7 @@ CustomForm.FileUploadField = function FileUploadField({
   if (!formMethods) {
     throw new Error("FileUploadField must be used within a CustomForm");
   }
+  console.log(field, CustomFileList);
   return (
     <CustomFileUploadField
       hookedForm={formMethods}
@@ -227,4 +232,16 @@ CustomForm.TextareaField = function TextareaField({
     throw new Error("TextareaField must be used within a CustomForm");
   }
   return <CustomTextareaField hookedForm={formMethods} field={field} />;
+};
+
+CustomForm.CalendarField = function CalendarField({
+  field,
+}: {
+  field: CalendarProps;
+}) {
+  const formMethods = useContext(FormMethodsContext);
+  if (!formMethods) {
+    throw new Error("CalendarField must be used within a CustomForm");
+  }
+  return <CustomCalendarField hookedForm={formMethods} field={field} />;
 };
