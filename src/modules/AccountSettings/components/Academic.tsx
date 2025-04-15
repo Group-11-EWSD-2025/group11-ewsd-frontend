@@ -1,25 +1,4 @@
-import CustomForm from "@/components/common/CustomForm";
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import {
   Popover,
   PopoverContent,
@@ -33,593 +12,41 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { addWeeks, format, formatDate, parseISO } from "date-fns";
-import { Calendar, MoreVertical, Pencil, Plus, Trash } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { toast } from "@/hooks/use-toast";
+import { cn, showDialog } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
+import { formatDate, parseISO } from "date-fns";
+import { MoreVertical, Pencil, Plus, Trash } from "lucide-react";
+import { useState } from "react";
+import { useDeleteAcademicYear } from "../api/mutateDeleteAcademicYear";
+import { useGetAcademicYearList } from "../api/queryGetAcademicYearList";
+import AcademicYearForm from "./AcademicYearForm";
 
-const academicYearCreateSchema = z
-  .object({
-    start_date: z.date({
-      required_error: "Start date is required",
-    }),
-    end_date: z.date({
-      required_error: "End date is required",
-    }),
-    idea_submission_deadline: z.date({
-      required_error: "Idea Submission deadline is required",
-    }),
-    final_closure_date: z.date({
-      required_error: "Final closure date is required",
-    }),
-  })
-  .refine(
-    (data) => {
-      return data.end_date > data.start_date;
-    },
-    {
-      message: "End date must be after start date",
-      path: ["end_date"],
-    },
-  )
-  .refine(
-    (data) => {
-      return data.final_closure_date > data.idea_submission_deadline;
-    },
-    {
-      message: "Final closure date must be after submission deadline",
-      path: ["final_closure_date"],
-    },
-  );
-
-const academicYearEditSchema = z
-  .object({
-    id: z.number().optional(),
-    start_date: z.date({
-      required_error: "Start date is required",
-    }),
-    end_date: z.date({
-      required_error: "End date is required",
-    }),
-    idea_submission_deadline: z.date({
-      required_error: "Idea Submission deadline is required",
-    }),
-    final_closure_date: z.date({
-      required_error: "Final closure date is required",
-    }),
-  })
-  .refine(
-    (data) => {
-      return data.end_date > data.start_date;
-    },
-    {
-      message: "End date must be after start date",
-      path: ["end_date"],
-    },
-  )
-  .refine(
-    (data) => {
-      return data.final_closure_date > data.idea_submission_deadline;
-    },
-    {
-      message: "Final closure date must be after submission deadline",
-      path: ["final_closure_date"],
-    },
-  );
-
-export type AcademicCreateFormInputs = z.infer<typeof academicYearCreateSchema>;
-
-export type AcademicEditFormInputs = z.infer<typeof academicYearEditSchema>;
-
-interface AcademicYearData {
+export type AcademicYearData = {
   id: number;
   start_date: string;
   end_date: string;
   idea_submission_deadline: string;
   final_closure_date: string;
   status: "active" | "closed";
-}
-
-interface CreateAcademicDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (data: AcademicCreateFormInputs) => void;
-}
-
-const CreateAcademicDialog = ({
-  open,
-  onOpenChange,
-  onSubmit,
-}: CreateAcademicDialogProps) => {
-  const form = useForm<AcademicCreateFormInputs>({
-    resolver: zodResolver(academicYearCreateSchema),
-    defaultValues: {
-      start_date: new Date(),
-      end_date: addWeeks(new Date(), 1),
-      idea_submission_deadline: addWeeks(new Date(), 2),
-      final_closure_date: addWeeks(new Date(), 2),
-    },
-  });
-
-  const handleSubmit = (data: AcademicCreateFormInputs) => {
-    onSubmit(data);
-    form.reset();
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange} modal>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create Academic Year</DialogTitle>
-        </DialogHeader>
-        <CustomForm
-          formMethods={form}
-          onSubmit={handleSubmit}
-          className="space-y-4"
-        >
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="start_date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Start from</FormLabel>
-                  <FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !field.value && "text-muted-foreground",
-                          )}
-                        >
-                          <Calendar className="mr-2 h-4 w-4" />
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <CalendarComponent
-                          mode="single"
-                          selected={field.value}
-                          onSelect={(date) => {
-                            field.onChange(date);
-                          }}
-                          disabled={(date) => date < new Date()}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="end_date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>End at</FormLabel>
-                  <FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !field.value && "text-muted-foreground",
-                          )}
-                        >
-                          <Calendar className="mr-2 h-4 w-4" />
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="center">
-                        <CalendarComponent
-                          mode="single"
-                          className="z-100"
-                          selected={field.value}
-                          onSelect={(date) => {
-                            field.onChange(date);
-                          }}
-                          disabled={(date) => {
-                            const start = form.getValues("start_date");
-                            return date <= start || date < new Date();
-                          }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <p className="text-muted-foreground text-sm">
-            Note: This cannot be edited once ideas have been submitted.
-          </p>
-
-          <FormField
-            control={form.control}
-            name="idea_submission_deadline"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Idea Submission Deadline*</FormLabel>
-                <FormControl>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !field.value && "text-muted-foreground",
-                        )}
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarComponent
-                        mode="single"
-                        className="z-100"
-                        selected={field.value}
-                        onSelect={(date) => {
-                          field.onChange(date);
-                        }}
-                        // disabled={(date) => {
-                        //   // const start = form.getValues("start_date");
-                        //   // const end = form.getValues("end_date");
-                        //   return (
-                        //     date <= start || date >= end || date < new Date()
-                        //   );
-                        // }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <p className="text-muted-foreground text-sm">
-            Note: This can only be modified up to 2 weeks before the set date.
-          </p>
-
-          <FormField
-            control={form.control}
-            name="final_closure_date"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Final Closure Date*</FormLabel>
-                <FormControl>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !field.value && "text-muted-foreground",
-                        )}
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarComponent
-                        mode="single"
-                        className="z-100"
-                        selected={field.value}
-                        onSelect={(date) => {
-                          field.onChange(date);
-                        }}
-                        // disabled={(date) => {}}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <p className="text-muted-foreground text-sm">
-            Note: This can still be extended even if the idea submission
-            deadline has passed but no earlier than its date.
-          </p>
-
-          <CustomForm.Button type="submit" className="w-full">
-            Create
-          </CustomForm.Button>
-        </CustomForm>
-      </DialogContent>
-    </Dialog>
-  );
 };
 
-interface EditAcademicDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (data: AcademicEditFormInputs) => void;
-  academicYear: AcademicYearData | null;
-}
+const Academic = () => {
+  const getAcademicYearList = useGetAcademicYearList({});
 
-const EditAcademicDialog = ({
-  open,
-  onOpenChange,
-  onSubmit,
-  academicYear,
-}: EditAcademicDialogProps) => {
-  const form = useForm<AcademicEditFormInputs>({
-    resolver: zodResolver(academicYearEditSchema),
-  });
+  const academicYears = getAcademicYearList.data?.data.body || [];
 
-  useEffect(() => {
-    if (academicYear) {
-      form.reset({
-        id: academicYear.id,
-        start_date: parseISO(academicYear.start_date),
-        end_date: parseISO(academicYear.end_date),
-        idea_submission_deadline: parseISO(
-          academicYear.idea_submission_deadline,
-        ),
-        final_closure_date: parseISO(academicYear.final_closure_date),
-      });
-    }
-  }, [academicYear, form]);
-
-  const handleSubmit = (data: AcademicEditFormInputs) => {
-    onSubmit(data);
-    form.reset();
-  };
-
-  if (!academicYear) return null;
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Academic Year</DialogTitle>
-        </DialogHeader>
-        <CustomForm
-          formMethods={form}
-          onSubmit={handleSubmit}
-          className="space-y-4"
-        >
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="start_date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Start from</FormLabel>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !field.value && "text-muted-foreground",
-                      )}
-                      disabled
-                    >
-                      <Calendar className="mr-2 h-4 w-4" />
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="end_date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>End at</FormLabel>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !field.value && "text-muted-foreground",
-                      )}
-                      disabled
-                    >
-                      <Calendar className="mr-2 h-4 w-4" />
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <p className="text-muted-foreground text-sm">
-            Note: This cannot be edited once ideas have been submitted.
-          </p>
-
-          <FormField
-            control={form.control}
-            name="idea_submission_deadline"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Idea Submission Deadline*</FormLabel>
-                <FormControl>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !field.value && "text-muted-foreground",
-                        )}
-                        disabled={field.value < addWeeks(new Date(), 2)}
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarComponent
-                        className="z-100"
-                        mode="single"
-                        selected={field.value}
-                        onSelect={(date) => {
-                          field.onChange(date);
-                        }}
-                        // now + 2 weeks
-                        disabled={(date) => {
-                          return date < addWeeks(new Date(), 2);
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <p className="text-muted-foreground text-sm">
-            Note: This can only be modified up to 2 weeks before the set date.
-          </p>
-
-          <FormField
-            control={form.control}
-            name="final_closure_date"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Final Closure Date*</FormLabel>
-                <FormControl>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !field.value && "text-muted-foreground",
-                        )}
-                        disabled={field.value < addWeeks(new Date(), 2)}
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarComponent
-                        mode="single"
-                        className="z-100"
-                        selected={field.value}
-                        onSelect={(date) => {
-                          field.onChange(date);
-                        }}
-                        // now + 2 weeks
-                        disabled={(date) => {
-                          return date < addWeeks(new Date(), 2);
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <p className="text-muted-foreground text-sm">
-            Note: This can still be extended even if the idea submission
-            deadline has passed but no earlier than its date.
-          </p>
-
-          <CustomForm.Button type="submit" className="w-full">
-            Save Changes
-          </CustomForm.Button>
-        </CustomForm>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-interface AcademicProps {
-  academicYears: AcademicYearData[];
-  onCreateAcademicYear: (data: AcademicCreateFormInputs) => void;
-  onUpdateAcademicYear: (data: AcademicEditFormInputs) => void;
-  onDeleteAcademicYear: (id: number) => void;
-}
-
-const Academic = ({
-  academicYears,
-  onCreateAcademicYear,
-  onUpdateAcademicYear,
-  onDeleteAcademicYear,
-}: AcademicProps) => {
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(true);
-  const [editingYear, setEditingYear] = useState<AcademicYearData | null>(null);
-
-  const handleCreate = (data: AcademicCreateFormInputs) => {
-    onCreateAcademicYear(data);
-    setIsCreateOpen(false);
-  };
-
-  const handleEdit = (data: AcademicEditFormInputs) => {
-    if (editingYear) {
-      onUpdateAcademicYear(data);
-      setEditingYear(null);
-    }
-  };
-
-  const handleDelete = (id: number) => {
-    onDeleteAcademicYear(id);
+  const handleCreate = () => {
+    showDialog({
+      title: "Create Academic Year",
+      children: <AcademicYearForm />,
+    });
   };
 
   // is academic year active
-  const isActive = academicYears.some((year) => year.status === "active");
+  const isActive = academicYears.some(
+    (year: AcademicYearData) => year.status === "active",
+  );
 
   return (
     <div className="space-y-6">
@@ -635,8 +62,8 @@ const Academic = ({
         </div>
 
         <div>
-          <Button onClick={() => setIsCreateOpen(true)} disabled={isActive}>
-            <Plus className="mr-2 h-4 w-4" />
+          <Button onClick={handleCreate} disabled={isActive}>
+            <Plus className="h-4 w-4" />
             Create
           </Button>
         </div>
@@ -661,91 +88,118 @@ const Academic = ({
                 </TableCell>
               </TableRow>
             ) : (
-              academicYears.map((year) => (
-                <TableRow key={year.id}>
-                  <TableCell>
-                    <div>
-                      {formatDate(parseISO(year.start_date), "dd MMM yy")} -{" "}
-                      {formatDate(parseISO(year.end_date), "dd MMM yy")}
-                    </div>
-                    <div
-                      className={cn(
-                        "text-muted-foreground text-sm capitalize",
-                        year.status === "active"
-                          ? "text-green-500"
-                          : "text-gray-500",
-                      )}
-                    >
-                      {year.status}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {year.idea_submission_deadline
-                      ? formatDate(
-                          parseISO(year.idea_submission_deadline),
-                          "dd MMM yyyy",
-                        )
-                      : "-"}
-                  </TableCell>
-                  <TableCell className="flex items-center justify-between">
-                    {year.final_closure_date
-                      ? formatDate(
-                          parseISO(year.final_closure_date),
-                          "dd MMM yyyy",
-                        )
-                      : "-"}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        {year.status === "active" && (
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setIsEditOpen(true);
-                              setEditingYear(year);
-                            }}
-                          >
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit Academic
-                          </DropdownMenuItem>
-                        )}
-                        {year.status !== "active" && (
-                          <DropdownMenuItem
-                            onClick={() => handleDelete(year.id)}
-                          >
-                            <Trash className="mr-2 h-4 w-4" />
-                            Delete Academic Year
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
+              academicYears.map((year: AcademicYearData) => (
+                <AcademicYearRow key={year.id} year={year} />
               ))
             )}
           </TableBody>
         </Table>
-
-        <CreateAcademicDialog
-          open={isCreateOpen}
-          onOpenChange={setIsCreateOpen}
-          onSubmit={handleCreate}
-        />
-
-        <EditAcademicDialog
-          open={isEditOpen}
-          onOpenChange={(open) => {
-            setIsEditOpen(!isEditOpen);
-            setEditingYear(null);
-          }}
-          onSubmit={handleEdit}
-          academicYear={editingYear}
-        />
       </div>
     </div>
+  );
+};
+
+const AcademicYearRow = ({ year }: { year: AcademicYearData }) => {
+  const queryClient = useQueryClient();
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+  const handleEdit = () => {
+    showDialog({
+      title: "Edit Academic Year",
+      children: <AcademicYearForm academicYear={year} />,
+    });
+  };
+
+  const deleteAcademicYearMutation = useDeleteAcademicYear({
+    mutationConfig: {
+      onSuccess: () => {
+        toast({
+          title: "Academic year dates is deleted successfully",
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["academic-year-list"],
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Failed to delete academic year.",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    },
+  });
+  const handleDelete = (id: number) => {
+    showDialog({
+      title: "Delete Academic Year",
+      description: "Are you sure you want to delete this academic year?",
+      action: {
+        variant: "destructive",
+        label: "Delete",
+        state: deleteAcademicYearMutation.isPending ? "loading" : "default",
+        onClick: () => {
+          deleteAcademicYearMutation.mutate(id);
+        },
+      },
+    });
+  };
+
+  return (
+    <TableRow key={year.id}>
+      <TableCell>
+        <div>
+          {formatDate(parseISO(year.start_date), "dd MMM yy")} -{" "}
+          {formatDate(parseISO(year.end_date), "dd MMM yy")}
+        </div>
+        <div
+          className={cn(
+            "text-muted-foreground text-sm capitalize",
+            year.status === "active" ? "text-green-500" : "text-gray-500",
+          )}
+        >
+          {year.status}
+        </div>
+      </TableCell>
+      <TableCell>
+        {year.idea_submission_deadline
+          ? formatDate(parseISO(year.idea_submission_deadline), "dd MMM yyyy")
+          : "-"}
+      </TableCell>
+      <TableCell className="flex items-center justify-between">
+        {year.final_closure_date
+          ? formatDate(parseISO(year.final_closure_date), "dd MMM yyyy")
+          : "-"}
+        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="ghost">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="flex w-auto flex-col p-1" align="end">
+            {year.status === "active" && (
+              <Button
+                variant="ghost"
+                onClick={handleEdit}
+                className="w-full justify-start rounded-none p-2 text-slate-700"
+              >
+                <Pencil className="mr-2 h-4 w-4" />
+                Edit Academic
+              </Button>
+            )}
+            {year.status !== "active" && (
+              <Button
+                variant="ghost"
+                className="w-full justify-start rounded-none p-2 !text-red-500"
+                onClick={() => handleDelete(year.id)}
+              >
+                <Trash className="mr-2 h-4 w-4 text-red-500" />
+                Delete Academic Year
+              </Button>
+            )}
+          </PopoverContent>
+        </Popover>
+      </TableCell>
+    </TableRow>
   );
 };
 

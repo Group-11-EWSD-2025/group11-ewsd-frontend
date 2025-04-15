@@ -12,21 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { useUpdateUserDetail } from "../api/mutateUpdateUserDetail";
-
-// Types
-type UserInfo = {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  role: string;
-  profile: string | null;
-};
-
-interface ProfileAndSecurityProps {
-  userInfo: UserInfo;
-  isUserDetailLoading: boolean;
-}
+import { useGetUserDetail } from "../api/queryGetUserDetail";
 
 // Schema
 const userInfoSchema = z.object({
@@ -41,16 +27,30 @@ const userInfoSchema = z.object({
 
 export type UserDetailFormInputs = z.infer<typeof userInfoSchema>;
 
-const ProfileAndSecurity = ({
-  userInfo,
-  isUserDetailLoading,
-}: ProfileAndSecurityProps) => {
+const ProfileAndSecurity = () => {
+  const queryClient = useQueryClient();
+  const { authState, setAuthState } = useAuth();
+
+  const getUserDetail = useGetUserDetail({
+    id: authState.userData.id,
+    queryConfig: {
+      enabled: !!authState.userData.id,
+    },
+  });
+
+  const userInfo = {
+    id: getUserDetail.data?.data.body.id || "",
+    name: getUserDetail.data?.data.body.name || "",
+    email: getUserDetail.data?.data.body.email || "",
+    phone: getUserDetail.data?.data.body.phone || "",
+    profile: getUserDetail.data?.data.body.profile || "",
+    role: getUserDetail.data?.data.body.role || "",
+  };
+
   // State
   const [currentImagePreview, setCurrentImagePreview] = useState<string | null>(
     userInfo?.profile || null,
   );
-  const queryClient = useQueryClient();
-  const { authState, setAuthState } = useAuth();
 
   // Form setup
   const userDetailForm = useForm<UserDetailFormInputs>({
@@ -135,7 +135,8 @@ const ProfileAndSecurity = ({
   };
 
   // Derived values
-  const isUpdating = updateUserDetailMutation.isPending || isUserDetailLoading;
+  const isUpdating =
+    updateUserDetailMutation.isPending || getUserDetail.isLoading;
   const isFormDirty =
     userDetailForm.formState.isDirty || userDetailForm.watch("profile");
 
