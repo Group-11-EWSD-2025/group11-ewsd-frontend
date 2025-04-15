@@ -187,6 +187,7 @@ CustomForm.FileUploadField = function FileUploadField({
   if (!formMethods) {
     throw new Error("FileUploadField must be used within a CustomForm");
   }
+  console.log(field, CustomFileList);
   return (
     <CustomFileUploadField
       hookedForm={formMethods}

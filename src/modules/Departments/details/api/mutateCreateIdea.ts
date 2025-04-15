@@ -1,9 +1,8 @@
 import { AXIOS_CLIENT } from "@/lib/axios-api-client";
 import { MutationConfig } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { IdeaFormInputs } from "../components/IdeaForm";
 
-export const createIdea = (data: IdeaFormInputs) => {
+export const createIdea = (data: FormData) => {
   return AXIOS_CLIENT.post(`idea/store`, data, {
     headers: { "Content-Type": "multipart/form-data" },
   });

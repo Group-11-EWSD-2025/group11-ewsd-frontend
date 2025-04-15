@@ -12,6 +12,7 @@ import { PaperclipIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useCreateIdea } from "../api/mutateCreateIdea";
+import { useUpdateIdea } from "../api/mutateUpdateIdea";
 
 const ideaSchema = z.object({
   privacy: z.enum(["public", "anonymous"]),
@@ -62,8 +63,19 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
     },
   });
 
+  const updateIdea = useUpdateIdea({
+    mutationConfig: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["getIdeaList"] });
+        toast({ title: "Idea updated successfully" });
+        hideDialog();
+      },
+    },
+  });
+
   function onSubmit(data: IdeaFormInputs) {
     const formData = new FormData();
+    formData.append("id", idea?.id ?? "");
     formData.append("privacy", data.privacy);
     formData.append("content", data.content);
     formData.append("category_id", data.category_id);
@@ -72,7 +84,11 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
         formData.append(`files[${index}]`, file);
       });
     }
-    createIdea.mutate(formData);
+    if (!!idea) {
+      updateIdea.mutate(formData);
+    } else {
+      createIdea.mutate(formData);
+    }
   }
 
   return (

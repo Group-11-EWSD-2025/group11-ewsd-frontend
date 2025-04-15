@@ -38,9 +38,22 @@ const IdeaListView = () => {
   const endOfDay = endDate ? new Date(endDate) : new Date();
   endOfDay.setHours(23, 59, 59, 999);
 
+  const orderBy = (tab: string) => {
+    switch (tab) {
+      case "latest":
+        return "created_at";
+      case "most-popular":
+        return "likes_count";
+      case "most-viewed":
+        return "views";
+      default:
+        return "created_at";
+    }
+  };
+
   const { data: getIdeas, isLoading: isLoadingIdeas } = useGetIdeaList({
     params: {
-      orderBy: tab === "latest" ? "created_at" : "views",
+      orderBy: orderBy(tab),
       categoryId: categoryId,
       startDate: startOfDay.toISOString(),
       endDate: endOfDay.toISOString(),
