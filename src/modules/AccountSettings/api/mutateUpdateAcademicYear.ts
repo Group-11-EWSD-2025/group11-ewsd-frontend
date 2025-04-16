@@ -1,10 +1,12 @@
 import { AXIOS_CLIENT } from "@/lib/axios-api-client";
 import { MutationConfig } from "@/lib/react-query";
+import { AcademicYearFormInputs } from "@/modules/AccountSettings/components/AcademicYearForm";
 import { useMutation } from "@tanstack/react-query";
 import { formatDate } from "date-fns";
-import { AcademicEditFormInputs } from "../components/Academic";
 
-export const updateUserDetail = (data: AcademicEditFormInputs) => {
+export const updateUserDetail = (
+  data: AcademicYearFormInputs & { id: number },
+) => {
   const formattedData = {
     id: data.id,
     start_date: formatDate(data.start_date, "yyyy-MM-dd"),

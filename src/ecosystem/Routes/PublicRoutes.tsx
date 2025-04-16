@@ -12,7 +12,7 @@ const PublicRoutes = () => {
       )}
       <Route
         path="/*"
-        element={<Navigate to={PublicPageEndPoints.login.path} replace />}
+        element={<Navigate to={PublicPageEndPoints.login.root.path} replace />}
       />
     </Routes>
   );

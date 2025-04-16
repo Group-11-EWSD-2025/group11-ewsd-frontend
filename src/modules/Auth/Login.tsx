@@ -70,9 +70,9 @@ const Login = () => {
     loginMutation.mutate(data);
   };
 
-  const handleRequestPasswordReset = () => {
-    console.log("Request password reset");
-  };
+  // const handleRequestPasswordReset = () => {
+  //   console.log("Request password reset");
+  // };
 
   return (
     <div className="bg-muted flex h-screen flex-col items-center justify-center gap-y-7">
@@ -121,7 +121,9 @@ const Login = () => {
             type="button"
             variant="link"
             className="w-full"
-            onClick={() => navigate(PublicPageEndPoints.resetPassword.path)}
+            onClick={() =>
+              navigate(PublicPageEndPoints.resetPassword.root.path)
+            }
           >
             Request Password Reset
           </Button>

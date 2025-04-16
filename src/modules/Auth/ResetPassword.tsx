@@ -29,13 +29,11 @@ const ResetPassword = () => {
 
   const resetPasswordMutation = useResetPassword({
     mutationConfig: {
-      onSuccess: (resetPasswordResponse) => {
-        if (resetPasswordResponse.status === 201) {
-          toast({
-            title: "Password reset successfully",
-          });
-          navigate(PublicPageEndPoints.login.path);
-        }
+      onSuccess: () => {
+        toast({
+          title: "Password reset successfully",
+        });
+        navigate(PublicPageEndPoints.login.root.path);
       },
     },
   });
