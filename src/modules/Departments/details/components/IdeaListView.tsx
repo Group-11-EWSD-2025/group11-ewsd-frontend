@@ -17,14 +17,8 @@ const IdeaListView = () => {
   const { checkFeatureAvailability } = useAuthorize();
 
   const [tab] = useQueryState("tab", parseAsString.withDefault("latest"));
-  const [startDate] = useQueryState(
-    "startDate",
-    parseAsString.withDefault(format(new Date(), "yyyy-MM-dd")),
-  );
-  const [endDate] = useQueryState(
-    "endDate",
-    parseAsString.withDefault(format(new Date(), "yyyy-MM-dd")),
-  );
+  const [startDate] = useQueryState("startDate", parseAsString.withDefault(""));
+  const [endDate] = useQueryState("endDate", parseAsString.withDefault(""));
   const [categoryId] = useQueryState(
     "categoryId",
     parseAsString.withDefault(""),
@@ -55,8 +49,8 @@ const IdeaListView = () => {
     params: {
       orderBy: orderBy(tab),
       categoryId: categoryId,
-      startDate: startOfDay.toISOString(),
-      endDate: endOfDay.toISOString(),
+      startDate: startDate ? startOfDay.toISOString() : "",
+      endDate: endDate ? endOfDay.toISOString() : "",
       page: Number(page),
       perPage: Number(perPage),
       departmentId,

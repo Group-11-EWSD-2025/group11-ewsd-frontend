@@ -108,8 +108,6 @@ function AcademicYearForm({
 }: {
   academicYear?: AcademicYearData;
 }) {
-  console.log(academicYear);
-
   const queryClient = useQueryClient();
   const form = useForm<AcademicYearFormInputs>({
     resolver: zodResolver(academicYearSchema),

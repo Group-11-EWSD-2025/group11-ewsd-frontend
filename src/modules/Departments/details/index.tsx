@@ -11,13 +11,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FEATURES, useAuthorize } from "@/hooks/useAuthorize";
 import { cn, showDialog } from "@/lib/utils";
+import { useGetAcademicYearList } from "@/modules/AccountSettings/api/queryGetAcademicYearList";
+import { AcademicYearData } from "@/modules/AccountSettings/components/Academic";
 import { useGetCategoryList } from "@/modules/Categories/api/queryGetCategoryList";
 import ExportDataDialog from "@/modules/Departments/details/components/ExportDataDialog";
 import IdeaForm from "@/modules/Departments/details/components/IdeaForm";
 import IdeaListView from "@/modules/Departments/details/components/IdeaListView";
 import { useDepartmentRedirect } from "@/modules/Departments/hooks/useDepartmentRedirect";
 import { format, parseISO } from "date-fns";
-import { Bell, Download, Loader2 } from "lucide-react";
+import { Bell, Download, Loader2, Plus } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
 import { useEffect, useMemo } from "react";
 
@@ -35,8 +37,6 @@ const tabs = [
     value: "most-viewed",
   },
 ];
-
-const IS_FINAL_CLOSURE_DATE = true;
 
 export type Filter = {
   tab: string;
@@ -57,16 +57,26 @@ const DepartmentDetails = () => {
   );
   const [startDate, setStartDate] = useQueryState(
     "startDate",
-    parseAsString.withDefault(format(new Date(), "yyyy-MM-dd")),
+    parseAsString.withDefault(""),
   );
   const [endDate, setEndDate] = useQueryState(
     "endDate",
-    parseAsString.withDefault(format(new Date(), "yyyy-MM-dd")),
+    parseAsString.withDefault(""),
   );
   const [categoryId, setCategoryId] = useQueryState(
     "categoryId",
     parseAsString.withDefault(""),
   );
+
+  const getAcademicYearList = useGetAcademicYearList({});
+
+  const academicYear = getAcademicYearList.data?.data.body.find(
+    (year: AcademicYearData) => year.status === "active",
+  );
+
+  const IS_FINAL_CLOSURE_DATE =
+    academicYear?.final_closure_date &&
+    academicYear?.final_closure_date < new Date();
 
   const isUsingParams = useMemo(() => {
     return (
@@ -128,100 +138,125 @@ const DepartmentDetails = () => {
   return (
     <div>
       <Tabs defaultValue={tab} className="w-full space-y-2">
-        <div className="border-border-weak fixed top-[var(--topbar-height)] z-10 flex h-[var(--topbar-height)] w-[calc(100%-var(--sidebar-width))] justify-between gap-2 border-y border-b-0 bg-[#FEFEFE] px-4 md:items-center">
-          <TabsList className="bg-background flex">
-            {tabs.map((tabItem) => (
-              <TabsTrigger
-                key={tabItem.value}
-                value={tabItem.value}
-                className="data-[state=active]:bg-slate-100"
-                onClick={() => {
-                  setTab(tabItem.value);
-                }}
-              >
-                {tabItem.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        <div className="fixed z-10 flex w-full flex-col justify-center bg-[#FEFEFE] lg:w-[calc(100%-var(--sidebar-width))]">
+          <div className="border-border-weak flex flex-col justify-between gap-2 border p-4 md:flex-row md:items-start">
+            <TabsList className="bg-background flex">
+              {tabs.map((tabItem) => (
+                <TabsTrigger
+                  key={tabItem.value}
+                  value={tabItem.value}
+                  className="data-[state=active]:bg-slate-100"
+                  onClick={() => {
+                    setTab(tabItem.value);
+                  }}
+                >
+                  {tabItem.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
-          <div className="flex items-center gap-2">
-            <div className="h-10">
-              <DateRangePicker
-                value={{
-                  from: startDate ? parseISO(startDate) : new Date(),
-                  to: endDate ? parseISO(endDate) : new Date(),
-                }}
-                onChange={(value) => {
-                  setStartDate(format(value?.from ?? new Date(), "yyyy-MM-dd"));
-                  setEndDate(format(value?.to ?? new Date(), "yyyy-MM-dd"));
-                }}
-              />
-            </div>
+            <div className="flex flex-wrap items-center gap-2 md:justify-end">
+              <div className="h-10">
+                <DateRangePicker
+                  value={{
+                    from: startDate ? parseISO(startDate) : undefined,
+                    to: endDate ? parseISO(endDate) : undefined,
+                  }}
+                  onChange={(value) => {
+                    setStartDate(
+                      format(value?.from ?? new Date(), "yyyy-MM-dd"),
+                    );
+                    setEndDate(format(value?.to ?? new Date(), "yyyy-MM-dd"));
+                  }}
+                />
+              </div>
 
-            {isLoadingCategories ? (
-              <Skeleton className="h-10 w-24" />
-            ) : (
-              <Select
-                value={categoryId}
-                onValueChange={(value) => {
-                  setCategoryId(value);
-                }}
-              >
-                <SelectTrigger className="bg-background h-10 min-w-[180px] shadow-none">
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoriesResponse?.body.data.map((category) => (
-                    <SelectItem
-                      key={category.id.toString()}
-                      value={category.id.toString()}
+              {isLoadingCategories ? (
+                <Skeleton className="h-10 w-24" />
+              ) : (
+                <div>
+                  <Select
+                    value={categoryId}
+                    onValueChange={(value) => {
+                      setCategoryId(value);
+                    }}
+                  >
+                    <SelectTrigger className="bg-background h-10 min-w-[180px] shadow-none">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categoriesResponse?.body.data.map((category) => (
+                        <SelectItem
+                          key={category.id.toString()}
+                          value={category.id.toString()}
+                        >
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {isUsingParams && (
+                <Button
+                  variant="outline"
+                  type="button"
+                  className="h-10"
+                  onClick={handleResetFilters}
+                >
+                  Reset Filters
+                </Button>
+              )}
+              {checkFeatureAvailability(FEATURES.CREATE_IDEA) && (
+                <>
+                  <div className="hidden h-10 md:block">
+                    <Button type="button" onClick={handleCreateNewIdea}>
+                      Create New Idea
+                    </Button>
+                  </div>
+                  <div className="block h-10 md:hidden">
+                    <Button
+                      type="button"
+                      size="icon"
+                      onClick={handleCreateNewIdea}
                     >
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-            {isUsingParams && (
-              <Button
-                variant="outline"
-                type="button"
-                onClick={handleResetFilters}
-              >
-                Reset Filters
-              </Button>
-            )}
-            {checkFeatureAvailability(FEATURES.CREATE_IDEA) && (
-              <Button type="button" onClick={handleCreateNewIdea}>
-                Create New Idea
-              </Button>
-            )}
+                      <Plus size={16} />
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
+
+          {IS_SHOW_EXPORT_DATA_BUTTON && (
+            <div className="z-[1] flex w-full flex-col items-center justify-between gap-2 border-y bg-slate-300 px-4 md:flex-row">
+              <div className="flex gap-4 py-2">
+                <div className="flex items-center">
+                  <Bell size={16} />
+                </div>
+                <p className="text-sm">
+                  The Final Closure Date has been reached. You can now download
+                  all data (ideas, comments, and documents).
+                </p>
+              </div>
+              <Button type="button" variant="link" onClick={handleExportData}>
+                <Download size={16} />
+                Export All Data
+              </Button>
+            </div>
+          )}
         </div>
 
-        {IS_SHOW_EXPORT_DATA_BUTTON && (
-          <div className="fixed top-[calc(var(--topbar-height)*2)] z-10 flex w-[calc(100%-var(--sidebar-width))] items-center justify-between gap-2 border-y bg-slate-300 px-4">
-            <div className="flex gap-4 py-2">
-              <div className="flex items-center">
-                <Bell size={16} />
-              </div>
-              <p className="text-sm">
-                The Final Closure Date has been reached. You can now download
-                all data (ideas, comments, and documents).
-              </p>
-            </div>
-            <Button type="button" variant="link" onClick={handleExportData}>
-              <Download size={16} />
-              Export All Data
-            </Button>
-          </div>
-        )}
         <div
           className={cn(
-            "mx-auto w-full space-y-4 p-4 lg:mt-[var(--topbar-height)] lg:max-w-[var(--content-width)] lg:p-6",
+            "mx-auto mt-[var(--topbar-height-mobile)] w-full space-y-4 p-4 md:mt-[var(--topbar-height-tablet)] lg:max-w-[var(--content-width)] lg:p-6 xl:mt-[var(--topbar-height)]",
             {
-              "lg:mt-[calc(var(--topbar-height)+var(--notification-height))]":
+              "mt-[calc(var(--topbar-height-mobile)+var(--notification-height-mobile))] md:mt-[calc(var(--topbar-height-tablet)+var(--notification-height-tablet))] xl:mt-[calc(var(--topbar-height)+var(--notification-height))]":
                 IS_SHOW_EXPORT_DATA_BUTTON,
+            },
+            {
+              "pt-[60px]": isUsingParams,
             },
           )}
         >
