@@ -52,7 +52,7 @@ const Academic = () => {
     <div className="space-y-6">
       <div className="bg-card flex flex-col gap-8 rounded-lg border p-6 shadow-sm">
         <div className="flex flex-col gap-2">
-          <h2 className="text-2xl font-medium">Academic Year</h2>
+          <h2 className="text-xl font-semibold">Academic Year</h2>
           <p className="text-muted-foreground">
             Define the start and end point for the academic year, including
             deadlines for idea submission and commenting. Please note that a new

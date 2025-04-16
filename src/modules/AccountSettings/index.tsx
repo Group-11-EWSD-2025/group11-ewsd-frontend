@@ -20,9 +20,9 @@ const AccountSettings = () => {
   ];
 
   return (
-    <div className="mx-auto w-full py-4 lg:max-w-[var(--content-width)] lg:py-6">
+    <div className="mx-auto w-full px-4 py-4 lg:max-w-[var(--content-width)] lg:py-6">
       {checkFeatureAvailability(FEATURES.ACADEMIC_YEAR_SETTING) ? (
-        <Tabs defaultValue="academic" className="w-full space-y-2">
+        <Tabs defaultValue="profile" className="w-full space-y-2">
           <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
             <TabsList className="bg-background flex">
               {tabs.map((tab) => (
