@@ -1,9 +1,9 @@
 import { AXIOS_CLIENT } from "@/lib/axios-api-client";
 import { MutationConfig } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { ResetPasswordFormInputs } from "../ResetPassword";
+import { RequestResetPasswordFormInputs } from "../RequestResetPassword";
 
-export const resetPassword = (data: ResetPasswordFormInputs) => {
+export const resetPassword = (data: RequestResetPasswordFormInputs) => {
   return AXIOS_CLIENT.post(
     `reset-password`,
     {

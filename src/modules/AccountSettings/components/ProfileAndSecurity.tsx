@@ -11,8 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "@/hooks/use-toast";
+import { hideDialog, showDialog } from "@/lib/utils";
+import { useResetPassword } from "@/modules/Auth/api/mutateResetPassword";
 import { useUpdateUserDetail } from "../api/mutateUpdateUserDetail";
 import { useGetUserDetail } from "../api/queryGetUserDetail";
+import ChangePasswordForm from "./ChangePasswordForm";
 
 // Schema
 const userInfoSchema = z.object({
@@ -130,9 +133,51 @@ const ProfileAndSecurity = () => {
     setCurrentImagePreview(null);
   };
 
-  const onSubmit = (data: UserDetailFormInputs) => {
+  function onSubmit(data: UserDetailFormInputs) {
     updateUserDetailMutation.mutate(data);
+  }
+
+  const handleChangePassword = () => {
+    showDialog({
+      title: "Change Password",
+      description:
+        "Please enter your current password to change a new password.",
+      children: <ChangePasswordForm />,
+    });
   };
+
+  const requestResetPasswordMutation = useResetPassword({
+    mutationConfig: {
+      onSuccess: (response) => {
+        toast({
+          title: response.data.meta.message,
+        });
+      },
+    },
+  });
+
+  function handleRequestPasswordReset() {
+    showDialog({
+      isAlert: true,
+      title: "Are you sure you want to request password reset?",
+      description:
+        "The request will notify the administrator and you will need to wait admin's response to get a new password. Once your password is reset, your current session will be logged out of the system.",
+      cancel: {
+        label: "Cancel",
+        onClick: () => {
+          hideDialog();
+        },
+      },
+      action: {
+        label: "Yes, Request Password Reset",
+        onClick: () => {
+          requestResetPasswordMutation.mutate({
+            email: userInfo.email,
+          });
+        },
+      },
+    });
+  }
 
   // Derived values
   const isUpdating =
@@ -250,6 +295,22 @@ const ProfileAndSecurity = () => {
               Save Changes
             </CustomForm.Button>
           </CustomForm>
+        </div>
+      </div>
+      <div className="bg-card space-y-6 rounded-lg border p-6 shadow-sm">
+        <div className="space-y-2">
+          <h2 className="text-xl font-semibold">Password Access Control</h2>
+          <p className="text-brand text-sm">
+            For security reasons, only administrators can reset passwords. If
+            you’ve forgotten your password, please contact your system
+            administrator to request a reset.
+          </p>
+        </div>
+        <div className="flex items-center gap-x-3">
+          <Button onClick={handleChangePassword}>Change Password</Button>
+          <Button variant={"outline"} onClick={handleRequestPasswordReset}>
+            Request Password Reset
+          </Button>
         </div>
       </div>
     </div>

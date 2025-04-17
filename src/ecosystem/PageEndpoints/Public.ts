@@ -15,7 +15,17 @@ export const PublicPageEndPoints = {
       path: "/reset-password",
       pattern: "^/reset-password$",
       label: "Reset Password",
-      component: Loadable(lazy(() => import("@/modules/Auth/ResetPassword"))),
+      component: Loadable(
+        lazy(() => import("@/modules/Auth/RequestResetPassword")),
+      ),
+    },
+    success: {
+      path: "/reset-password/success",
+      pattern: "^/reset-password/success$",
+      label: "Reset Password Success",
+      component: Loadable(
+        lazy(() => import("@/modules/Auth/RequestResetPasswordSuccess")),
+      ),
     },
   },
 };
