@@ -11,6 +11,8 @@ export const FEATURES = {
   DEPARTMENT_SETTING: "DEPARTMENT_SETTING",
   USER_CRUD: "USER_CRUD",
   REACT_COMMENT_IDEA: "REACT_COMMENT_IDEA",
+  REPORT_IDEA: "REPORT_IDEA",
+  TOGGLE_HIDE_AND_SEE_REPORT_IDEA: "TOGGLE_HIDE_AND_SEE_REPORT_IDEA",
 } as const;
 
 const MAIN_NAV_ITEMS = {
@@ -67,7 +69,7 @@ export const ROLES: Role[] = [
     value: "qa-manager",
     label: "QA Manager",
     description: "QA Manager role",
-    features: [FEATURES.EXPORT_DATA],
+    features: [FEATURES.EXPORT_DATA, FEATURES.TOGGLE_HIDE_AND_SEE_REPORT_IDEA],
     authorizedEndpoints: excludedRoutes([]).map((route) => route.path),
   },
   {
@@ -77,6 +79,8 @@ export const ROLES: Role[] = [
     features: [FEATURES.EXPORT_DATA],
     authorizedEndpoints: excludedRoutes([
       PrivatePageEndPoints.departments.details.settings.path,
+      PrivatePageEndPoints.categories.path,
+      PrivatePageEndPoints.users.path,
     ]).map((route) => route.path),
   },
   {

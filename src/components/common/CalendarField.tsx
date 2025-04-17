@@ -34,8 +34,6 @@ export const CalendarField = <T extends FieldValues>({
 }: CalendarFieldProps<T>) => {
   const [open, setOpen] = useState(false);
 
-  console.log(hookedForm.getValues(field.name as Path<T>));
-
   return (
     <FormField
       key={field.name}
@@ -71,7 +69,7 @@ export const CalendarField = <T extends FieldValues>({
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="z-[1001] w-auto p-0" align="start">
                 <CalendarComponent
                   mode="single"
                   selected={formField.value ?? undefined}

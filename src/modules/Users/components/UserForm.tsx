@@ -58,12 +58,12 @@ const createUserSchema = (isEditMode: boolean) =>
 
       // Others department validation
       if (
-        data.role !== "staff" &&
+        data.role === "qa-coordinator" &&
         (!data.others_department || data.others_department.length === 0)
       ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Other departments are required for non-staff roles",
+          message: "Other departments are required for qa-coordinator role",
           path: ["others_department"],
         });
       }
@@ -173,6 +173,8 @@ function UserForm({ user, rolesData }: UserFormProps) {
       },
     });
   };
+
+  console.log(UserForm.formState.errors);
 
   return (
     <CustomForm

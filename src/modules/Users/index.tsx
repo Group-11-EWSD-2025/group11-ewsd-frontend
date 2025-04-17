@@ -19,6 +19,7 @@ import {
   Plus,
   SearchIcon,
   Trash,
+  UserCheck,
   UserX,
 } from "lucide-react";
 import * as React from "react";
@@ -321,6 +322,34 @@ const Users = () => {
 
         if (!canSeeActions) return null;
 
+        const ToggleDisableButton = () => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                if (row.original.is_disable) {
+                  handleEnableUser(row.original);
+                } else {
+                  handleDisableUser(row.original);
+                }
+              }}
+              className="w-full justify-start rounded-none p-2"
+            >
+              {row.original.is_disable ? (
+                <>
+                  <UserCheck className="size-4 text-slate-700" />
+                  Enable User
+                </>
+              ) : (
+                <>
+                  <UserX className="size-4 text-slate-700" />
+                  Disable User
+                </>
+              )}
+            </Button>
+          );
+        };
+
         return (
           <Popover>
             <PopoverTrigger>
@@ -346,14 +375,7 @@ const Users = () => {
                     Edit User
                   </Button>
                   <Separator />
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleDisableUser(row.original)}
-                    className="w-full justify-start rounded-none p-2"
-                  >
-                    <UserX className="size-4 text-slate-700" />
-                    Disable User
-                  </Button>
+                  <ToggleDisableButton />
                   <Button
                     variant="ghost"
                     onClick={() => handleDeleteUser(row.original)}
@@ -364,14 +386,7 @@ const Users = () => {
                   </Button>
                 </>
               ) : (
-                <Button
-                  variant="ghost"
-                  onClick={() => handleDisableUser(row.original)}
-                  className="w-full justify-start rounded-none p-2"
-                >
-                  <UserX className="size-4 text-slate-700" />
-                  Disable User
-                </Button>
+                <ToggleDisableButton />
               )}
             </PopoverContent>
           </Popover>
@@ -547,6 +562,10 @@ const Users = () => {
         },
       },
     });
+  }
+
+  function handleEnableUser(user: TUser) {
+    console.log(user);
   }
 
   return (

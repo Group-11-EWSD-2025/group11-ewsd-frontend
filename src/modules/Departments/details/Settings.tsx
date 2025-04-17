@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { toast } from "@/hooks/use-toast";
-import { getInitials, showDialog } from "@/lib/utils";
+import { getInitials, hideDialog, showDialog } from "@/lib/utils";
 import { useGetRoles } from "@/modules/Auth/api/queryGetRoles";
 import { useDeleteDepartment } from "@/modules/Departments/api/mutateDeleteDepartment";
 import { useUpdateDepartment } from "@/modules/Departments/api/mutateUpdateDepartment";
@@ -222,6 +222,13 @@ function DeleteDepartment() {
       title: "Delete Department",
       description:
         "Are you sure you want to delete this department? This action cannot be undone.",
+      cancel: {
+        label: "Cancel",
+        variant: "outline",
+        onClick: () => {
+          hideDialog();
+        },
+      },
       action: {
         label: "Delete",
         variant: "destructive",

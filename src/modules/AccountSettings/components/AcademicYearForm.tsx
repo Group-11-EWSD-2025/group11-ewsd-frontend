@@ -48,20 +48,6 @@ const academicYearSchema = z
   )
   .refine(
     (data) => {
-      const twoWeeksInMs = 14 * 24 * 60 * 60 * 1000; // 14 days in milliseconds
-      return (
-        data.idea_submission_deadline.getTime() - data.start_date.getTime() >=
-        twoWeeksInMs
-      );
-    },
-    {
-      message:
-        "Idea submission deadline must be at least 2 weeks after start date",
-      path: ["idea_submission_deadline"],
-    },
-  )
-  .refine(
-    (data) => {
       return (
         data.final_closure_date >= data.start_date &&
         data.final_closure_date <= data.end_date
@@ -74,30 +60,11 @@ const academicYearSchema = z
   )
   .refine(
     (data) => {
-      const twoWeeksInMs = 14 * 24 * 60 * 60 * 1000; // 14 days in milliseconds
-      return (
-        data.final_closure_date.getTime() -
-          data.idea_submission_deadline.getTime() >=
-        twoWeeksInMs
-      );
+      return data.final_closure_date >= data.idea_submission_deadline;
     },
     {
-      message:
-        "Final closure date must be at least 2 weeks after idea submission deadline",
+      message: "Final closure date must be after idea submission deadline",
       path: ["final_closure_date"],
-    },
-  )
-  .refine(
-    (data) => {
-      const oneWeekInMs = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-      return (
-        data.end_date.getTime() - data.final_closure_date.getTime() >=
-        oneWeekInMs
-      );
-    },
-    {
-      message: "End date must be at least 1 week after final closure date",
-      path: ["end_date"],
     },
   );
 
@@ -139,9 +106,11 @@ function AcademicYearForm({
         hideDialog();
       },
       onError: (error) => {
+        console.log(error);
         toast({
           title: "Failed to create academic year dates",
-          description: error.message,
+          // @ts-ignore
+          description: error.response?.data?.meta?.message,
           variant: "destructive",
         });
       },
@@ -211,11 +180,19 @@ function AcademicYearForm({
             name: "idea_submission_deadline",
             label: "Idea Submission Deadline",
             required: true,
+            disabled:
+              academicYear &&
+              new Date() >=
+                new Date(
+                  new Date(form.getValues("idea_submission_deadline")).setDate(
+                    form.getValues("idea_submission_deadline").getDate() - 14,
+                  ),
+                ),
           }}
         />
 
         <p className="text-muted-foreground text-sm">
-          Note: This can only be modified up to 2 weeks before the start date.
+          Note: This can only be modified up to 2 weeks before the set date.
         </p>
       </div>
 
@@ -234,18 +211,19 @@ function AcademicYearForm({
         </p>
       </div>
 
-      <CustomForm.Button
-        state={
-          createAcademicYearMutation.isPending ||
-          updateAcademicYearMutation.isPending
-            ? "loading"
-            : "default"
-        }
-        type="submit"
-        className="w-full"
-      >
-        {!!academicYear ? "Update" : "Create"}
-      </CustomForm.Button>
+      <div className="flex justify-end">
+        <CustomForm.Button
+          state={
+            createAcademicYearMutation.isPending ||
+            updateAcademicYearMutation.isPending
+              ? "loading"
+              : "default"
+          }
+          type="submit"
+        >
+          {!!academicYear ? "Update" : "Create"}
+        </CustomForm.Button>
+      </div>
     </CustomForm>
   );
 }
