@@ -32,6 +32,7 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
   const [filesArray, setFilesArray] = useState<File[]>(
     idea?.files.map((file) => new File([file.file], file.file)) || [],
   );
+  const remainingFileSlots = MAX_TOTAL_FILES - filesArray.length;
 
   const ideaForm = useForm<IdeaFormInputs>({
     resolver: zodResolver(ideaSchema),
@@ -190,23 +191,23 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
               ))}
 
               {/* File upload button */}
-              {/* {remainingFileSlots > 0 && ( */}
-              <CustomForm.FileUploadField
-                field={{
-                  name: "files",
-                  children: (
-                    <FileUploadField.SimpleUpload>
-                      <div className="flex h-[120px] w-[120px] cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 hover:bg-gray-50">
-                        <PaperclipIcon className="mb-2 h-6 w-6 text-gray-500" />
-                        <p className="text-sm text-gray-500">Choose File</p>
-                      </div>
-                    </FileUploadField.SimpleUpload>
-                  ),
-                  isMultiple: true,
-                  // maxFiles: remainingFileSlots,
-                }}
-              />
-              {/* )} */}
+              {remainingFileSlots > 0 && (
+                <CustomForm.FileUploadField
+                  field={{
+                    name: "files",
+                    children: (
+                      <FileUploadField.SimpleUpload>
+                        <div className="flex h-[120px] w-[120px] cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 hover:bg-gray-50">
+                          <PaperclipIcon className="mb-2 h-6 w-6 text-gray-500" />
+                          <p className="text-sm text-gray-500">Choose File</p>
+                        </div>
+                      </FileUploadField.SimpleUpload>
+                    ),
+                    isMultiple: true,
+                    maxFiles: remainingFileSlots,
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>
