@@ -142,12 +142,12 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
             )}
           <div className="flex items-center gap-x-2">
             <Avatar className="size-10 border border-gray-200">
-              <AvatarImage src={authState?.userData.profile ?? ""} />
+              <AvatarImage src={authState?.userData?.profile ?? ""} />
               <AvatarFallback>
-                {getInitials(authState?.userData.name)}
+                {getInitials(authState?.userData?.name ?? "")}
               </AvatarFallback>
             </Avatar>
-            <p>{authState?.userData.name}</p>
+            <p>{authState?.userData?.name}</p>
           </div>
         </div>
       </div>
@@ -177,9 +177,9 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
                 </Link>
               )}
             <Avatar>
-              <AvatarImage src={authState?.userData.profile ?? ""} />
+              <AvatarImage src={authState?.userData?.profile ?? ""} />
               <AvatarFallback>
-                {getInitials(authState?.userData.name)}
+                {getInitials(authState?.userData?.name ?? "")}
               </AvatarFallback>
             </Avatar>
           </div>
