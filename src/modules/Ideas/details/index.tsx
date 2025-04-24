@@ -1,4 +1,5 @@
 import CustomForm from "@/components/common/CustomForm";
+import HideButton from "@/components/common/HideButton";
 import IdeaAttachmentCard from "@/components/common/IdeaAttachmentCard";
 import { isAttachment, isImage } from "@/components/common/IdeaCard";
 import IdeaCardPopover from "@/components/common/IdeaCardPopover";
@@ -22,6 +23,7 @@ import {
   ArrowUp,
   Clock,
   Eye,
+  Flag,
   Loader2,
   Send,
   ThumbsDown,
@@ -142,10 +144,22 @@ function IdeaDetails() {
             <div className="flex items-center gap-x-2">
               <Tag content={`#${ideaData?.category?.name}`} />
             </div>
-            <div className="flex items-center gap-x-6">
-              {authState?.userData?.id !== ideaData?.user_id && (
-                <ReportButton />
+            <div className="flex items-center gap-x-2">
+              {checkFeatureAvailability(
+                FEATURES.TOGGLE_HIDE_AND_SEE_REPORT_IDEA,
+              ) && (
+                <div className="flex items-center gap-x-2 rounded-md bg-red-100 px-2.5 py-1.5">
+                  <Flag size={20} className="text-destructive" />
+                  <p className="text-destructive">{ideaData.report_count}</p>
+                </div>
               )}
+              {checkFeatureAvailability(FEATURES.REPORT_IDEA) &&
+                authState?.userData?.id !== ideaData?.user_id && (
+                  <ReportButton idea={ideaData} />
+                )}
+              {checkFeatureAvailability(
+                FEATURES.TOGGLE_HIDE_AND_SEE_REPORT_IDEA,
+              ) && <HideButton isHidden={false} />}
               {authState?.userData?.id === ideaData?.user_id && (
                 <IdeaCardPopover idea={ideaData} />
               )}

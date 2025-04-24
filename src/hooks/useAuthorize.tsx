@@ -87,7 +87,11 @@ export const ROLES: Role[] = [
     value: "staff",
     label: "Staff",
     description: "Staff role",
-    features: [FEATURES.CREATE_IDEA, FEATURES.REACT_COMMENT_IDEA],
+    features: [
+      FEATURES.CREATE_IDEA,
+      FEATURES.REACT_COMMENT_IDEA,
+      FEATURES.REPORT_IDEA,
+    ],
     authorizedEndpoints: excludedRoutes([
       PrivatePageEndPoints.categories.path,
       PrivatePageEndPoints.insights.path,

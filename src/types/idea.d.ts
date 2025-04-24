@@ -59,4 +59,6 @@ export type TIdea = {
   is_unliked: boolean;
   likes_count: number;
   un_likes_count: number;
+  is_report: boolean;
+  report_count: number;
 };

@@ -113,7 +113,7 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
             ) && <HideButton isHidden={false} />}
             {authState?.userData?.id !== idea.user_id &&
               checkFeatureAvailability(FEATURES.REPORT_IDEA) && (
-                <ReportButton />
+                <ReportButton idea={idea} />
               )}
             {authState?.userData?.id === idea.user_id && (
               <IdeaCardPopover idea={idea} />
@@ -177,10 +177,15 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
           </p>
         </div>
         <div className="flex items-center">
-          <div className="flex items-center gap-x-2 rounded-md bg-red-100 px-2.5 py-1.5">
-            <Flag size={20} className="text-destructive" />
-            <p className="text-destructive">12</p>
-          </div>
+          {checkFeatureAvailability(
+            FEATURES.TOGGLE_HIDE_AND_SEE_REPORT_IDEA,
+          ) && (
+            <div className="flex items-center gap-x-2 rounded-md bg-red-100 px-2.5 py-1.5">
+              <Flag size={20} className="text-destructive" />
+              <p className="text-destructive">{idea.report_count}</p>
+            </div>
+          )}
+
           <Button
             variant="ghost"
             onClick={handleLikeButtonClick}
