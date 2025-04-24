@@ -51,7 +51,7 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
 
   const getDepartmentList = useGetDepartmentList({
     params: {
-      userId: authState.userData.id,
+      userId: authState.userData?.id,
     },
     queryConfig: {
       retry: false,
