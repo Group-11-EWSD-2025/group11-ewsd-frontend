@@ -12,7 +12,8 @@ export const FEATURES = {
   USER_CRUD: "USER_CRUD",
   REACT_COMMENT_IDEA: "REACT_COMMENT_IDEA",
   REPORT_IDEA: "REPORT_IDEA",
-  TOGGLE_HIDE_AND_SEE_REPORT_IDEA: "TOGGLE_HIDE_AND_SEE_REPORT_IDEA",
+  TOGGLE_HIDE_UNHIDE: "TOGGLE_HIDE_UNHIDE",
+  SEE_REPORT_COUNT: "SEE_REPORT_COUNT",
 } as const;
 
 const MAIN_NAV_ITEMS = {
@@ -60,6 +61,7 @@ export const ROLES: Role[] = [
       FEATURES.CREATE_DEPARTMENT,
       FEATURES.DEPARTMENT_SETTING,
       FEATURES.USER_CRUD,
+      FEATURES.SEE_REPORT_COUNT,
     ],
     authorizedEndpoints: excludedRoutes([
       PrivatePageEndPoints.categories.path,
@@ -69,14 +71,18 @@ export const ROLES: Role[] = [
     value: "qa-manager",
     label: "QA Manager",
     description: "QA Manager role",
-    features: [FEATURES.EXPORT_DATA, FEATURES.TOGGLE_HIDE_AND_SEE_REPORT_IDEA],
+    features: [
+      FEATURES.EXPORT_DATA,
+      FEATURES.SEE_REPORT_COUNT,
+      FEATURES.TOGGLE_HIDE_UNHIDE,
+    ],
     authorizedEndpoints: excludedRoutes([]).map((route) => route.path),
   },
   {
     value: "qa-coordinator",
     label: "QA Coordinator",
     description: "QA Coordinator role",
-    features: [FEATURES.EXPORT_DATA],
+    features: [FEATURES.EXPORT_DATA, FEATURES.SEE_REPORT_COUNT],
     authorizedEndpoints: excludedRoutes([
       PrivatePageEndPoints.departments.details.settings.path,
       PrivatePageEndPoints.categories.path,

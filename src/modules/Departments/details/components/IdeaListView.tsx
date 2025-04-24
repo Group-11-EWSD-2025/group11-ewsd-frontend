@@ -1,6 +1,7 @@
 import { IdeaCard, IdeaCardSkeleton } from "@/components/common/IdeaCard";
 import Pagination from "@/components/common/Pagination";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 import { FEATURES, useAuthorize } from "@/hooks/useAuthorize";
 import { showDialog } from "@/lib/utils";
 import { useGetIdeaList } from "@/modules/Departments/details/api/queryGetIdeaList";
@@ -15,6 +16,7 @@ import { useParams } from "react-router-dom";
 const IdeaListView = () => {
   const { id: departmentId } = useParams();
   const { checkFeatureAvailability } = useAuthorize();
+  const { authState } = useAuth();
 
   const [tab] = useQueryState("tab", parseAsString.withDefault("latest"));
   const [startDate] = useQueryState("startDate", parseAsString.withDefault(""));
@@ -54,6 +56,7 @@ const IdeaListView = () => {
       page: Number(page),
       perPage: Number(perPage),
       departmentId,
+      isHidden: authState?.userData?.role === "staff" ? true : false,
     },
     queryConfig: {
       enabled: true,

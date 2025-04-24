@@ -149,6 +149,9 @@ function AcademicYearForm({
     }
   }
 
+  const ideaCount = academicYear?.idea_count ?? 0;
+  console.log(academicYear?.idea_count, ideaCount);
+
   return (
     <CustomForm formMethods={form} onSubmit={onSubmit} className="space-y-6">
       <div className="space-y-2">
@@ -158,6 +161,7 @@ function AcademicYearForm({
               name: "start_date",
               label: "Start Date",
               required: true,
+              disabled: ideaCount > 0,
             }}
           />
           <CustomForm.CalendarField
@@ -165,6 +169,7 @@ function AcademicYearForm({
               name: "end_date",
               label: "End Date",
               required: true,
+              disabled: ideaCount > 0,
             }}
           />
         </div>

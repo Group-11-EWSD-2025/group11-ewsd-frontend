@@ -60,6 +60,7 @@ export const CalendarField = <T extends FieldValues>({
                     "w-full justify-start text-left font-normal",
                     !formField.value && "text-muted-foreground",
                   )}
+                  disabled={field.disabled}
                 >
                   <Calendar className="mr-2 h-4 w-4" />
                   {formField.value ? (

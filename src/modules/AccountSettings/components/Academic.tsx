@@ -29,6 +29,7 @@ export type AcademicYearData = {
   idea_submission_deadline: string;
   final_closure_date: string;
   status: "active" | "closed";
+  idea_count: number;
 };
 
 const Academic = () => {

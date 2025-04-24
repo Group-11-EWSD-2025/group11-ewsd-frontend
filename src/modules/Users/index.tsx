@@ -63,6 +63,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useGetRoles } from "../Auth/api/queryGetRoles";
 import { useDeleteUser } from "./api/mutateDeleteUser";
 import { useDisableUser } from "./api/mutateDisableUser";
+import { useEnableUser } from "./api/mutateEnableUser";
 import { useGetUsers } from "./api/queryGetUsers";
 
 const Users = () => {
@@ -189,6 +190,21 @@ const Users = () => {
       onSuccess: () => {
         toast({
           title: "User disabled successfully",
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["getUsers"],
+          exact: false,
+        });
+        hideDialog();
+      },
+    },
+  });
+
+  const { mutate: enableUser, isPending: isEnablingUser } = useEnableUser({
+    mutationConfig: {
+      onSuccess: () => {
+        toast({
+          title: "User enabled successfully",
         });
         queryClient.invalidateQueries({
           queryKey: ["getUsers"],
@@ -545,7 +561,7 @@ const Users = () => {
       children: (
         <div>
           <p className="text-brand text-sm">
-            This action cannot be undone, and the user will lose access to the
+            This action cannot be undone, and the user will lose access to the
             system.
           </p>
         </div>
@@ -565,7 +581,27 @@ const Users = () => {
   }
 
   function handleEnableUser(user: TUser) {
-    console.log(user);
+    showDialog({
+      isAlert: true,
+      title: "Confirm restoring user access?",
+      children: (
+        <div>
+          <p className="text-brand text-sm">
+            After enabling the user, they will regain access to the system.
+          </p>
+        </div>
+      ),
+      cancel: {
+        label: "Cancel",
+      },
+      action: {
+        label: "Yes, Enable",
+        state: isEnablingUser ? "loading" : "default",
+        onClick: () => {
+          enableUser({ id: user.id });
+        },
+      },
+    });
   }
 
   return (

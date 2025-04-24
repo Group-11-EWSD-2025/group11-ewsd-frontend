@@ -108,9 +108,9 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
             <Tag content={`#${idea.category?.name}`} />
           </div>
           <div className="flex items-center gap-x-4">
-            {checkFeatureAvailability(
-              FEATURES.TOGGLE_HIDE_AND_SEE_REPORT_IDEA,
-            ) && <HideButton isHidden={false} />}
+            {checkFeatureAvailability(FEATURES.TOGGLE_HIDE_UNHIDE) && (
+              <HideButton idea={idea} />
+            )}
             {authState?.userData?.id !== idea.user_id &&
               checkFeatureAvailability(FEATURES.REPORT_IDEA) && (
                 <ReportButton idea={idea} />
@@ -177,9 +177,7 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
           </p>
         </div>
         <div className="flex items-center">
-          {checkFeatureAvailability(
-            FEATURES.TOGGLE_HIDE_AND_SEE_REPORT_IDEA,
-          ) && (
+          {checkFeatureAvailability(FEATURES.SEE_REPORT_COUNT) && (
             <div className="flex items-center gap-x-2 rounded-md bg-red-100 px-2.5 py-1.5">
               <Flag size={20} className="text-destructive" />
               <p className="text-destructive">{idea.report_count}</p>
