@@ -1,4 +1,5 @@
 import CustomForm from "@/components/common/CustomForm";
+import { API_BASE_URL } from "@/config/env";
 import { useGetAcademicYearList } from "@/modules/AccountSettings/api/queryGetAcademicYearList";
 import { AcademicYearData } from "@/modules/AccountSettings/components/Academic";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,7 +48,8 @@ export const ExportDataDialog = () => {
 
   function onSubmit() {
     if (exportForm.getValues("csv") || exportForm.getValues("zip")) {
-      exportData.refetch();
+      const downloadLink = `${API_BASE_URL}export/idea-list?department_id=${departmentId}&academic_year_id=${academicYearId}&csv=${exportForm.getValues("csv") ? "1" : ""}&zip=${exportForm.getValues("zip") ? "1" : ""}`;
+      window.open(downloadLink, "_blank");
     }
   }
 

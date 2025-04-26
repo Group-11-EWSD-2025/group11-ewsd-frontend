@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, hideDialog, showDialog } from "@/lib/utils";
 import { useReportIdea } from "@/modules/Ideas/api/mutateReportIdea";
 import { TIdea } from "@/types/idea";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,12 +21,25 @@ function ReportButton({
           queryKey: ["getIdeaDetails", idea.id],
         });
         queryClient.invalidateQueries({ queryKey: ["getIdeaList"] });
+        hideDialog();
       },
     },
   });
 
   function handleReport() {
-    reportIdea.mutate(idea.id);
+    showDialog({
+      isAlert: true,
+      title: "Report Idea",
+      description: "Are you sure you want to report this idea?",
+      action: {
+        variant: "destructive",
+        label: "Report",
+        state: reportIdea.isPending ? "loading" : "default",
+        onClick: () => {
+          reportIdea.mutate(idea.id);
+        },
+      },
+    });
   }
 
   return (

@@ -150,7 +150,6 @@ function AcademicYearForm({
   }
 
   const ideaCount = academicYear?.idea_count ?? 0;
-  console.log(academicYear?.idea_count, ideaCount);
 
   return (
     <CustomForm formMethods={form} onSubmit={onSubmit} className="space-y-6">

@@ -31,6 +31,7 @@ function IdeaCardPopover({ idea }: { idea: TIdea }) {
           queryKey: ["getIdeaList"],
         });
         toast({ title: "Idea deleted successfully." });
+        hideDialog();
       },
     },
   });
@@ -43,9 +44,6 @@ function IdeaCardPopover({ idea }: { idea: TIdea }) {
       cancel: {
         label: "Cancel",
         variant: "outline",
-        onClick: () => {
-          hideDialog();
-        },
       },
       action: {
         label: "Delete",
@@ -79,6 +77,7 @@ function IdeaCardPopover({ idea }: { idea: TIdea }) {
           <Button
             variant="ghost"
             onClick={handleDeleteIdea}
+            state={deleteIdea.isPending ? "loading" : "default"}
             className="w-full justify-start rounded-none p-2 text-red-500"
           >
             <Trash className="size-4" />

@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
-import { cn, showDialog } from "@/lib/utils";
+import { cn, hideDialog, showDialog } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDate, parseISO } from "date-fns";
 import { MoreVertical, Pencil, Plus, Trash } from "lucide-react";
@@ -120,6 +120,7 @@ const AcademicYearRow = ({ year }: { year: AcademicYearData }) => {
         queryClient.invalidateQueries({
           queryKey: ["academic-year-list"],
         });
+        hideDialog();
       },
       onError: (error) => {
         toast({
@@ -191,6 +192,9 @@ const AcademicYearRow = ({ year }: { year: AcademicYearData }) => {
               <Button
                 variant="ghost"
                 className="w-full justify-start rounded-none p-2 !text-red-500"
+                state={
+                  deleteAcademicYearMutation.isPending ? "loading" : "default"
+                }
                 onClick={() => handleDelete(year.id)}
               >
                 <Trash className="mr-2 h-4 w-4 text-red-500" />

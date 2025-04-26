@@ -152,6 +152,7 @@ const ProfileAndSecurity = () => {
         toast({
           title: response.data.meta.message,
         });
+        hideDialog();
       },
     },
   });
@@ -164,12 +165,10 @@ const ProfileAndSecurity = () => {
         "The request will notify the administrator and you will need to wait admin's response to get a new password. Once your password is reset, your current session will be logged out of the system.",
       cancel: {
         label: "Cancel",
-        onClick: () => {
-          hideDialog();
-        },
       },
       action: {
         label: "Yes, Request Password Reset",
+        state: requestResetPasswordMutation.isPending ? "loading" : "default",
         onClick: () => {
           requestResetPasswordMutation.mutate({
             email: userInfo.email,
@@ -308,7 +307,13 @@ const ProfileAndSecurity = () => {
         </div>
         <div className="flex items-center gap-x-3">
           <Button onClick={handleChangePassword}>Change Password</Button>
-          <Button variant={"outline"} onClick={handleRequestPasswordReset}>
+          <Button
+            variant={"outline"}
+            state={
+              requestResetPasswordMutation.isPending ? "loading" : "default"
+            }
+            onClick={handleRequestPasswordReset}
+          >
             Request Password Reset
           </Button>
         </div>

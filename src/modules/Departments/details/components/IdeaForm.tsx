@@ -1,5 +1,8 @@
 import CustomForm from "@/components/common/CustomForm";
 import { FileUploadField } from "@/components/common/FileUploadDragAndDrop";
+import IdeaAttachmentCard from "@/components/common/IdeaAttachmentCard";
+import { isAttachment, isImage } from "@/components/common/IdeaCard";
+import IdeaImgCard from "@/components/common/IdeaImgCard";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
@@ -9,6 +12,7 @@ import { TIdea } from "@/types/idea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { PaperclipIcon, X } from "lucide-react";
+import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -33,6 +37,11 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
     idea?.files.map((file) => new File([file.file], file.file)) || [],
   );
   const remainingFileSlots = MAX_TOTAL_FILES - filesArray.length;
+
+  const [, setStartDate] = useQueryState("startDate");
+  const [, setEndDate] = useQueryState("endDate");
+  const [, setCategoryId] = useQueryState("categoryId");
+  const [, setPage] = useQueryState("page");
 
   const ideaForm = useForm<IdeaFormInputs>({
     resolver: zodResolver(ideaSchema),
@@ -65,6 +74,10 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
         });
         toast({ title: "Idea created successfully" });
         hideDialog();
+        setStartDate("");
+        setEndDate("");
+        setCategoryId("");
+        setPage("");
       },
     },
   });
@@ -169,26 +182,28 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
         <div>
           <Label>Attachments (up to {MAX_TOTAL_FILES} items)</Label>
           <div className="mt-2">
-            <div className="flex flex-wrap gap-4">
-              {/* Existing files preview */}
-              {filesArray?.map((file) => (
-                <div key={file.name} className="relative">
-                  <div className="h-[120px] w-[120px] overflow-hidden rounded-lg border border-gray-200">
-                    <img
-                      src={file.name}
-                      alt="Attachment preview"
-                      className="h-full w-full object-cover"
-                    />
+            <div className="grid grid-cols-4 items-center gap-x-2">
+              {filesArray.length > 0 &&
+                filesArray.map((file, index) => (
+                  <div key={`file.name-${index}`} className="relative">
+                    {isImage(file.name.split(".").pop() || "") && (
+                      <IdeaImgCard key={`img-${index}`} image={file.name} />
+                    )}
+                    {isAttachment(file.name.split(".").pop() || "") && (
+                      <IdeaAttachmentCard
+                        key={`attachment-${index}`}
+                        attachment={file.name}
+                      />
+                    )}
+                    <button
+                      type="button"
+                      className="absolute top-2 right-2 rounded-full bg-white p-1 shadow-md transition-opacity"
+                      onClick={() => handleRemoveExistingFile(file.name)}
+                    >
+                      <X className="h-4 w-4 text-gray-600" />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    className="absolute top-2 right-2 rounded-full bg-white p-1 shadow-md transition-opacity"
-                    onClick={() => handleRemoveExistingFile(file.name)}
-                  >
-                    <X className="h-4 w-4 text-gray-600" />
-                  </button>
-                </div>
-              ))}
+                ))}
 
               {/* File upload button */}
               {remainingFileSlots > 0 && (
@@ -197,7 +212,7 @@ export default function IdeaForm({ idea }: { idea?: TIdea }) {
                     name: "files",
                     children: (
                       <FileUploadField.SimpleUpload>
-                        <div className="flex h-[120px] w-[120px] cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 hover:bg-gray-50">
+                        <div className="flex aspect-square w-[126px] cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 hover:bg-gray-50">
                           <PaperclipIcon className="mb-2 h-6 w-6 text-gray-500" />
                           <p className="text-sm text-gray-500">Choose File</p>
                         </div>

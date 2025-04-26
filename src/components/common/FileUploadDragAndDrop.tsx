@@ -378,7 +378,7 @@ const FileList = () => {
       <div className="flex gap-3">
         {acceptedFiles.map((file) => (
           <div key={file.name} className="relative">
-            <div className="flex h-[128px] w-[128px] items-center justify-center rounded-lg bg-gray-50">
+            <div className="flex aspect-square w-[126px] items-center justify-center rounded-lg bg-gray-50">
               {file.type.startsWith("image/") ? (
                 <img
                   src={URL.createObjectURL(file)}
@@ -392,7 +392,7 @@ const FileList = () => {
                   ) : (
                     <File className="size-6 text-gray-400" />
                   )}
-                  <p className="text-muted-foreground max-w-[100px] truncate text-xs">
+                  <p className="text-muted-foreground max-w-[100px] truncate text-sm">
                     {file.name}
                   </p>
                 </div>

@@ -211,6 +211,7 @@ function DeleteDepartment() {
           queryKey: ["getDepartmentList"],
         });
         toast({ title: "Department deleted successfully." });
+        hideDialog();
         navigate(PrivatePageEndPoints.root.path);
       },
     },
