@@ -6,6 +6,7 @@ import { TRole } from "@/types/roles";
 import { TUser } from "@/types/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../../../components/ui/button";
@@ -175,6 +176,20 @@ function UserForm({ user, rolesData }: UserFormProps) {
   };
 
   console.log(UserForm.formState.errors);
+
+  useEffect(() => {
+    if (user?.role !== UserForm.watch("role")) {
+      switch (UserForm.watch("role")) {
+        case "qa-manager":
+        case "staff":
+          UserForm.setValue("staff_department", "");
+          break;
+        case "qa-coordinator":
+          UserForm.setValue("others_department", []);
+          break;
+      }
+    }
+  }, [UserForm.watch("role")]);
 
   return (
     <CustomForm
