@@ -9,7 +9,7 @@ const useAcademicYear = () => {
       (year: AcademicYearData) => year.status === "active",
     );
 
-    return true;
+    // return true;
     return (
       academicYear?.final_closure_date &&
       academicYear?.final_closure_date < new Date()

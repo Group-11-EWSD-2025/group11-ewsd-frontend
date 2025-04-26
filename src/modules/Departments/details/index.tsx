@@ -9,10 +9,9 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useAcademicYear from "@/hooks/useAcademicYear";
 import { FEATURES, useAuthorize } from "@/hooks/useAuthorize";
 import { cn, showDialog } from "@/lib/utils";
-import { useGetAcademicYearList } from "@/modules/AccountSettings/api/queryGetAcademicYearList";
-import { AcademicYearData } from "@/modules/AccountSettings/components/Academic";
 import { useGetCategoryList } from "@/modules/Categories/api/queryGetCategoryList";
 import ExportDataDialog from "@/modules/Departments/details/components/ExportDataDialog";
 import IdeaForm from "@/modules/Departments/details/components/IdeaForm";
@@ -68,15 +67,7 @@ const DepartmentDetails = () => {
     parseAsString.withDefault(""),
   );
 
-  const getAcademicYearList = useGetAcademicYearList({});
-
-  const academicYear = getAcademicYearList.data?.data.body.find(
-    (year: AcademicYearData) => year.status === "active",
-  );
-
-  const IS_FINAL_CLOSURE_DATE =
-    academicYear?.final_closure_date &&
-    academicYear?.final_closure_date < new Date();
+  const { isFinalClosureDate } = useAcademicYear();
 
   const isUsingParams = useMemo(() => {
     return (
@@ -91,7 +82,7 @@ const DepartmentDetails = () => {
   }, [redirectDepartment]);
 
   const IS_SHOW_EXPORT_DATA_BUTTON =
-    IS_FINAL_CLOSURE_DATE && checkFeatureAvailability(FEATURES.EXPORT_DATA);
+    isFinalClosureDate && checkFeatureAvailability(FEATURES.EXPORT_DATA);
 
   const { data: categoriesResponse, isLoading: isLoadingCategories } =
     useGetCategoryList({
@@ -208,7 +199,7 @@ const DepartmentDetails = () => {
                   Reset Filters
                 </Button>
               )}
-              {!IS_FINAL_CLOSURE_DATE &&
+              {!isFinalClosureDate &&
                 checkFeatureAvailability(FEATURES.CREATE_IDEA) && (
                   <>
                     <div className="hidden h-10 md:block">
