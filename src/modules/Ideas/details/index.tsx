@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/AuthContext";
+import useAcademicYear from "@/hooks/useAcademicYear";
 import { FEATURES, useAuthorize } from "@/hooks/useAuthorize";
 import { cn, getInitials } from "@/lib/utils";
 import { TComment, TIdea } from "@/types/idea";
@@ -42,6 +43,7 @@ function IdeaDetails() {
   const { ideaId } = useParams();
   const { authState } = useAuth();
   const { checkFeatureAvailability } = useAuthorize();
+  const { isFinalClosureDate } = useAcademicYear();
   const [viewBy, setViewBy] = useState<"asc" | "desc">("desc");
 
   const { data: idea, isLoading } = useGetIdeaDetails({
@@ -109,8 +111,6 @@ function IdeaDetails() {
     return <Skeleton className="h-[calc(100vh-var(--topbar-height))]" />;
   }
 
-  console.log(ideaData?.comments);
-
   return (
     <div className="relative mx-auto space-y-4 p-4 lg:mt-[var(--topbar-height)] lg:max-w-[var(--content-width)] lg:p-6">
       <div className="flex items-center justify-between">
@@ -153,14 +153,19 @@ function IdeaDetails() {
               )}
               {checkFeatureAvailability(FEATURES.REPORT_IDEA) &&
                 authState?.userData?.id !== ideaData?.user_id && (
-                  <ReportButton idea={ideaData} />
+                  <ReportButton
+                    isFinalClosureDate={isFinalClosureDate}
+                    idea={ideaData}
+                  />
                 )}
               {checkFeatureAvailability(FEATURES.TOGGLE_HIDE_UNHIDE) && (
-                <HideButton idea={ideaData} />
+                <HideButton
+                  isFinalClosureDate={isFinalClosureDate}
+                  idea={ideaData}
+                />
               )}
-              {authState?.userData?.id === ideaData?.user_id && (
-                <IdeaCardPopover idea={ideaData} />
-              )}
+              {authState?.userData?.id === ideaData?.user_id &&
+                !isFinalClosureDate && <IdeaCardPopover idea={ideaData} />}
             </div>
           </div>
           <p className="text-text-strong">{ideaData?.content}</p>
@@ -193,7 +198,8 @@ function IdeaDetails() {
               onClick={handleLikeButtonClick}
               disabled={
                 likeIdea.isPending ||
-                !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA)
+                !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA) ||
+                isFinalClosureDate
               }
             >
               <ThumbsUp
@@ -212,7 +218,8 @@ function IdeaDetails() {
               onClick={handleUnlikeButtonClick}
               disabled={
                 unlikeIdea.isPending ||
-                !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA)
+                !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA) ||
+                isFinalClosureDate
               }
             >
               <ThumbsDown
@@ -275,13 +282,14 @@ function IdeaDetails() {
           </div>
         </div>
 
-        {checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA) && (
-          <div className="sticky bottom-0 left-0 rounded-xl bg-white p-4 lg:p-5">
-            <div className="border-border-weak rounded-lg border p-3 shadow-sm">
-              <CommentForm />
+        {checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA) &&
+          !isFinalClosureDate && (
+            <div className="sticky bottom-0 left-0 rounded-xl bg-white p-4 lg:p-5">
+              <div className="border-border-weak rounded-lg border p-3 shadow-sm">
+                <CommentForm />
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
     </div>
   );
@@ -350,6 +358,7 @@ function CommentForm() {
       content: data.comment,
       privacy: data.isAnonymous ? "private" : "public",
     });
+    commentForm.reset();
   }
 
   return (

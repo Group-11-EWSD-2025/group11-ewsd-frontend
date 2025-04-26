@@ -4,7 +4,13 @@ import { TIdea } from "@/types/idea";
 import { useQueryClient } from "@tanstack/react-query";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
-function HideButton({ idea }: { idea: TIdea }) {
+function HideButton({
+  idea,
+  isFinalClosureDate,
+}: {
+  idea: TIdea;
+  isFinalClosureDate: boolean;
+}) {
   const queryClient = useQueryClient();
 
   const toggleHideIdea = useToggleHideIdea({
@@ -30,6 +36,7 @@ function HideButton({ idea }: { idea: TIdea }) {
       variant="ghost"
       className="flex cursor-pointer items-center gap-x-2"
       onClick={handleHide}
+      disabled={isFinalClosureDate}
     >
       {idea.status === "hide" ? (
         <Eye size={20} className="text-brand" />

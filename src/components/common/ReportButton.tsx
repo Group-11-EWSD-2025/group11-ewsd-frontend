@@ -5,7 +5,13 @@ import { TIdea } from "@/types/idea";
 import { useQueryClient } from "@tanstack/react-query";
 import { Flag } from "lucide-react";
 
-function ReportButton({ idea }: { idea: TIdea }) {
+function ReportButton({
+  idea,
+  isFinalClosureDate,
+}: {
+  idea: TIdea;
+  isFinalClosureDate: boolean;
+}) {
   const queryClient = useQueryClient();
 
   const reportIdea = useReportIdea({
@@ -28,7 +34,7 @@ function ReportButton({ idea }: { idea: TIdea }) {
       variant="ghost"
       className="flex cursor-pointer items-center gap-x-2"
       state={reportIdea.isPending ? "loading" : "default"}
-      disabled={idea.is_report}
+      disabled={idea.is_report || isFinalClosureDate}
       onClick={handleReport}
     >
       <Flag size={20} className={cn({ "text-destructive": idea.is_report })} />

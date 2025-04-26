@@ -208,24 +208,25 @@ const DepartmentDetails = () => {
                   Reset Filters
                 </Button>
               )}
-              {checkFeatureAvailability(FEATURES.CREATE_IDEA) && (
-                <>
-                  <div className="hidden h-10 md:block">
-                    <Button type="button" onClick={handleCreateNewIdea}>
-                      Create New Idea
-                    </Button>
-                  </div>
-                  <div className="block h-10 md:hidden">
-                    <Button
-                      type="button"
-                      size="icon"
-                      onClick={handleCreateNewIdea}
-                    >
-                      <Plus size={16} />
-                    </Button>
-                  </div>
-                </>
-              )}
+              {!IS_FINAL_CLOSURE_DATE &&
+                checkFeatureAvailability(FEATURES.CREATE_IDEA) && (
+                  <>
+                    <div className="hidden h-10 md:block">
+                      <Button type="button" onClick={handleCreateNewIdea}>
+                        Create New Idea
+                      </Button>
+                    </div>
+                    <div className="block h-10 md:hidden">
+                      <Button
+                        type="button"
+                        size="icon"
+                        onClick={handleCreateNewIdea}
+                      >
+                        <Plus size={16} />
+                      </Button>
+                    </div>
+                  </>
+                )}
             </div>
           </div>
 

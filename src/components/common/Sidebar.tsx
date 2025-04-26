@@ -46,7 +46,7 @@ const Sidebar = ({ setIsSidebarOpen }: Props) => {
   ];
 
   const isActive = (path: string) => {
-    return currentPath === path;
+    return currentPath.includes(path);
   };
 
   const getDepartmentList = useGetDepartmentList({

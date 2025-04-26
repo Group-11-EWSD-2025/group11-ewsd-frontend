@@ -5,7 +5,7 @@ import { RequestResetPasswordFormInputs } from "../RequestResetPassword";
 
 export const resetPassword = (data: RequestResetPasswordFormInputs) => {
   return AXIOS_CLIENT.post(
-    `reset-password`,
+    `password-reset/request`,
     {
       email: data.email,
     },

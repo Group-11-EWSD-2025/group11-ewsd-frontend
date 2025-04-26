@@ -76,7 +76,9 @@ export const ROLES: Role[] = [
       FEATURES.SEE_REPORT_COUNT,
       FEATURES.TOGGLE_HIDE_UNHIDE,
     ],
-    authorizedEndpoints: excludedRoutes([]).map((route) => route.path),
+    authorizedEndpoints: excludedRoutes([
+      PrivatePageEndPoints.insights.path,
+    ]).map((route) => route.path),
   },
   {
     value: "qa-coordinator",
@@ -87,6 +89,7 @@ export const ROLES: Role[] = [
       PrivatePageEndPoints.departments.details.settings.path,
       PrivatePageEndPoints.categories.path,
       PrivatePageEndPoints.users.path,
+      PrivatePageEndPoints.insights.path,
     ]).map((route) => route.path),
   },
   {

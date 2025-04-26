@@ -80,6 +80,13 @@ const Insights = () => {
     },
   };
 
+  const mostViewPages = [
+    "Idea Details Page",
+    "User Management Page",
+    "Account Settings Page",
+  ];
+  const topActiveUsers = ["John Smith", "Prof. Susan", "Sarah Johnson"];
+
   return (
     <div className="relative mx-auto space-y-4 p-4 lg:mt-[var(--topbar-height)] lg:max-w-[var(--content-width)] lg:p-6">
       <div className="flex items-center justify-between">
@@ -124,7 +131,7 @@ const Insights = () => {
 
       {/* System Usage */}
       <div>
-        <p>System Usage</p>
+        <h2 className="font-semibold">System Usage</h2>
         <p className="text-muted-foreground mt-1 text-sm">
           A quick glance at the top-performing pages, most active users, and
           preferred browsers.
@@ -132,39 +139,27 @@ const Insights = () => {
       </div>
       <div>
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="space-y-3 rounded-md border border-gray-200 bg-white p-4">
-            <h3>Most View Pages</h3>
+          <div className="space-y-3 rounded-md border border-gray-200 bg-white p-4 pb-0">
+            <h3 className="font-medium">Most View Pages</h3>
             <div className="divide-y divide-gray-200">
-              <div className="flex items-center gap-2 py-4">
-                <FileIcon className="text-muted-foreground h-4 w-4" />
-                <span className="text-sm">Idea Details Page</span>
-              </div>
-              <div className="flex items-center gap-2 py-4">
-                <FileIcon className="text-muted-foreground h-4 w-4" />
-                <span className="text-sm">User Management Page</span>
-              </div>
-              <div className="flex items-center gap-2 py-4">
-                <FileIcon className="text-muted-foreground h-4 w-4" />
-                <span className="text-sm">Account Settings Page</span>
-              </div>
+              {mostViewPages.map((page) => (
+                <div className="flex items-center gap-2 py-4">
+                  <FileIcon className="text-muted-foreground h-4 w-4" />
+                  <span className="text-sm">{page}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="space-y-3 rounded-md border border-gray-200 bg-white p-4">
-            <h3>Top Active Users</h3>
+          <div className="space-y-3 rounded-md border border-gray-200 bg-white p-4 pb-0">
+            <h3 className="font-medium">Top Active Users</h3>
             <div className="divide-y divide-gray-200">
-              <div className="flex items-center gap-2 py-4">
-                <Users className="text-muted-foreground h-4 w-4" />
-                <span className="text-sm">John Smith</span>
-              </div>
-              <div className="flex items-center gap-2 py-4">
-                <Users className="text-muted-foreground h-4 w-4" />
-                <span className="text-sm">Prof. Susan</span>
-              </div>
-              <div className="flex items-center gap-2 py-4">
-                <Users className="text-muted-foreground h-4 w-4" />
-                <span className="text-sm">Sarah Johnson</span>
-              </div>
+              {topActiveUsers.map((user) => (
+                <div className="flex items-center gap-2 py-4">
+                  <Users className="text-muted-foreground h-4 w-4" />
+                  <span className="text-sm">{user}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -172,7 +167,7 @@ const Insights = () => {
 
       {/* Chart */}
       <div className="space-y-4 rounded-md border border-gray-200 bg-white p-4">
-        <h3>Browser Usage Breakdown</h3>
+        <h3 className="font-medium">Browser Usage Breakdown</h3>
         <div>
           <div className="flex items-center gap-4">
             <div className="relative h-[120px]">

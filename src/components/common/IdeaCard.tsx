@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
 import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
+import useAcademicYear from "@/hooks/useAcademicYear";
 import { FEATURES, useAuthorize } from "@/hooks/useAuthorize";
 import { cn, getInitials } from "@/lib/utils";
 import { useReactIdea } from "@/modules/Ideas/api/mutateReactIdea";
@@ -45,6 +46,7 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
   const { authState } = useAuth();
   const queryClient = useQueryClient();
   const { checkFeatureAvailability } = useAuthorize();
+  const { isFinalClosureDate } = useAcademicYear();
 
   const likeIdea = useReactIdea({
     mutationConfig: {
@@ -109,15 +111,17 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
           </div>
           <div className="flex items-center gap-x-4">
             {checkFeatureAvailability(FEATURES.TOGGLE_HIDE_UNHIDE) && (
-              <HideButton idea={idea} />
+              <HideButton isFinalClosureDate={isFinalClosureDate} idea={idea} />
             )}
             {authState?.userData?.id !== idea.user_id &&
               checkFeatureAvailability(FEATURES.REPORT_IDEA) && (
-                <ReportButton idea={idea} />
+                <ReportButton
+                  isFinalClosureDate={isFinalClosureDate}
+                  idea={idea}
+                />
               )}
-            {authState?.userData?.id === idea.user_id && (
-              <IdeaCardPopover idea={idea} />
-            )}
+            {authState?.userData?.id === idea.user_id &&
+              !isFinalClosureDate && <IdeaCardPopover idea={idea} />}
           </div>
         </div>
         <Link
@@ -189,7 +193,8 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
             onClick={handleLikeButtonClick}
             disabled={
               likeIdea.isPending ||
-              !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA)
+              !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA) ||
+              isFinalClosureDate
             }
           >
             <ThumbsUp
@@ -205,7 +210,8 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
             onClick={handleUnlikeButtonClick}
             disabled={
               unlikeIdea.isPending ||
-              !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA)
+              !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA) ||
+              isFinalClosureDate
             }
           >
             <ThumbsDown
