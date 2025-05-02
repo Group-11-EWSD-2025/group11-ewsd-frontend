@@ -43,7 +43,7 @@ function IdeaDetails() {
   const { ideaId } = useParams();
   const { authState } = useAuth();
   const { checkFeatureAvailability } = useAuthorize();
-  const { isIdeaSubmissionOpen } = useAcademicYear();
+  const { isAfterFinalClosureDate, isIdeaSubmissionOpen } = useAcademicYear();
   const [viewBy, setViewBy] = useState<"asc" | "desc">("desc");
 
   const { data: idea, isLoading } = useGetIdeaDetails({
@@ -279,7 +279,7 @@ function IdeaDetails() {
         </div>
 
         {checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA) &&
-          isIdeaSubmissionOpen && (
+          !isAfterFinalClosureDate && (
             <div className="sticky bottom-0 left-0 rounded-xl bg-white p-4 lg:p-5">
               <div className="border-border-weak rounded-lg border p-3 shadow-sm">
                 <CommentForm />
