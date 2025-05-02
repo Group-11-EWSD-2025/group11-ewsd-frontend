@@ -130,7 +130,7 @@ const DepartmentDetails = () => {
     <div>
       <Tabs defaultValue={tab} className="w-full gap-0">
         <div className="sticky top-0 z-10 flex w-full flex-col justify-center bg-[#FEFEFE]">
-          <div className="border-border-weak flex flex-col justify-between gap-2 border p-4 md:flex-row md:items-start">
+          <div className="border-border-weak flex flex-col justify-between gap-2 border-y p-4 md:flex-row md:items-start">
             <TabsList>
               <div className="bg-background flex">
                 {tabs.map((tabItem) => (
