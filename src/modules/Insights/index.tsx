@@ -88,8 +88,8 @@ const Insights = () => {
   const topActiveUsers = ["John Smith", "Prof. Susan", "Sarah Johnson"];
 
   return (
-    <div className="relative mx-auto space-y-4 p-4 lg:mt-[var(--topbar-height)] lg:max-w-[var(--content-width)] lg:p-6">
-      <div className="flex items-center justify-between">
+    <div className="relative mx-auto space-y-4 p-4 lg:max-w-[var(--content-width)] lg:p-6">
+      <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
         <h1 className="text-2xl font-semibold">Department Overview</h1>
 
         <Select

@@ -2,6 +2,7 @@ import { IdeaCard, IdeaCardSkeleton } from "@/components/common/IdeaCard";
 import Pagination from "@/components/common/Pagination";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import useAcademicYear from "@/hooks/useAcademicYear";
 import { FEATURES, useAuthorize } from "@/hooks/useAuthorize";
 import { showDialog } from "@/lib/utils";
 import { useGetIdeaList } from "@/modules/Departments/details/api/queryGetIdeaList";
@@ -17,6 +18,7 @@ const IdeaListView = () => {
   const { id: departmentId } = useParams();
   const { checkFeatureAvailability } = useAuthorize();
   const { authState } = useAuth();
+  const { isIdeaSubmissionOpen } = useAcademicYear();
 
   const [tab] = useQueryState("tab", parseAsString.withDefault("latest"));
   const [startDate] = useQueryState("startDate", parseAsString.withDefault(""));
@@ -115,14 +117,15 @@ const IdeaListView = () => {
                       university! Your voice can make a difference.
                     </p>
                   </div>
-                  {checkFeatureAvailability(FEATURES.CREATE_IDEA) && (
-                    <div>
-                      <Button type="button" onClick={handleCreateNewIdea}>
-                        <Plus size={20} />
-                        Create New Idea
-                      </Button>
-                    </div>
-                  )}
+                  {isIdeaSubmissionOpen &&
+                    checkFeatureAvailability(FEATURES.CREATE_IDEA) && (
+                      <div>
+                        <Button type="button" onClick={handleCreateNewIdea}>
+                          <Plus size={20} />
+                          Create New Idea
+                        </Button>
+                      </div>
+                    )}
                 </div>
               ) : (
                 <div className="border-weak mx-auto flex h-full w-full flex-col gap-y-8 rounded-xl border bg-white p-4 md:p-10">
@@ -135,14 +138,15 @@ const IdeaListView = () => {
                       Please try different filters or create a new idea.
                     </p>
                   </div>
-                  {checkFeatureAvailability(FEATURES.CREATE_IDEA) && (
-                    <div>
-                      <Button type="button" onClick={handleCreateNewIdea}>
-                        <Plus size={20} />
-                        Create New Idea
-                      </Button>
-                    </div>
-                  )}
+                  {isIdeaSubmissionOpen &&
+                    checkFeatureAvailability(FEATURES.CREATE_IDEA) && (
+                      <div>
+                        <Button type="button" onClick={handleCreateNewIdea}>
+                          <Plus size={20} />
+                          Create New Idea
+                        </Button>
+                      </div>
+                    )}
                 </div>
               )}
             </>

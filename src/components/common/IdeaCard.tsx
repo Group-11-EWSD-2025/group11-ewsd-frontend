@@ -46,7 +46,7 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
   const { authState } = useAuth();
   const queryClient = useQueryClient();
   const { checkFeatureAvailability } = useAuthorize();
-  const { isFinalClosureDate } = useAcademicYear();
+  const { isIdeaSubmissionOpen } = useAcademicYear();
 
   const likeIdea = useReactIdea({
     mutationConfig: {
@@ -111,17 +111,16 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
           </div>
           <div className="flex items-center gap-x-4">
             {checkFeatureAvailability(FEATURES.TOGGLE_HIDE_UNHIDE) && (
-              <HideButton isFinalClosureDate={isFinalClosureDate} idea={idea} />
+              <HideButton idea={idea} />
             )}
+
             {authState?.userData?.id !== idea.user_id &&
               checkFeatureAvailability(FEATURES.REPORT_IDEA) && (
-                <ReportButton
-                  isFinalClosureDate={isFinalClosureDate}
-                  idea={idea}
-                />
+                <ReportButton idea={idea} />
               )}
+
             {authState?.userData?.id === idea.user_id &&
-              !isFinalClosureDate && <IdeaCardPopover idea={idea} />}
+              isIdeaSubmissionOpen && <IdeaCardPopover idea={idea} />}
           </div>
         </div>
         <Link
@@ -135,7 +134,7 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
         {idea.files.length > 0 && (
           <div className="space-y-2">
             <p className="text-brand text-sm">Attached with</p>
-            <div className="grid grid-cols-4 items-center gap-x-2">
+            <div className="grid grid-cols-2 items-center gap-2 md:grid-cols-4">
               {idea.files.map((file, index) => (
                 <div key={`file-${index}`}>
                   {isImage(file.file) && (
@@ -180,7 +179,7 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
             </span>
           </p>
         </div>
-        <div className="flex items-center">
+        <div className="flex flex-wrap items-center">
           {checkFeatureAvailability(FEATURES.SEE_REPORT_COUNT) && (
             <div className="flex items-center gap-x-2 rounded-md bg-red-100 px-2.5 py-1.5">
               <Flag size={20} className="text-destructive" />
@@ -194,7 +193,7 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
             disabled={
               likeIdea.isPending ||
               !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA) ||
-              isFinalClosureDate
+              !isIdeaSubmissionOpen
             }
           >
             <ThumbsUp
@@ -211,7 +210,7 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
             disabled={
               unlikeIdea.isPending ||
               !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA) ||
-              isFinalClosureDate
+              !isIdeaSubmissionOpen
             }
           >
             <ThumbsDown
@@ -230,8 +229,8 @@ export const IdeaCard = ({ idea }: { idea: TIdea }) => {
               className="flex cursor-pointer items-center gap-x-2"
             >
               <MessageCircle size={20} />
-              <p className="text-brand">{idea.comments_count} Comments</p>
-              <ChevronRight size={20} className="text-brand" />
+              <p>{idea.comments_count} Comments</p>
+              <ChevronRight size={20} />
             </Link>
           </Button>
         </div>

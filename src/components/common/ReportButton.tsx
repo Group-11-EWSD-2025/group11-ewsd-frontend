@@ -1,18 +1,14 @@
 import { Button } from "@/components/ui/button";
+import useAcademicYear from "@/hooks/useAcademicYear";
 import { cn, hideDialog, showDialog } from "@/lib/utils";
 import { useReportIdea } from "@/modules/Ideas/api/mutateReportIdea";
 import { TIdea } from "@/types/idea";
 import { useQueryClient } from "@tanstack/react-query";
 import { Flag } from "lucide-react";
 
-function ReportButton({
-  idea,
-  isFinalClosureDate,
-}: {
-  idea: TIdea;
-  isFinalClosureDate: boolean;
-}) {
+function ReportButton({ idea }: { idea: TIdea }) {
   const queryClient = useQueryClient();
+  const { isIdeaSubmissionOpen } = useAcademicYear();
 
   const reportIdea = useReportIdea({
     mutationConfig: {
@@ -47,7 +43,7 @@ function ReportButton({
       variant="ghost"
       className="flex cursor-pointer items-center gap-x-2"
       state={reportIdea.isPending ? "loading" : "default"}
-      disabled={idea.is_report || isFinalClosureDate}
+      disabled={idea.is_report || !isIdeaSubmissionOpen}
       onClick={handleReport}
     >
       <Flag size={20} className={cn({ "text-destructive": idea.is_report })} />

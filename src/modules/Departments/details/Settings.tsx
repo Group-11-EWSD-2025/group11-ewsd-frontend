@@ -32,7 +32,7 @@ function Settings() {
   });
 
   return (
-    <div className="mx-auto w-full p-4 lg:mt-[calc(var(--topbar-height))] lg:max-w-[var(--content-width)] lg:p-6">
+    <div className="mx-auto w-full p-4 lg:max-w-[var(--content-width)] lg:p-6">
       <div className="flex flex-col gap-y-4">
         {getDepartmentDetails.isSuccess && (
           <DepartmentDetailsForm

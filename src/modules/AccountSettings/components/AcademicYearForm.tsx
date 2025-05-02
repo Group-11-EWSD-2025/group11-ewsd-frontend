@@ -188,8 +188,9 @@ function AcademicYearForm({
               academicYear &&
               new Date() >=
                 new Date(
-                  new Date(form.getValues("idea_submission_deadline")).setDate(
-                    form.getValues("idea_submission_deadline").getDate() - 14,
+                  new Date(academicYear.idea_submission_deadline).setDate(
+                    new Date(academicYear.idea_submission_deadline).getDate() -
+                      14,
                   ),
                 ),
           }}

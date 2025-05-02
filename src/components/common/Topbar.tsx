@@ -107,7 +107,7 @@ const Topbar = ({ setIsSidebarOpen }: Props) => {
   return (
     <>
       <div
-        className="fixed top-0 z-10 hidden h-[var(--topbar-height)] w-[calc(100vw-var(--sidebar-width))] items-center justify-between px-5 lg:flex"
+        className="sticky top-0 z-10 hidden w-[calc(100vw-var(--sidebar-width))] items-center justify-between px-5 py-3 lg:flex"
         style={{
           background: "linear-gradient(180deg, #F3F4F6 0%, #FFFFFF 100%)",
         }}

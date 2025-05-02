@@ -2,21 +2,30 @@ import { useGetAcademicYearList } from "@/modules/AccountSettings/api/queryGetAc
 import { AcademicYearData } from "@/modules/AccountSettings/components/Academic";
 
 const useAcademicYear = () => {
-  const isFinalClosureDate = () => {
-    const getAcademicYearList = useGetAcademicYearList({});
+  const getAcademicYearList = useGetAcademicYearList({});
 
-    const academicYear = getAcademicYearList.data?.data.body.find(
-      (year: AcademicYearData) => year.status === "active",
-    );
+  const academicYear = getAcademicYearList.data?.data.body.find(
+    (year: AcademicYearData) => year.status === "active",
+  );
 
-    // return true;
+  const isAfterFinalClosureDate = () => {
     return (
       academicYear?.final_closure_date &&
-      academicYear?.final_closure_date < new Date()
+      new Date() > new Date(academicYear?.final_closure_date)
     );
   };
 
-  return { isFinalClosureDate: isFinalClosureDate() };
+  const isIdeaSubmissionOpen = () => {
+    return (
+      academicYear?.idea_submission_deadline &&
+      new Date() < new Date(academicYear?.idea_submission_deadline)
+    );
+  };
+
+  return {
+    isAfterFinalClosureDate: isAfterFinalClosureDate(),
+    isIdeaSubmissionOpen: isIdeaSubmissionOpen(),
+  };
 };
 
 export default useAcademicYear;

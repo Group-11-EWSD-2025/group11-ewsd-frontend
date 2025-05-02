@@ -43,7 +43,7 @@ function IdeaDetails() {
   const { ideaId } = useParams();
   const { authState } = useAuth();
   const { checkFeatureAvailability } = useAuthorize();
-  const { isFinalClosureDate } = useAcademicYear();
+  const { isIdeaSubmissionOpen } = useAcademicYear();
   const [viewBy, setViewBy] = useState<"asc" | "desc">("desc");
 
   const { data: idea, isLoading } = useGetIdeaDetails({
@@ -108,12 +108,12 @@ function IdeaDetails() {
   };
 
   if (isLoading) {
-    return <Skeleton className="h-[calc(100vh-var(--topbar-height))]" />;
+    return <Skeleton className="h-screen" />;
   }
 
   return (
-    <div className="relative mx-auto space-y-4 p-4 lg:mt-[var(--topbar-height)] lg:max-w-[var(--content-width)] lg:p-6">
-      <div className="flex items-center justify-between">
+    <div className="relative mx-auto space-y-4 p-4 lg:max-w-[var(--content-width)] lg:p-6">
+      <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
         <div className="flex items-center gap-x-2">
           <Eye size={20} />
           <p className="text-text-strong text-sm">
@@ -153,19 +153,15 @@ function IdeaDetails() {
               )}
               {checkFeatureAvailability(FEATURES.REPORT_IDEA) &&
                 authState?.userData?.id !== ideaData?.user_id && (
-                  <ReportButton
-                    isFinalClosureDate={isFinalClosureDate}
-                    idea={ideaData}
-                  />
+                  <ReportButton idea={ideaData} />
                 )}
+
               {checkFeatureAvailability(FEATURES.TOGGLE_HIDE_UNHIDE) && (
-                <HideButton
-                  isFinalClosureDate={isFinalClosureDate}
-                  idea={ideaData}
-                />
+                <HideButton idea={ideaData} />
               )}
+
               {authState?.userData?.id === ideaData?.user_id &&
-                !isFinalClosureDate && <IdeaCardPopover idea={ideaData} />}
+                isIdeaSubmissionOpen && <IdeaCardPopover idea={ideaData} />}
             </div>
           </div>
           <p className="text-text-strong">{ideaData?.content}</p>
@@ -199,7 +195,7 @@ function IdeaDetails() {
               disabled={
                 likeIdea.isPending ||
                 !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA) ||
-                isFinalClosureDate
+                !isIdeaSubmissionOpen
               }
             >
               <ThumbsUp
@@ -219,7 +215,7 @@ function IdeaDetails() {
               disabled={
                 unlikeIdea.isPending ||
                 !checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA) ||
-                isFinalClosureDate
+                !isIdeaSubmissionOpen
               }
             >
               <ThumbsDown
@@ -283,7 +279,7 @@ function IdeaDetails() {
         </div>
 
         {checkFeatureAvailability(FEATURES.REACT_COMMENT_IDEA) &&
-          !isFinalClosureDate && (
+          isIdeaSubmissionOpen && (
             <div className="sticky bottom-0 left-0 rounded-xl bg-white p-4 lg:p-5">
               <div className="border-border-weak rounded-lg border p-3 shadow-sm">
                 <CommentForm />

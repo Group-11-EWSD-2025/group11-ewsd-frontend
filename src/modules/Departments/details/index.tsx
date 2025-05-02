@@ -67,7 +67,7 @@ const DepartmentDetails = () => {
     parseAsString.withDefault(""),
   );
 
-  const { isFinalClosureDate } = useAcademicYear();
+  const { isAfterFinalClosureDate, isIdeaSubmissionOpen } = useAcademicYear();
 
   const isUsingParams = useMemo(() => {
     return (
@@ -82,7 +82,7 @@ const DepartmentDetails = () => {
   }, [redirectDepartment]);
 
   const IS_SHOW_EXPORT_DATA_BUTTON =
-    isFinalClosureDate && checkFeatureAvailability(FEATURES.EXPORT_DATA);
+    isAfterFinalClosureDate && checkFeatureAvailability(FEATURES.EXPORT_DATA);
 
   const { data: categoriesResponse, isLoading: isLoadingCategories } =
     useGetCategoryList({
@@ -128,22 +128,24 @@ const DepartmentDetails = () => {
 
   return (
     <div>
-      <Tabs defaultValue={tab} className="w-full space-y-2">
-        <div className="fixed z-10 flex w-full flex-col justify-center bg-[#FEFEFE] lg:w-[calc(100%-var(--sidebar-width))]">
+      <Tabs defaultValue={tab} className="w-full gap-0">
+        <div className="sticky top-0 z-10 flex w-full flex-col justify-center bg-[#FEFEFE]">
           <div className="border-border-weak flex flex-col justify-between gap-2 border p-4 md:flex-row md:items-start">
-            <TabsList className="bg-background flex">
-              {tabs.map((tabItem) => (
-                <TabsTrigger
-                  key={tabItem.value}
-                  value={tabItem.value}
-                  className="data-[state=active]:bg-slate-100"
-                  onClick={() => {
-                    setTab(tabItem.value);
-                  }}
-                >
-                  {tabItem.label}
-                </TabsTrigger>
-              ))}
+            <TabsList>
+              <div className="bg-background flex">
+                {tabs.map((tabItem) => (
+                  <TabsTrigger
+                    key={tabItem.value}
+                    value={tabItem.value}
+                    className="data-[state=active]:bg-slate-100"
+                    onClick={() => {
+                      setTab(tabItem.value);
+                    }}
+                  >
+                    {tabItem.label}
+                  </TabsTrigger>
+                ))}
+              </div>
             </TabsList>
 
             <div className="flex flex-wrap items-center gap-2 md:justify-end">
@@ -199,7 +201,7 @@ const DepartmentDetails = () => {
                   Reset Filters
                 </Button>
               )}
-              {!isFinalClosureDate &&
+              {isIdeaSubmissionOpen &&
                 checkFeatureAvailability(FEATURES.CREATE_IDEA) && (
                   <>
                     <div className="hidden h-10 md:block">
@@ -242,14 +244,7 @@ const DepartmentDetails = () => {
 
         <div
           className={cn(
-            "mx-auto mt-[var(--topbar-height-mobile)] w-full space-y-4 p-4 md:mt-[var(--topbar-height-tablet)] lg:max-w-[var(--content-width)] lg:p-6 xl:mt-[var(--topbar-height)]",
-            {
-              "mt-[calc(var(--topbar-height-mobile)+var(--notification-height-mobile))] md:mt-[calc(var(--topbar-height-tablet)+var(--notification-height-tablet))] xl:mt-[calc(var(--topbar-height)+var(--notification-height))]":
-                IS_SHOW_EXPORT_DATA_BUTTON,
-            },
-            {
-              "pt-[60px]": isUsingParams,
-            },
+            "mx-auto w-full space-y-4 p-4 pt-8 lg:max-w-[var(--content-width)] lg:p-6",
           )}
         >
           {tabs.map((tab) => (
