@@ -23,6 +23,7 @@ const useAcademicYear = () => {
   };
 
   return {
+    academicYear,
     isAfterFinalClosureDate: isAfterFinalClosureDate(),
     isIdeaSubmissionOpen: isIdeaSubmissionOpen(),
   };
