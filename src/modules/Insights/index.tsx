@@ -44,8 +44,6 @@ const Insights = () => {
     },
   });
 
-  console.log(getInsightData?.data?.body);
-
   const browserData = getInsightData?.data?.body?.browser_usage
     ? Object.entries(getInsightData.data.body.browser_usage).map(
         ([browser, value]) => ({

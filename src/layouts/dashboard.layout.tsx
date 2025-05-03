@@ -1,11 +1,53 @@
 import Sidebar from "@/components/common/Sidebar";
 import Topbar from "@/components/common/Topbar";
+import { PrivatePageEndPoints } from "@/ecosystem/PageEndpoints/Private";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { useStorePageView } from "./api/mutateStorePageView";
+
+function getPageLabel(pathname: string, routes: any): string | undefined {
+  if (pathname === "/") {
+    return routes.root.label;
+  }
+  const segments = pathname.split("/").filter(Boolean);
+  let current = routes;
+  for (const segment of segments) {
+    if (current[segment]?.label) {
+      return current[segment].label;
+    }
+
+    if (current[segment]?.details) {
+      current = current[segment].details;
+      continue;
+    }
+
+    for (const key of Object.keys(current)) {
+      const route = current[key];
+      if (route?.pattern && new RegExp(route.pattern).test(pathname)) {
+        return route.label;
+      }
+    }
+    return undefined;
+  }
+  return undefined;
+}
 
 function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  const { mutate: storePageView } = useStorePageView({});
+  const previousPathname = useRef(location.pathname);
+
+  useEffect(() => {
+    const label = getPageLabel(location.pathname, PrivatePageEndPoints);
+
+    if (label && previousPathname.current !== location.pathname) {
+      storePageView(label);
+      previousPathname.current = location.pathname;
+    }
+  }, [location, storePageView]);
 
   return (
     <div className="bg-muted flex min-h-screen">

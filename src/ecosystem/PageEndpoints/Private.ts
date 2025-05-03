@@ -35,7 +35,7 @@ export const PrivatePageEndPoints = {
       root: {
         path: "/departments/:id",
         pattern: "^/departments/\\d+$",
-        label: "Department Details",
+        label: "Idea Listing",
         component: Loadable(
           lazy(() => import("@/modules/Departments/details")),
         ),
