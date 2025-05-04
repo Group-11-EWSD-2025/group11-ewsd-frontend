@@ -1,7 +1,6 @@
 import CustomForm from "@/components/common/CustomForm";
 import { API_BASE_URL } from "@/config/env";
 import { useGetAcademicYearList } from "@/modules/AccountSettings/api/queryGetAcademicYearList";
-import { AcademicYearData } from "@/modules/AccountSettings/components/Academic";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
@@ -29,9 +28,7 @@ export const ExportDataDialog = () => {
   const getAcademicYearList = useGetAcademicYearList({});
   const academicYears = getAcademicYearList.data?.data.body || [];
 
-  const academicYearId = academicYears.find(
-    (year: AcademicYearData) => year.status === "active",
-  )?.id;
+  const academicYearId = academicYears[0].id;
 
   const exportData = useExportData({
     params: {
