@@ -34,8 +34,8 @@ interface ActiveUser {
 const Insights = () => {
   const [selectedDepartment, setSelectedDepartment] = useState<string>("");
 
-  const { academicYear } = useAcademicYear();
-  const academicYearId = academicYear?.id;
+  const { latestAcademicYear } = useAcademicYear();
+  const academicYearId = latestAcademicYear?.id;
 
   const { data: getInsightData } = useGetInsightData({
     data: {
