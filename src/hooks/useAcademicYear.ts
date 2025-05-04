@@ -8,10 +8,12 @@ const useAcademicYear = () => {
     (year: AcademicYearData) => year.status === "active",
   );
 
+  const latestAcademicYear = getAcademicYearList.data?.data.body[0];
+
   const isAfterFinalClosureDate = () => {
     return (
-      academicYear?.final_closure_date &&
-      new Date() > new Date(academicYear?.final_closure_date)
+      latestAcademicYear?.final_closure_date &&
+      new Date() > new Date(latestAcademicYear?.final_closure_date)
     );
   };
 
