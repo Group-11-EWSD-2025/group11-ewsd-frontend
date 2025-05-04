@@ -48,7 +48,6 @@ const Login = () => {
             token: loginResponse.data.body.token,
           }));
           getProfile.refetch().then((res) => {
-            console.log(res.data?.data);
             setAuthState((prev) => ({
               ...prev,
               userData: {
@@ -69,10 +68,6 @@ const Login = () => {
   const onSubmit = (data: LoginFormInputs) => {
     loginMutation.mutate(data);
   };
-
-  // const handleRequestPasswordReset = () => {
-  //   console.log("Request password reset");
-  // };
 
   return (
     <div className="bg-muted flex h-screen flex-col items-center justify-center gap-y-7">
