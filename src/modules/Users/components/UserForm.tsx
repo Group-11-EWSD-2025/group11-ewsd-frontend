@@ -96,7 +96,7 @@ function UserForm({ user, rolesData }: UserFormProps) {
       role:
         (user?.role as "qa-manager" | "qa-coordinator" | "staff") || "staff",
       staff_department:
-        user?.role === "staff" ? user?.departments?.[0]?.id || "" : "",
+        user?.role === "staff" ? `${user?.departments?.[0]?.id}` || "" : "",
       others_department:
         user?.role !== "staff"
           ? user?.departments?.map((dept) => dept.id) || []

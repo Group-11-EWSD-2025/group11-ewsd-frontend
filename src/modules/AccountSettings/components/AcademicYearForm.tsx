@@ -207,6 +207,14 @@ function AcademicYearForm({
             name: "final_closure_date",
             label: "Final Closure Date",
             required: true,
+            disabled:
+              academicYear &&
+              new Date() >=
+                new Date(
+                  new Date(academicYear.final_closure_date).setDate(
+                    new Date(academicYear.final_closure_date).getDate() - 14,
+                  ),
+                ),
           }}
         />
 

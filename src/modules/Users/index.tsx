@@ -508,6 +508,7 @@ const Users = () => {
   function handleCreateUser() {
     showDialog({
       title: "Create User",
+      size: "lg",
       children: <UserForm rolesData={rolesData?.body} />,
     });
   }
@@ -515,6 +516,7 @@ const Users = () => {
   function handleEditUser(user: TUser) {
     showDialog({
       title: "Edit User",
+      size: "lg",
       children: <UserForm user={user} rolesData={rolesData?.body} />,
     });
   }
