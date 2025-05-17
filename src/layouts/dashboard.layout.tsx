@@ -53,7 +53,7 @@ function DashboardLayout() {
     <div className="bg-muted flex min-h-screen">
       <div
         className={cn(
-          "border-border-weak fixed top-0 left-0 z-20 w-[var(--sidebar-width)] translate-x-[-100%] border-r bg-white transition-transform duration-300 ease-in-out lg:translate-x-0",
+          "border-border-weak fixed top-0 left-0 z-30 w-[var(--sidebar-width)] translate-x-[-100%] border-r bg-white transition-transform duration-300 ease-in-out lg:translate-x-0",
           isSidebarOpen && "translate-x-0",
         )}
       >
